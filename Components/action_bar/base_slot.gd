@@ -1,0 +1,361 @@
+class_name BaseSlot extends PanelContainer
+const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
+
+# type0
+enum SLOT_TYPE {
+	SKILL,
+	SELECT,
+	ITEM,
+	TALENT,
+	BUFF,
+	DEFAULT
+}
+
+# slot state
+enum SLOT_STATE {
+	IN_ACTIVE,
+	ACTIVE
+}
+
+signal slot_clicked(s: BaseSlot)
+
+signal slot_left_clicked(s: BaseSlot)
+signal slot_right_clicked(s: BaseSlot)
+
+
+@onready var icon_texture: TextureRect = %IconTexture
+@onready var short_cut: Label = get_node_or_null("%ShortKey")
+@onready var level_key: Label = get_node_or_null("%LevelKey")
+@onready var progress_bar: TextureProgressBar = %TextureProgressBar
+@onready var boarder_effect: AnimatedSprite2D = %BoardEffect
+
+var timer: Timer
+var cimer: CommonUtil.Cimer
+
+static var action_bar: ActionBar
+
+static var slot_panel_container_unactive_theme: Theme = preload("res://Components/action_bar/slot_panel_container_unactive_theme.tres")
+static var _slot_material = preload("res://Components/action_bar/corner_boder_color.tres")
+# static var _slot_shader = preload("res://Components/action_bar/corner_boder_color.gdshader")
+
+# 槽位引用的实体对象
+@export var reference: Variant = null
+# @export var slot_state: SLOT_STATE = SLOT_STATE.IN_ACTIVE
+
+var slot_material: ShaderMaterial
+var icon_res_container := {}
+
+var is_active: bool = false
+var is_mouse_hover: bool = false
+# var is_fill: bool = false
+var slot_type: SLOT_TYPE
+# 快捷键（写死）
+var mapping_key: String = ""
+ 
+
+func _ready() -> void:
+	# Decorations must not swallow _gui_input before it reaches this slot.
+	for child in find_children("*", "Control", true, false):
+		child.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_process(false)
+	# set_process_input(false)
+	slot_material = _slot_material.duplicate(true)
+	progress_bar.value = 0.0
+	progress_bar.visible = false
+
+	# board
+	boarder_effect.visible = false
+
+	# Assuming slot is a Control node or subclass like Button, Label, etc.
+	# 设置 slot 轴心位置（防止缩放时，图标位置偏移）
+	self.pivot_offset = self.size / 2  # Set the pivot to the center of the node
+
+
+	slot_left_clicked.connect(_on_slot_left_clicked)
+	slot_right_clicked.connect(_on_slot_right_clicked)
+
+
+	
+# input event handler register
+func _input(event: InputEvent) -> void: 
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE and is_instance_valid(_chest):
+		cancel_drop_preview()
+		get_viewport().set_input_as_handled()
+		return
+
+func _gui_input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or not BattleInput.interaction_available(get_viewport()): return
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			slot_left_clicked.emit(self)
+			accept_event()
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			slot_right_clicked.emit(self)
+			accept_event()
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if not is_visible_in_tree() or not BattleInput.interaction_available(get_viewport()): return
+	# 监听 slot 键盘输入 
+	if event is InputEventKey and event.pressed:
+		# SKILL
+		if slot_type == SLOT_TYPE.SKILL:
+			# 按键主动绑定到显示的 slot 上（每次切换 action bar 时动态绑定）
+			if mapping_key != ""  and  InputMap.action_has_event(mapping_key, event):
+				# 技能状态正常
+				if (
+					is_instance_valid(reference)
+					# and is_instance_valid(reference.unit) 
+					and reference.unit.current_global_skill_state == 0 
+					and reference.current_state == reference.SKILL_STATE.Idle
+					):
+						print("Triggered action:", mapping_key)
+						slot_clicked.emit(self)
+						get_viewport().set_input_as_handled()
+
+
+
+
+# mouse left click handler
+func _on_slot_left_clicked(slot: BaseSlot) -> void:
+	# print("slot clicked %s" % slot)
+	if is_instance_valid(reference):
+		if slot_type == SLOT_TYPE.SKILL:
+			if reference.unit.current_global_skill_state == 0 and reference.current_state == reference.SKILL_STATE.Idle:
+				# print("slot clicked %s" % reference.title)
+				slot_clicked.emit(self)
+
+
+# mouse right click handler
+func _on_slot_right_clicked(slot: BaseSlot) -> void:
+	# print("slot right clicked %s" % slot)
+	if is_instance_valid(reference):
+		if slot_type == SLOT_TYPE.SKILL:
+			if reference.unit.current_global_skill_state == 0 :
+				# print("slot right clicked %s" % reference.title)
+				if reference.auto_release:
+					reference.auto_release = false
+					boarder_effect.visible = false
+					boarder_effect.stop()
+				else: 
+					reference.auto_release = true
+					boarder_effect.visible = true
+					boarder_effect.play("default", 1.0, true)
+
+				# slot 自动释放动画效果添加
+
+				print("自动施法 %s %s" % [reference.title, reference.auto_release])
+		
+		elif slot_type == SLOT_TYPE.ITEM:
+			# print("slot right clicked %s" % reference.title)
+			if SOS.main.player_controller.player_status == SOS.main.player_controller.PLAYER_STATUS.DEFAULT and reference:
+
+				# 切换玩家状态
+				SOS.main.player_controller.player_status = SOS.main.player_controller.PLAYER_STATUS.DROPING_ITEM
+
+				# 3D 场景创建 chest 实例
+				_chest = SystemUtil.item_system.generate_chest(reference, Vector3.ZERO)
+
+				# 注册 RayPicker
+				SignalBus.ray_picker_regist.emit(callable_drop_item)
+
+
+
+# item drop handler =================================================
+var _chest
+
+func cancel_drop_preview() -> void:
+	if not is_instance_valid(_chest): return
+	SignalBus.ray_picker_unregist.emit(callable_drop_item)
+	var preview = _chest
+	_chest = null
+	if is_instance_valid(reference) and reference is Item and not reference.is_queued_for_deletion():
+		preview.reparent(reference, false)
+		preview.hide()
+		preview.process_mode = Node.PROCESS_MODE_DISABLED
+	else: preview.queue_free()
+	if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+		SOS.main.player_controller.player_status = PlayerController.PLAYER_STATUS.DEFAULT
+
+func _exit_tree() -> void:
+	cancel_drop_preview()
+
+# 注册 build_turret function 到 RayPicker
+func callable_drop_item(ray_cast_3d: RayCast3D) -> void:
+	if not ray_cast_3d.is_colliding() or not BattleInput.pointer_available(get_viewport()): return
+
+	if _chest:
+		var collision_point = ray_cast_3d.get_collision_point()
+		# print("drop item at %s" % collision_point)
+		_chest.global_position = collision_point
+
+		if Input.is_action_just_pressed("click"):	# 等待左键点击
+			_chest = null
+
+			# 取消注册
+			SignalBus.ray_picker_unregist.emit(callable_drop_item)
+
+
+			# item buff 信息删除(注意所有 buff 都是在 unit 下，不要再 item 或 skill 下寻找)
+			if reference is Item:
+				
+				for c in reference.unit.buff_map.keys():
+					print("unit name %s,  remove unit buff %s" % [reference.unit.name ,c])
+
+				# 删除 buff 信息
+				for _item_buff in reference.unit.buff_map.values():
+					if _item_buff.code in reference.buff_map.keys():
+						print("remove item buff %s" % _item_buff.code)
+						if _item_buff.reference_instance == reference: SystemUtil.buff_system.remove(_item_buff, reference.unit)
+
+
+
+
+			# 删除装备信息（从背包中删除）
+			SystemUtil.item_system.remove_item_from_inventory(reference)
+
+
+			# item bar 删除
+			SOS.main.level_controller._cur_scene.action_bar.item_bar_comp.drop_item(self)
+
+
+			# 切换玩家状态
+			SOS.main.player_controller.player_status = SOS.main.player_controller.PLAYER_STATUS.DEFAULT
+# item drop handler =================================================
+
+
+
+
+
+
+	
+
+
+
+
+func active_callback(act: bool) -> void:
+	# 回调函数（当前 slot 是否激活状态设置）
+	is_active = act
+	
+
+
+func custome_init(ref: Variant, icon_path: String, type: SLOT_TYPE = SLOT_TYPE.DEFAULT, active: bool = true, level: int = -1 ) -> void:
+	# 引用实体对象
+	reference = ref
+	if is_instance_valid(ref):
+		tooltip_text = str(ref.get("title")) + "\n" + str(ref.get("desc"))
+		if ref is Skill:
+			tooltip_text += "\n冷却 %.1fs · 魔法 %.0f" % [maxf(ref.cooldown, 0.0), maxf(ref.mana_cost, 0.0)]
+			if ref.skill_meta_res.building_res != null:
+				tooltip_text += "\n金币 %.0f · 木材 %.0f" % [maxf(ref.skill_meta_res.building_res.money_cost, 0.0), maxf(ref.skill_meta_res.building_res.wood_cost, 0.0)]
+
+	# 填充
+	# is_fill = true	
+
+	# Resolve symbolic icons without treating an empty slot as a file path.
+	var icon_name = icon_path.get_file().get_basename()
+	icon_texture.texture = icon_res_container.get(icon_name)
+	if icon_texture.texture == null and icon_path.begins_with("res://") and ResourceLoader.exists(icon_path):
+		icon_texture.texture = load(icon_path)
+	if icon_texture.texture == null:
+		icon_texture.texture = icon_res_container.get("default", preload("res://icon.svg"))
+	icon_texture.material = slot_material
+	
+
+	reset_level(level)
+
+	
+	slot_type = type
+	is_active = active
+	
+	
+	# 激活 or 不激活	
+	do(active)
+	
+
+	
+		
+		
+func do(active):
+	if active:
+		icon_texture.material.set_shader_parameter("modulate_color", Color.WHITE)
+		icon_texture.material.set_shader_parameter("show_border", false)
+		self.theme = null
+	else:
+		icon_texture.material.set_shader_parameter("modulate_color", Color.DIM_GRAY)
+		icon_texture.material.set_shader_parameter("show_border", false)
+		self.theme = null # slot_panel_container_unactive_theme
+
+
+# 重新设置等级
+func reset_level(level: int) -> void:
+	if is_instance_valid(level_key) and level > -1:
+		level_key.text = "LV " + str(level)
+
+
+
+# 延长冷却时间
+func extend_cooldown(cooldown: float) -> void:
+	if cimer:
+		cimer.add_time(cooldown)
+		progress_bar.max_value = cimer.wait_time
+
+
+
+
+
+func _on_mouse_entered() -> void:
+	# set_process_input(true)
+	# print("mouse hover")
+	is_mouse_hover = true
+
+	if icon_texture and icon_texture.material:
+		icon_texture.material.set_shader_parameter("show_border", true)
+	
+
+	# 显示 slot_indicator 
+	if is_instance_valid(reference) and reference is Skill:
+		SOS.main.skill_slot_indicator.show_toggle(self)
+	elif is_instance_valid(reference) and reference is BaseUnit:
+		SOS.main.unit_slot_indicator.show_toggle(self)
+	elif is_instance_valid(reference) and reference is Item:
+		SOS.main.item_slot_indicator.show_toggle(self)
+	
+
+
+func _on_mouse_exited() -> void:
+	# print("mouse out")
+	is_mouse_hover = false
+	
+	if icon_texture  and icon_texture.material:
+		icon_texture.material.set_shader_parameter("show_border", false)
+
+	# 关闭 slot_indicator 
+	if is_instance_valid(reference) and  reference is Skill:
+		SOS.main.skill_slot_indicator.show_toggle(self)
+	elif is_instance_valid(reference) and reference is BaseUnit:
+		SOS.main.unit_slot_indicator.show_toggle(self)
+	elif is_instance_valid(reference) and reference is Item:
+		SOS.main.item_slot_indicator.show_toggle(self)
+
+	# set_process_input(false)
+
+
+
+func _process(delta: float) -> void:
+	if timer and is_instance_valid(timer):
+		progress_bar.value = timer.time_left
+		# print(timer.time_left)
+	
+	# cimer 引用 buff 实例，此处可能 buff 会先于这里释放，需要判断
+	if cimer and is_instance_valid(cimer):
+		progress_bar.value = cimer.time_left
+
+
+# 监听技能是否禁用
+func _on_skill_disabled(skill_context: SkillContext, disabled: bool):
+	var _skill = skill_context.skill
+	
+	if _skill.get_instance_id() == reference.get_instance_id():
+		# print("skill %s - %s disabled %s" % [_skill.name, _skill.title, disabled])
+		call_deferred("do", !disabled)
+

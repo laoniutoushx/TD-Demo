@@ -1,0 +1,15 @@
+{
+  "leaves": 660,
+  "clumps": 30,
+  "leaf_triangles": 10,
+  "triangles": 7953,
+  "ao_method": "24 actual BVH visibility rays per leaf; no height-based AO",
+  "ao_min": 0.0,
+  "ao_mean": 0.39065656565656565,
+  "ao_max": 1.0,
+  "process": "offline editable Blender assembly",
+  "root_closed": true,
+  "height": 3.755431890487671,
+  "source_scenes": 2,
+  "packed_textures": 6
+}

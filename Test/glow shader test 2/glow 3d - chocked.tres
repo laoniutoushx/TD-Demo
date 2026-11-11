@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://ch7clb1tmb3w2"]
+
+[ext_resource type="Shader" uid="uid://bmmglgp8877sb" path="res://Test/glow shader test 2/glow 3d - choked.gdshader" id="1_1qmoo"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_1qmoo")
+shader_parameter/emission_color = Color(0, 0.803922, 0.0352941, 1)
+shader_parameter/emission_amount = 1.898
+shader_parameter/rim_sharpness = 0.031

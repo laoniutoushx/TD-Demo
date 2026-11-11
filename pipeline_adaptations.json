@@ -1,0 +1,15 @@
+[
+  {
+    "file": "Levels\\level_1\\Level1.tscn",
+    "change": "Use original terrain text path instead of stale custom-resource UID in fresh import"
+  },
+  {
+    "file": "Levels\\level_1\\Level12.tscn",
+    "change": "Use original terrain text path instead of stale custom-resource UID in fresh import"
+  },
+  {
+    "file": "override.cfg",
+    "change": "Use copied certifi CA bundle for this isolated runtime; certificate verification stays enabled",
+    "ca_sha256": "4f3975ff30abbf35443b486064ae8bcb41dff707ffdf576c76d292fb458aa0a9"
+  }
+]

@@ -1,0 +1,135 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://asset_lab/benchmark/models/broadleaf_lod0.glb" id="1"]
+[ext_resource type="Material" path="res://asset_lab/benchmark/gray.tres" id="gray"]
+[node name="GrayTree" type="Node3D"]
+[node name="Model" parent="." instance=ExtResource("1")]
+[node name="Leader_Branch" parent="Model" index="0"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_00" parent="Model" index="1"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_01" parent="Model" index="2"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_02" parent="Model" index="3"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_03" parent="Model" index="4"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_04" parent="Model" index="5"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_05" parent="Model" index="6"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_06" parent="Model" index="7"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_07" parent="Model" index="8"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_08" parent="Model" index="9"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_09" parent="Model" index="10"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_10" parent="Model" index="11"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_11" parent="Model" index="12"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_12" parent="Model" index="13"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_13" parent="Model" index="14"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_14" parent="Model" index="15"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_15" parent="Model" index="16"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_16" parent="Model" index="17"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_17" parent="Model" index="18"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_18" parent="Model" index="19"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_19" parent="Model" index="20"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_20" parent="Model" index="21"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_21" parent="Model" index="22"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_22" parent="Model" index="23"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_23" parent="Model" index="24"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_24" parent="Model" index="25"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_25" parent="Model" index="26"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_26" parent="Model" index="27"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_27" parent="Model" index="28"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_28" parent="Model" index="29"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="LeafClump_29" parent="Model" index="30"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_00" parent="Model" index="31"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_01" parent="Model" index="32"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_02" parent="Model" index="33"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_03" parent="Model" index="34"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_04" parent="Model" index="35"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_05" parent="Model" index="36"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_06" parent="Model" index="37"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_07" parent="Model" index="38"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_08" parent="Model" index="39"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Primary_Branch_09" parent="Model" index="40"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="Trunk_Branches_LOD0" parent="Model" index="41"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[node name="TwigBranches_LOD0" parent="Model" index="42"]
+material_override = ExtResource("gray")
+lod_bias = 100.0
+[editable path="Model"]

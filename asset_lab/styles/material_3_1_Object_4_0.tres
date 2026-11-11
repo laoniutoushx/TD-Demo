@@ -1,0 +1,38 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://asset_lab/styles/stylized.gdshader" id="1_0mdre"]
+[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Bark_C_baseColor.png" id="2_lbw7k"]
+[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Bark_C_normal.png" id="3_wc3y0"]
+[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Bark_C_metallicRoughness.png" id="4_g7mq2"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_0mdre")
+shader_parameter/base_map = ExtResource("2_lbw7k")
+shader_parameter/normal_map = ExtResource("3_wc3y0")
+shader_parameter/orm_map = ExtResource("4_g7mq2")
+shader_parameter/orm_roughness_channel = 1
+shader_parameter/has_normal = true
+shader_parameter/has_orm = true
+shader_parameter/cutout = false
+shader_parameter/is_combined_mesh = false
+shader_parameter/style = 1
+shader_parameter/foliage_core_color = Color(0.09411765, 0.17254902, 0.078431375, 1)
+shader_parameter/foliage_shadow_color = Color(0.18431373, 0.3254902, 0.11372549, 1)
+shader_parameter/foliage_mid_color = Color(0.29411766, 0.47058824, 0.13725491, 1)
+shader_parameter/foliage_lit_color = Color(0.5294118, 0.65882355, 0.14509805, 1)
+shader_parameter/foliage_rim_color = Color(0.8, 0.89411765, 0.30588236, 1)
+shader_parameter/bark_lit_color = Color(0.47843137, 0.3647059, 0.27450982, 1)
+shader_parameter/bark_shadow_color = Color(0.19607843, 0.17254902, 0.20784314, 1)
+shader_parameter/normal_sphere_blend = 0.78
+shader_parameter/normal_cluster_blend = 0.46
+shader_parameter/cluster_scale = 1.1811660575866698
+shader_parameter/canopy_bottom_darken = 0.3
+shader_parameter/max_saturation = 0.64
+shader_parameter/texture_detail_weight = 0.4
+shader_parameter/rim_strength = 0.36
+shader_parameter/instance_variation = null
+shader_parameter/wind_strength = null
+shader_parameter/tree_transform = Projection(0.62317777, 0, 0, 0, 0, 0.62317777, 0, 0, 0, 0, 0.62317777, 0, 0.19090104, 0.015821664, -0.42421585, 1)
+shader_parameter/canopy_center = Vector3(-2.3841858e-07, 2.79, 0)
+shader_parameter/tree_height = 4.5

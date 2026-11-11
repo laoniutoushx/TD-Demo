@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://meshy_assets/pilot_shrub.glb" id="1"]
+
+[node name="ShrubFlowers" instance=ExtResource("1")]

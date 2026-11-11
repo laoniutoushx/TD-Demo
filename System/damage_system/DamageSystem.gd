@@ -1,0 +1,253 @@
+extends Node3D
+class_name DamageSystem
+
+var _tick := 0.0
+var attack_serial := 0
+
+func attack_delay(source: BaseUnit) -> float:
+	if source.anim_ack_normalized >= 0 and is_instance_valid(source._ap) and source._ap.has_animation(source.anim_attack):
+		return source._ap.get_animation(source.anim_attack).length * source.anim_ack_normalized / maxf(source._ap.speed_scale, 0.001)
+	return maxf(0.0, source.anim_ack_point)
+
+func _ready() -> void:
+	SystemUtil.damage_system = self
+
+
+func action(source: BaseUnit, target: BaseUnit):
+	if not is_instance_valid(source) or not is_instance_valid(target):
+		return
+	var generation = SOS.main.level_controller.session_id
+	attack_serial += 1
+	var attack_uid := "%d:%d" % [generation, attack_serial]
+	# 等待动画回复点
+	await CommonUtil.await_timer(attack_delay(source))
+	if not is_instance_valid(source) or not is_instance_valid(target) or not SystemUtil.skill_system._session_valid(generation, source):
+		return
+
+	var fire_pos_marks: Array = CommonUtil.get_fire_pos(source)
+
+	# 并发处理所有火力点 - 不等待完成
+	process_all_fire_positions_concurrent(source, target, fire_pos_marks, attack_uid)
+
+	# 火力点轮换
+	source.current_fire_pos_key = CommonUtil.get_next_fire_pos_key(source)
+
+
+# 并发处理所有火力点 - 核心方法
+func process_all_fire_positions_concurrent(source: BaseUnit, target: BaseUnit, fire_pos_marks: Array, attack_uid := "") -> void:
+	# 直接启动所有并发任务，不存储返回值
+	for fire_pos_mark: Marker3D in fire_pos_marks:
+		# 每个火力点独立启动，不等待
+		process_single_fire_position_async(source, target, fire_pos_mark, attack_uid)
+
+	# 可选：如果需要等待所有任务完成，可以使用信号或计数器
+	# 这里不等待，实现真正的"发射后不管"并发
+
+
+# 单个火力点的异步处理 - 完全独立
+func process_single_fire_position_async(source: BaseUnit, original_target: BaseUnit, fire_pos_mark: Marker3D, attack_uid := "") -> void:
+	if not is_instance_valid(source) or not is_instance_valid(original_target) or not is_instance_valid(fire_pos_mark):
+		return
+	var fire_pos = fire_pos_mark.global_position
+	var current_target = original_target
+
+	# 播放火力点动画
+
+	if fire_pos_mark and fire_pos_mark.ap and fire_pos_mark.fire_animation:
+		# fire_pos_mark.ap.play(fire_pos_mark.fire_animation)
+		CommonUtil.play_attack_animation_with_reset_v1(fire_pos_mark.ap, fire_pos_mark.fire_animation, source.attack_speed)
+
+	# 弹幕系统处理
+	var bs = await (SystemUtil.barrage_system as BarrageSystem).action(source, fire_pos, current_target, fire_pos_mark, attack_uid)
+	if bs.is_empty() or not is_instance_valid(source) or not is_instance_valid(current_target):
+		return
+
+	# 处理主目标伤害
+	await apply_damage_and_effects(source, current_target, attack_uid)
+	if not is_instance_valid(self) or not is_instance_valid(source) or not source.is_inside_tree():
+		return
+
+	# 更新目标信息
+	var dest_pos: Vector3 = bs[0]
+	var target_unit_id = bs[1]
+	current_target = bs[2]
+
+	# 处理弹跳逻辑
+	await process_bounce_chain(source, current_target, dest_pos, target_unit_id, fire_pos_mark, attack_uid)
+	if not is_instance_valid(self) or not is_instance_valid(source) or not source.is_inside_tree():
+		return
+
+
+# 处理弹跳链
+func process_bounce_chain(source: BaseUnit, initial_target: BaseUnit, dest_pos: Vector3, target_unit_id: int, fire_pos_mark: Marker3D, attack_uid := "") -> void:
+	var current_target = initial_target
+	var current_dest_pos = dest_pos
+	var current_target_unit_id = target_unit_id
+
+	# 弹跳处理
+	for bounce_count in range(source.bounce_times):
+		if not current_target_unit_id:
+			break
+
+		# 寻找下一个弹跳目标
+		var next_target = get_units_in_range_physics_3d(current_dest_pos, source.bounce_distance, current_target_unit_id)
+
+		if not next_target:
+			break
+
+		# 计算新的发射位置
+		var new_fire_pos = Vector3(current_target.global_position.x, current_target._height / 2, current_target.global_position.z)
+
+		# 弹幕系统处理弹跳
+		var bounce_result = await (SystemUtil.barrage_system as BarrageSystem).action(source, new_fire_pos, next_target, fire_pos_mark, attack_uid)
+
+		if bounce_result.is_empty():
+			return
+		# 更新目标
+		current_target = next_target
+
+		# 处理弹跳目标的伤害和效果
+		await apply_damage_and_effects(source, current_target, attack_uid, &"bounce")
+		if not is_instance_valid(self) or not is_instance_valid(source) or not source.is_inside_tree():
+			return
+
+		# 更新位置和目标信息
+		current_dest_pos = bounce_result[0]
+		current_target_unit_id = bounce_result[1]
+		current_target = bounce_result[2]
+
+
+# 应用伤害和效果
+func apply_damage_and_effects(source: BaseUnit, target: BaseUnit, attack_uid := "", role: StringName = &"primary") -> void:
+	if not is_instance_valid(source) or not is_instance_valid(target) or not target is BaseUnit or not (target as BaseUnit).is_alive():
+		return
+
+	# 造成伤害
+	var context := DamageCtxPool.get_ctx(source, target, source.attack_value)
+	context.attack_uid = attack_uid
+	context.hit_role = role
+	target.take_damage(context)
+
+	# 受击动画
+	_under_attack_anim(target)
+
+	# 销毁特效
+	_vfx_projectile_destory(target)
+
+
+# 受击动画处理
+func _under_attack_anim(target: BaseUnit):
+	if not is_instance_valid(target) or not target is BaseUnit:
+		return
+
+	var mesh_standing = (target as BaseUnit).get_mesh_standing()
+	if mesh_standing == null:
+		return
+
+	mesh_standing.visible = true
+	# 延迟隐藏
+	CommonUtil.delay_execution(0.1, target,
+		func():
+			if mesh_standing and is_instance_valid(mesh_standing):
+				mesh_standing.visible = false
+	)
+
+
+# 弹丸销毁特效
+func _vfx_projectile_destory(target: BaseUnit):
+	if not is_instance_valid(target) or not target is BaseUnit:
+		return
+
+	var mesh_standing = (target as BaseUnit).get_mesh_standing()
+	if mesh_standing == null:
+		return
+
+	mesh_standing.visible = true
+	# 延迟隐藏
+	CommonUtil.delay_execution(0.1, target,
+		func():
+			if mesh_standing and is_instance_valid(mesh_standing):
+				mesh_standing.visible = false
+	)
+
+
+# 范围内单位查找
+func get_units_in_range_physics_3d(center_position: Vector3, range_distance: float, target_unit_id: int) -> BaseUnit:
+	for unit in SOS.main.get_tree().get_nodes_in_group("enemy"):
+		if unit is BaseUnit and unit.is_alive() and unit.get_instance_id() != target_unit_id:
+			if unit.global_position.distance_to(center_position) <= range_distance:
+				return unit
+	return null
+
+
+# 动画处理
+func animation_action(source: BaseUnit, target: BaseUnit):
+	var ap: AnimationPlayer = CommonUtil.get_first_node_by_node_type(source, Constants.AnimationPlayer_CLZ)
+	if ap != null:
+		if ap.is_playing():
+			ap.stop()
+		ap.play(source.anim_attack)
+
+
+func _process(delta: float) -> void:
+	_tick += delta
+
+
+# 技能伤害
+func skill_damage(skill: Variant, source: BaseUnit, target: BaseUnit) -> bool:
+	if is_instance_valid(source) and is_instance_valid(target) and target.is_alive():
+		return target.take_skill_damage(DamageCtxPool.get_ctx(source, target, skill.value, DamageCtx.DamageType.NORMAL, DamageCtx.DamageSourceType.SKILL))
+	return true
+
+
+
+
+# 技能范围伤害
+func skill_range_damage(skill: Skill, source: BaseUnit, target_position: Vector3, affect_range: float = 5) -> Array:
+	var affected: Array = []
+	if not is_instance_valid(skill) or not is_instance_valid(source):
+		return affected
+	var visited: Dictionary = {}
+	for candidate in get_tree().get_nodes_in_group("enemy"):
+		var unit = candidate if candidate is BaseUnit else candidate.owner
+		if not is_instance_valid(unit) or not unit is BaseUnit or not unit.is_alive():
+			continue
+		var id = unit.get_instance_id()
+		if visited.has(id):
+			continue
+		visited[id] = true
+		if unit.player_group == source.player_group or not CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.ENEMY, skill.target_type):
+			continue
+		var half_size = unit._transformed_aabb.size * 0.5
+		var offset = (unit.global_position - target_position).abs()
+		var edge_distance = Vector2(maxf(offset.x - half_size.x, 0.0), maxf(offset.z - half_size.z, 0.0))
+		if edge_distance.length_squared() <= affect_range * affect_range:
+			unit.take_skill_damage(DamageCtxPool.get_ctx(source, unit, skill.value, DamageCtx.DamageType.NORMAL, DamageCtx.DamageSourceType.SKILL))
+			affected.append(unit)
+	return affected
+
+## 伤害池：
+class DamageCtxPool extends RefCounted:
+	const POOL_SIZE := 64
+	static var _pool: Array[DamageCtx] = []
+
+	static func get_ctx(_source: BaseUnit, _target: BaseUnit, _damage: float, _damage_type: DamageCtx.DamageType = DamageCtx.DamageType.NORMAL, _damage_source: DamageCtx.DamageSourceType = DamageCtx.DamageSourceType.UNIT) -> DamageCtx:
+		if _pool.is_empty():
+			return DamageCtx.new(_source, _target, _damage, _damage_type, _damage_source) # fallback，少数情况
+		var context = _pool.pop_back()
+		context.source = _source
+		context.target = _target
+		context.damage = _damage
+		context.damage_type = _damage_type
+		context.damage_source_type = _damage_source
+		context.attack_uid = ""
+		context.hit_role = &"primary"
+		return context
+
+	static func return_ctx(ctx: DamageCtx) -> void:
+		if _pool.size() < POOL_SIZE:
+			ctx.source = null
+			ctx.target = null
+			_pool.push_back(ctx)
+func reset_session() -> void:
+	DamageCtxPool._pool.clear()

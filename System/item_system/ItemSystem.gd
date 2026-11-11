@@ -1,0 +1,230 @@
+class_name ItemSystem extends Node3D
+
+
+var _chest: PackedScene = preload("res://System/item_system/resources/treasure_chest.tscn")
+
+func _ready() -> void:
+	SystemUtil.item_system = self
+	# 在系统启动时，初始化所有 item template resource，将起保存在 container 当中
+	CommonUtil.load_resources_to_container_from_directory("res://System/item_system/resources/", ItemManager.container())
+
+
+# drop_item 
+func drop_item(unit: BaseUnit) -> void:
+	var drop_item_metas = unit.drop_item_metas
+	if drop_item_metas and drop_item_metas.size() > 0:
+		
+		for drop_item_key in drop_item_metas.keys():
+			var drop_item: DropItem = drop_item_metas[drop_item_key]
+			if SOS.main.prob.chance_fast(drop_item.chance):
+				# 创建装备模型
+				var chest_model: Node3D = drop_item.scene.instantiate()
+				chest_model.steup(drop_item)
+				SOS.main.item_system.add_child(chest_model)
+				chest_model.global_position = unit.global_position
+
+
+# generate chest
+func generate_chest(item: Item, position: Vector3) -> TreasureChest:
+	var chest: TreasureChest = item.chest
+	
+	# add to item system
+	if chest.get_parent(): chest.reparent(self)
+	else: add_child(chest)
+	chest.process_mode = Node.PROCESS_MODE_INHERIT
+	chest.show()
+
+	chest.global_position = position
+	
+	return chest
+
+
+
+func remove_item_from_inventory(reference: Item):
+
+	# 从背包中删除 item
+	if reference != null and reference.unit != null:
+		var unit: BaseUnit = reference.unit
+		if unit.item_map.has(reference.code):
+			remove_effects(reference, unit)
+			unit.item_map.erase(reference.code)
+
+			# res 中也清除
+			# unit.item_metas.erase(reference.item_res)
+
+			reference.queue_free()
+			print("Item %s removed from inventory." % reference.code)
+		else:
+			printerr("ERROR: Item %s not found in inventory." % reference.code)
+	else:
+		printerr("ERROR: Invalid item reference.")
+
+
+
+
+
+	
+# 实例化 技能
+func initialize_items(source_unit: BaseUnit, item_metas: Array[ItemResource]) -> Dictionary:
+	var item_map: Dictionary = {}
+	for idx in range(item_metas.size()):
+		var item: Item = _initialize_item(source_unit, item_metas[idx], idx)
+
+		if item != null:
+			# 初始化 buff
+			SystemUtil.buff_system.init_buff_for_unit_by_res(source_unit, item.item_res, item)
+
+			item.unit = source_unit
+			item_map[item.code] = item
+
+			# add to unit tree
+			item.name = item.code
+			source_unit.add_child(item)
+			item.add_child(item.item_script_instance)
+
+	return item_map
+	
+ # 实例化
+func _initialize_item(source_unit: BaseUnit, item_meta_res: ItemResource, idx: int = 0) -> Item:
+	if item_meta_res != null:
+		for level_definition in item_meta_res.item_level_config:
+			if level_definition != null and not level_definition is ItemResource:
+				push_error("Invalid item level resource: " + item_meta_res.resource_path)
+				return null
+		var item: Item = Item.new()
+		item.unit = source_unit
+		CommonUtil.bean_properties_copy(item_meta_res, item)
+		# 手动赋值 skill_script
+		item.item_script = item_meta_res.item_script
+		item.item_res = item_meta_res
+		item.sort = idx
+		if item.code == null:
+			printerr("ERROR: item code not define")
+			
+		# skill id
+		item.id = UUID.v4()
+
+		# 实例化技能脚本
+		# assert(skill.skill_script != null, "skill script not define")
+		if item.item_script != null:
+			item.item_script_instance = item.item_script.new()
+		else:
+			printerr("ERROR: item script not define")
+
+		# 初始化 item chest
+		item.chest = _chest.instantiate()
+		item.chest.drop_item = DropItem.new()
+		item.chest.drop_item.item_name = item.code
+		item.chest.drop_item.chance = 10000 # 100% 掉
+		
+		return item
+	
+	return null
+	
+
+
+func pick_up(source: BaseUnit, chest: TreasureChest) -> Item:
+	if not is_instance_valid(source) or not is_instance_valid(chest) or source.item_map.size() >= 3:
+		if is_instance_valid(SOS.main): SOS.main.message_bar.set_message("无法拾取：背包已满或目标失效")
+		return null
+	# 获取 item
+	var drop_item: DropItem = chest.drop_item
+	if drop_item == null:
+		return null
+	
+	# 获取 item resource
+	var item_res: ItemResource = CommonUtil.get_resource(drop_item.item_name, ItemManager.container())
+	if source.item_map.has(drop_item.item_name):
+		SOS.main.message_bar.set_message("已拥有同类物品")
+		return null
+	if item_res == null:
+		printerr("ERROR: item resource not found for %s" % drop_item.item_name)
+		return null
+	
+	# 实例化 item
+	var new_item: Item = _initialize_item(source, item_res)
+	if new_item == null:
+		printerr("ERROR: failed to initialize item for %s" % drop_item.item_name)
+		return null
+
+	# 初始化 buff
+	SystemUtil.buff_system.init_buff_for_unit_by_res(source, item_res, new_item)
+
+	new_item.unit = source
+
+	source.item_map[new_item.code] = new_item
+
+	# add to unit tree
+	new_item.name = new_item.code
+	source.add_child(new_item)
+	new_item.add_child(new_item.item_script_instance)
+
+	# action bar item bar 处理
+	# 获取一个空白的 item slot
+	var bar = SOS.main.level_controller._cur_scene.action_bar
+	if bar.active_unit == source: bar.item_bar_comp.pick_up(new_item)
+
+
+	# 删除掉宝箱
+	chest.queue_free()
+
+
+	return new_item
+
+
+
+
+# Inner Class
+func remove_effects(item: Item, unit: BaseUnit) -> void:
+	for buff in unit.buff_map.values().duplicate():
+		if is_instance_valid(buff) and buff.reference_instance == item:
+			# Equipment removal must not leave aura reference counts behind.
+			buff.cooldown = 0.0
+			SystemUtil.buff_system.remove(buff, unit)
+
+func transfer_all(source: BaseUnit, destination: BaseUnit) -> void:
+	for item in source.item_map.values().duplicate():
+		remove_effects(item, source)
+		if destination.item_map.has(item.code):
+			remove_item_from_inventory(destination.item_map[item.code])
+		source.item_map.erase(item.code)
+		CommonUtil.release_detached_nodes(item.buff_map)
+		item.unit = destination
+		item.slot = null
+		item.reparent(destination)
+		destination.item_map[item.code] = item
+		SystemUtil.buff_system.init_buff_for_unit_by_res(destination, item.item_res, item)
+	_refresh_inventory_ui.call_deferred(source.get_instance_id())
+	_refresh_inventory_ui.call_deferred(destination.get_instance_id())
+
+func _refresh_inventory_ui(id: int) -> void:
+	if not is_instance_valid(SOS.main) or not SOS.main.level_controller.battle_active: return
+	var bar = SOS.main.level_controller._cur_scene.action_bar
+	if not is_instance_valid(bar.active_unit) or bar.active_unit.get_instance_id() != id: return
+	var unit: BaseUnit = bar.active_unit
+	SOS.main.player_controller.refresh_selection_units(PlayerController.PlayerSelect.unit_map(), unit.global_position, PlayerController.PLAYER_STATUS.DEFAULT)
+
+# control item data
+class ItemManager:
+
+	static var _item_res_container = {}    # code => ItemResource
+	static var _item_domain_container = {} # id => Item
+
+
+	static func put(k: String, v: Object) -> Object:
+		_item_domain_container[k] = v
+		return v
+
+
+	static func got(k: String) -> Object:
+		return _item_domain_container[k]
+
+
+	# 获取容器
+	static func container() -> Dictionary:
+		return _item_res_container
+
+func reset_session() -> void:
+	for item in get_children():
+		item.queue_free()
+	ItemManager._item_domain_container.clear()

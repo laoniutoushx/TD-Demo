@@ -1,0 +1,326 @@
+[gd_scene load_steps=46 format=3 uid="uid://bxibobasihqmy"]
+
+[ext_resource type="Script" uid="uid://jiitdpiccclv" path="res://Levels/level_1/level.gd" id="1_chftm"]
+[ext_resource type="PackedScene" uid="uid://boulaxdrcplpg" path="res://RayPickerCamera/ray_picker_camera.tscn" id="1_elhju"]
+[ext_resource type="PackedScene" uid="uid://bdyptm7smjixm" path="res://Unit/player/gdbot/gdbot_skin.tscn" id="1_umiea"]
+[ext_resource type="MeshLibrary" uid="uid://b6ioecdsupr03" path="res://MeshLibraries/SpaceLibrary.tres" id="2_cynf3"]
+[ext_resource type="PackedScene" uid="uid://cym641yvamusq" path="res://Unit/home/base.tscn" id="3_epmlt"]
+[ext_resource type="Script" uid="uid://bcxq7ivuxy3up" path="res://addons/zylann.hterrain/hterrain.gd" id="3_gvb4y"]
+[ext_resource type="Resource" path="res://Asserts/h_terrain_data/data.hterrain" id="4_ivp0y"]
+[ext_resource type="Script" uid="uid://dqh2rt0fn1vli" path="res://addons/zylann.hterrain/hterrain_texture_set.gd" id="5_xcclr"]
+[ext_resource type="Script" uid="uid://cinc4wtj23xik" path="res://Scripts/controller/RTSController.gd" id="7_xmjyx"]
+[ext_resource type="Script" uid="uid://d386ucglmr21" path="res://Waves/WaveManager.gd" id="8_iynip"]
+[ext_resource type="Texture2D" uid="uid://cxsddk700q5mr" path="res://Levels/level_1/Level1_slot0_albedo_bump.png" id="8_lj00k"]
+[ext_resource type="Shader" uid="uid://bnm6ve400eljx" path="res://Levels/level_1/Level1.gdshader" id="9_25tn7"]
+[ext_resource type="Texture2D" uid="uid://ssg5up7saq6q" path="res://Levels/level_1/Level1_slot1_albedo_bump.png" id="9_312i8"]
+[ext_resource type="Texture2D" uid="uid://fyg6yshil7wl" path="res://Asserts/materials/Tiles130_2K-JPG/Tiles130_2K-JPG_Color.jpg" id="10_56d2c"]
+[ext_resource type="PackedScene" uid="uid://v7ppoiw21kdi" path="res://UI/ui.tscn" id="10_i7dqg"]
+[ext_resource type="Texture2D" uid="uid://baci0tbmcgmbo" path="res://Levels/level_1/Level1_slot2_albedo_bump.png" id="10_tqfjl"]
+[ext_resource type="Texture2D" uid="uid://c0mtvptnnk33f" path="res://Levels/level_1/Level1_slot3_albedo_bump.png" id="11_7xjsd"]
+[ext_resource type="Texture2D" uid="uid://bfc5ana2pdo7a" path="res://Asserts/materials/Tiles130_2K-JPG/Tiles130_2K-JPG_NormalGL.jpg" id="11_ixhyk"]
+[ext_resource type="Texture2D" uid="uid://dt3oco8x2kbmb" path="res://Levels/level_1/Level1_slot0_normal_roughness.png" id="12_jn16r"]
+[ext_resource type="Texture2D" uid="uid://cqployapdqqit" path="res://Asserts/materials/Tiles130_2K-JPG/Tiles130_2K-JPG_Roughness.jpg" id="12_utomj"]
+[ext_resource type="Texture2D" uid="uid://dc807c4aqlfly" path="res://Levels/level_1/Level1_slot1_normal_roughness.png" id="13_ck2aa"]
+[ext_resource type="PackedScene" uid="uid://cddhheg1d4j32" path="res://Components/action_bar/action_bar.tscn" id="13_sr2b3"]
+[ext_resource type="Texture2D" uid="uid://ur3vahvc4yau" path="res://Levels/level_1/Level1_slot2_normal_roughness.png" id="14_0bopa"]
+[ext_resource type="PackedScene" uid="uid://btv2y2tfng4ob" path="res://Unit/turret/TurretManager.tscn" id="14_d0au5"]
+[ext_resource type="PackedScene" uid="uid://m4qd1674r2ft" path="res://Test/3d grid shader/cube_mesh_shader/cell_mesh_tri_ind.tscn" id="14_g50c0"]
+[ext_resource type="Texture2D" uid="uid://ji2s1x270ubw" path="res://Levels/level_1/Level1_slot3_normal_roughness.png" id="15_80t7b"]
+[ext_resource type="PackedScene" uid="uid://brsoxpbmx54b2" path="res://System/item_system/resources/treasure_chest.tscn" id="29_hjlrc"]
+[ext_resource type="Script" uid="uid://ceet2kpd86p7c" path="res://System/item_system/domain/DropItem.gd" id="30_7xjsd"]
+[ext_resource type="AudioStream" uid="uid://b1hqjv1hvuqs1" path="res://Asserts/Audios/background/BattleBGM.mp3" id="37_0bopa"]
+
+[ext_resource type="Material" path="res://render_v10/materials/ground_standard_pbr.tres" id="ground_pbr_mat"]
+
+[ext_resource type="Script" path="res://render_v10/monster_road.gd" id="script_monster_road"]
+[ext_resource type="Script" path="res://render_v10/ruins_builder.gd" id="script_ruins_builder"]
+[ext_resource type="Shader" path="res://render_v10/shaders/forest_air.gdshader" id="shader_forest_air"]
+
+[ext_resource type="PackedScene" path="res://render_v10/scenery_layout.tscn" id="scenery_layout"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_v10"]
+sky_top_color = Color(0.3, 0.46, 0.66, 1)
+sky_horizon_color = Color(0.66, 0.75, 0.85, 1)
+ground_bottom_color = Color(0.13, 0.14, 0.1, 1)
+ground_horizon_color = Color(0.38, 0.4, 0.35, 1)
+
+[sub_resource type="Sky" id="Sky_v10"]
+sky_material = SubResource("ProceduralSkyMaterial_v10")
+
+[sub_resource type="Environment" id="Environment_tk0br"]
+background_mode = 2
+sky = SubResource("Sky_v10")
+ambient_light_source = 2
+ambient_light_color = Color(0.466667, 0.615686, 0.768627, 1)
+ambient_light_energy = 0.48
+reflected_light_source = 2
+tonemap_mode = 3
+tonemap_exposure = 1.02
+tonemap_white = 4.0
+ssr_enabled = false
+ssao_enabled = true
+ssao_radius = 0.26
+ssao_intensity = 1.1
+ssao_power = 1.2
+ssao_detail = 0.5
+ssao_light_affect = 0.05
+ssil_enabled = true
+ssil_radius = 1.6
+ssil_intensity = 0.36
+glow_enabled = true
+glow_intensity = 0.22
+glow_hdr_threshold = 1.25
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0
+volumetric_fog_length = 90.0
+volumetric_fog_detail_spread = 0.7
+volumetric_fog_ambient_inject = 0.02
+volumetric_fog_temporal_reprojection_enabled = true
+volumetric_fog_temporal_reprojection_amount = 0.82
+adjustment_enabled = true
+adjustment_contrast = 1.04
+adjustment_saturation = 1.06
+
+[sub_resource type="Resource" id="Resource_vqpk2"]
+script = ExtResource("5_xcclr")
+mode = 0
+textures = [[ExtResource("8_lj00k"), ExtResource("9_312i8"), ExtResource("10_tqfjl"), ExtResource("11_7xjsd")], [ExtResource("12_jn16r"), ExtResource("13_ck2aa"), ExtResource("14_0bopa"), ExtResource("15_80t7b")]]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1726d"]
+render_priority = 0
+shader = ExtResource("9_25tn7")
+shader_parameter/albedo_color = Color(0, 0, 0, 1)
+shader_parameter/uv_scale = 20.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_narih"]
+material = ExtResource("ground_pbr_mat")
+size = Vector2(160, 140)
+
+[sub_resource type="Curve3D" id="Curve3D_g10yy"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -40.942, -3.8147e-06, 7.22268, -2, 0, 2, 2, 0, -2, 18, 0, 6, 2, 0, 2, -2, 0, -2, 18, 0, -6, 2, 0, 2, -2, 0, -2, -29.2242, 0, -7.33026, 0, 0, 0, 0, 0, 0, -29.8582, 0, -17.7681, 0, 0, 0, 0, 0, 0, 26.8472, 0, -17.7681),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rcpim"]
+albedo_color = Color(0.607843, 0.607843, 0.607843, 1)
+albedo_texture = ExtResource("10_56d2c")
+roughness = 0.85
+roughness_texture = ExtResource("12_utomj")
+normal_enabled = true
+normal_texture = ExtResource("11_ixhyk")
+uv1_scale = Vector3(0.1, 5, 1)
+
+[sub_resource type="FogMaterial" id="FogMaterial_ck2aa"]
+density = 0.12
+emission = Color(0.446777, 0.446777, 0.446777, 1)
+edge_fade = 0.17411
+
+[sub_resource type="Resource" id="Resource_lj00k"]
+script = ExtResource("30_7xjsd")
+item_name = "axe"
+chance = 10000
+metadata/_custom_type_script = "uid://ceet2kpd86p7c"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_forest_air"]
+shader = ExtResource("shader_forest_air")
+
+[node name="BaseLevel" type="Node3D"]
+script = ExtResource("1_chftm")
+
+[node name="UI" parent="." instance=ExtResource("10_i7dqg")]
+
+[node name="ActionBar" parent="." instance=ExtResource("13_sr2b3")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_tk0br")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.707107, 0, 0.707107, 0.374709, 0.848048, 0.374709, -0.599661, 0.529919, -0.599661, 0, 10, 0)
+rotation_degrees = Vector3(-32, -135, 0)
+light_color = Color(1, 0.87451, 0.717647, 1)
+light_energy = 1.40
+light_volumetric_fog_energy = 3.2
+shadow_enabled = true
+shadow_bias = 0.025
+shadow_normal_bias = 0.65
+shadow_blur = 1.0
+directional_shadow_mode = 0
+directional_shadow_fade_start = 1.0
+directional_shadow_max_distance = 90.0
+
+[node name="Ground" type="Node3D" parent="."]
+
+[node name="HTerrain" type="Node3D" parent="Ground"]
+visible = false
+script = ExtResource("3_gvb4y")
+map_scale = Vector3(0.5, 0.5, 0.5)
+centered = true
+_terrain_data = ExtResource("4_ivp0y")
+chunk_size = 16
+collision_enabled = false
+collision_layer = 0
+collision_mask = 0
+shader_type = "Classic4"
+custom_shader = null
+custom_globalmap_shader = null
+texture_set = SubResource("Resource_vqpk2")
+render_layers = 524288
+cast_shadow = 1
+shader_params/u_ground_uv_scale_per_texture = Vector4(12, 12, 12, 12)
+shader_params/u_depth_blending = true
+shader_params/u_triplanar = false
+shader_params/u_tile_reduction = Vector4(0, 0, 0, 0)
+shader_params/u_globalmap_blend_start = 0.0
+shader_params/u_globalmap_blend_distance = 0.0
+shader_params/u_colormap_opacity_per_texture = Vector4(1, 1, 1, 1)
+shader_params/u_specular = 0.15
+
+[node name="GroundMesh" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.001, 0)
+layers = 524289
+mesh = SubResource("PlaneMesh_narih")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="RayPickerCamera" parent="." node_paths=PackedStringArray("grid_map") instance=ExtResource("1_elhju")]
+transform = Transform3D(1, 0, 0, 0, 0.317305, 0.948324, 0, -0.948324, 0.317305, -3.87054, 32, 11.1057)
+fov = 70.0
+grid_map = NodePath("../GridMap")
+
+[node name="GridMap" type="GridMap" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+mesh_library = ExtResource("2_cynf3")
+cell_size = Vector3(4, 4, 4)
+cell_center_y = false
+collision_layer = 524288
+collision_mask = 0
+data = {
+"cells": PackedInt32Array(65529, 65532, 0, 65529, 65533, 0, 65529, 65534, 0, 65529, 65535, 0, 65529, 0, 0, 65529, 2, 0, 65529, 3, 0, 65530, 65532, 0, 65530, 65533, 0, 65530, 65534, 0, 65530, 65535, 0, 65530, 0, 0, 65530, 2, 0, 65530, 3, 0, 65531, 65535, 0, 65531, 0, 0, 65531, 2, 0, 65531, 3, 0, 65532, 65535, 0, 65532, 0, 0, 65532, 2, 0, 65533, 65532, 0, 65533, 65535, 0, 65533, 0, 0, 65534, 65532, 0, 65534, 65535, 0, 65534, 0, 0, 65534, 2, 0, 65534, 3, 0, 65535, 65532, 0, 65535, 65535, 0, 65535, 0, 0, 65535, 2, 0, 65535, 3, 0, 0, 65532, 0, 0, 65533, 0, 0, 65535, 0, 0, 0, 0, 0, 2, 0, 0, 3, 0, 1, 65532, 0, 1, 65533, 0, 1, 65535, 0, 1, 0, 0, 1, 2, 0, 1, 3, 0, 2, 65532, 0, 2, 65533, 0, 2, 65535, 0, 2, 0, 0, 2, 2, 0, 2, 3, 0, 3, 65532, 0, 3, 65533, 0, 3, 65535, 0, 3, 0, 0, 3, 2, 0, 3, 3, 0, 4, 65532, 0, 4, 65533, 0, 4, 2, 0, 4, 3, 0, 5, 65532, 0, 5, 65533, 0, 5, 65534, 0, 5, 65535, 0, 5, 1, 0, 5, 2, 0, 5, 3, 0, 6, 65532, 0, 6, 65533, 0, 6, 65534, 0, 6, 1, 0, 6, 2, 0, 6, 3, 0, 65535, 65533, 0, 65534, 65533, 0, 65533, 65533, 0, 65532, 65533, 0, 65532, 65532, 0, 7, 65532, 0, 8, 65532, 0, 8, 65533, 0, 7, 65533, 0, 7, 65534, 0, 8, 65534, 0, 8, 65535, 0, 7, 65535, 0, 7, 0, 0, 8, 0, 0, 8, 1, 0, 7, 1, 0, 7, 2, 0, 8, 2, 0, 8, 3, 0, 7, 3, 0, 65528, 3, 0, 65528, 2, 0, 65527, 3, 0, 65526, 0, 0, 65527, 0, 0, 65528, 0, 0, 65528, 65535, 0, 65527, 65535, 0, 65526, 65535, 0, 65526, 65534, 0, 65527, 65534, 0, 65528, 65534, 0, 65528, 65533, 0, 65526, 65531, 0, 65527, 65531, 0, 65528, 65531, 0, 65528, 65532, 0, 65527, 65532, 0, 65529, 65531, 0, 65534, 65531, 0, 6, 65531, 0, 6, 65527, 0, 7, 65528, 0, 7, 65529, 0, 65531, 65532, 0, 65531, 65533, 0, 6, 65530, 0, 5, 65530, 0, 4, 65530, 0, 3, 65530, 0, 2, 65530, 0, 1, 65530, 0, 0, 65530, 0, 65535, 65530, 0, 65534, 65530, 0, 65533, 65530, 0, 65532, 65530, 0, 65531, 65530, 0, 65530, 65530, 0, 65529, 65530, 0, 65528, 65530, 0, 65527, 65530, 0, 65526, 65530, 0, 4, 65529, 0, 65535, 65529, 0, 65534, 65529, 0, 65532, 65529, 0, 65531, 65529, 0, 65529, 65529, 0, 65528, 65529, 0, 65527, 65529, 0, 65526, 65529, 0, 65533, 65529, 0, 65530, 65529, 0, 65535, 65528, 0, 65535, 65527, 0, 65534, 65527, 0, 65533, 65527, 0, 65532, 65527, 0, 65531, 65527, 0, 65530, 65527, 0, 65529, 65527, 0, 65528, 65527, 0, 65527, 65527, 0, 65526, 65527, 0, 65526, 65528, 0, 65527, 65528, 0, 65528, 65528, 0, 65529, 65528, 0, 65530, 65528, 0, 65531, 65528, 0, 65532, 65528, 0, 65533, 65528, 0, 65534, 65528, 0, 4, 65528, 0, 4, 65527, 0, 5, 65527, 0, 5, 65528, 0, 6, 65528, 0, 6, 65529, 0, 5, 65529, 0, 8, 65528, 0, 8, 65527, 0, 7, 65527, 0)
+}
+
+[node name="Path3D" type="Path3D" parent="."]
+unique_name_in_owner = true
+curve = SubResource("Curve3D_g10yy")
+
+[node name="Road" type="CSGPolygon3D" parent="Path3D"]
+visible = false
+layers = 262144
+polygon = PackedVector2Array(-3, 0, -2, 0.1, 2, 0.1, 2, 0)
+mode = 2
+path_node = NodePath("..")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = SubResource("StandardMaterial3D_rcpim")
+
+[node name="LeftShoulder" type="CSGPolygon3D" parent="Path3D"]
+visible = false
+layers = 262144
+polygon = PackedVector2Array(-3, 0, -3, 0.5, -2, 0.5, -2, 0)
+mode = 2
+path_node = NodePath("..")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = SubResource("StandardMaterial3D_rcpim")
+
+[node name="RightShoulder" type="CSGPolygon3D" parent="Path3D"]
+visible = false
+layers = 262144
+polygon = PackedVector2Array(3, 0, 3, 0.5, 2, 0.5, 2, 0)
+mode = 2
+path_node = NodePath("..")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = SubResource("StandardMaterial3D_rcpim")
+
+[node name="StartMark" type="Marker3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.4411, 0.103827, 5.59998)
+
+[node name="Base" parent="." instance=ExtResource("3_epmlt")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 31.3225, 0, -18.3236)
+life = 1
+
+[node name="RTSController" type="Node3D" parent="." node_paths=PackedStringArray("cam")]
+script = ExtResource("7_xmjyx")
+cam = NodePath("../RayPickerCamera")
+map_bounds = Rect2(-30, -10, 50, 50)
+
+[node name="WaveManager" type="Node3D" parent="."]
+script = ExtResource("8_iynip")
+
+[node name="TurretManager" parent="." instance=ExtResource("14_d0au5")]
+cell_mesh_indicator_scene = ExtResource("14_g50c0")
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="ContinuousForestAir" type="FogVolume" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3.5, -5)
+size = Vector3(85, 9, 55)
+material = SubResource("ShaderMaterial_forest_air")
+
+[node name="MonsterRoad" type="Node3D" parent="Environment"]
+script = ExtResource("script_monster_road")
+path_node_path = NodePath("../../Path3D")
+road_width = 2.4
+slab_height = 0.08
+curb_height = 0.11
+curb_width = 0.16
+
+[node name="RuinsBuilder" type="Node3D" parent="Environment"]
+script = ExtResource("script_ruins_builder")
+path_node_path = NodePath("../../Path3D")
+grid_map_path = NodePath("../../GridMap")
+
+[node name="FogVolume2" type="FogVolume" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.0338, 1, -13.5129)
+layers = 524288
+size = Vector3(30.9623, 2, 80)
+material = SubResource("FogMaterial_ck2aa")
+
+[node name="FogVolume3" type="FogVolume" parent="Environment"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -4.49606, 1, -43.9635)
+layers = 524288
+size = Vector3(21.0512, 2, 100.583)
+material = SubResource("FogMaterial_ck2aa")
+
+[node name="FogVolume4" type="FogVolume" parent="Environment"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5.64912, 1, 34.8732)
+layers = 524288
+size = Vector3(21.0512, 2, 135.874)
+material = SubResource("FogMaterial_ck2aa")
+
+[node name="GDbotSkin" parent="." instance=ExtResource("1_umiea")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 0.16514, 0)
+
+[node name="TreasureChest" parent="." instance=ExtResource("29_hjlrc")]
+drop_item = SubResource("Resource_lj00k")
+
+[node name="BGMPlayer" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("37_0bopa")
+autoplay = true
+
+[node name="SceneryLayout" parent="Environment" instance=ExtResource("scenery_layout")]

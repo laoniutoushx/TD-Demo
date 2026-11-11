@@ -1,0 +1,59 @@
+[gd_resource type="Resource" script_class="EnemyResource" load_steps=7 format=3 uid="uid://du2cd7tgpnqxw"]
+
+[ext_resource type="PackedScene" uid="uid://ca3nvrkfayrwg" path="res://Unit/enemy/scenes/cow.tscn" id="1_i6ap7"]
+[ext_resource type="Script" uid="uid://di7jhxb20hgok" path="res://System/item_system/domain/item_resource.gd" id="1_yonoe"]
+[ext_resource type="Script" uid="uid://cwoilst65vmq6" path="res://Unit/enemy/EnemyResource.gd" id="2_1desw"]
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="3_6odkl"]
+[ext_resource type="Resource" uid="uid://bm3kcjrhtayri" path="res://System/skill_system/resources/effect/force_field.tres" id="5_26ho2"]
+[ext_resource type="Resource" uid="uid://w7qj0bg1wsuy" path="res://System/skill_system/resources/effect/missing.tres" id="6_60q5y"]
+
+[resource]
+script = ExtResource("2_1desw")
+clz_name = "01_cow"
+model_path = ExtResource("1_i6ap7")
+title = "狂暴母牛"
+desc = "狂暴母牛原本是丛林边缘某个小型农场中饲养的温顺家畜。当诅咒的阴影笼罩这片土地时，农场也未能幸免。原本平和的母牛受到了强烈的负面能量侵蚀，体型变得更加壮硕，肌肉虬结，双眼充血，充满了狂怒和不安。曾经哺育生命的温柔母性被扭曲为一种极端的保护欲和攻击性，任何靠近它“领地”的生物都会被视为威胁，遭到它疯狂的冲撞和践踏。"
+icon_path = "res://Asserts/Images/icon/enemy/cow.png"
+aabb_scale = 0.1
+aabb_height_scale = 1.0
+element_phase = 4
+unit_move_type = 1
+unit_cate = 1
+armor_amount = 0.0
+armor_type = 10
+is_mesh_outline = false
+is_mesh_standing = true
+mana_cost = 10.0
+wood_cost = 10.0
+money_cost = 10.0
+money_reward = 20
+wood_reward = -1
+max_health = 500.0
+max_mana = 200.0
+move_speed = 5.0
+turn_speed = 0.0
+attack_speed = 100.0
+attack_range = 0.0
+attack_num = 1
+bounce_times = 0
+bounce_distance = 20
+bounce_decay_factor = 0.3
+attack_value = 0.0
+unit_growth_factor = 1.0
+projectile_speed = 100.0
+health_recove_rate_factor = 0.0
+mana_recove_rate_factor = 0.0
+anim_attack = null
+anim_run = "Armature|Run"
+anim_walk = null
+anim_idle = "Armature|Idle"
+anim_death = "Armature|Death"
+anim_release = null
+anim_speed_factor = 1.0
+anim_ack_point = 0.03
+audio_death = "怪物声音大死亡(monster_sound_big_deat_爱给网_aigei_com"
+is_selected_circle = true
+component_systems = 0
+pickup_velocity = 1000.0
+item_metas = Array[ExtResource("1_yonoe")]([])
+skill_metas = Array[ExtResource("3_6odkl")]([ExtResource("5_26ho2"), ExtResource("6_60q5y")])

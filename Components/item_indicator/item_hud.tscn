@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://4givvjtq4idu"]
+
+[ext_resource type="Script" uid="uid://cc6p8be3bc3he" path="res://Components/item_indicator/item_hud.gd" id="1_rie1f"]
+[ext_resource type="PackedScene" uid="uid://c877ljdwqdknf" path="res://Components/item_indicator/item_hud_2d.tscn" id="2_ydsxc"]
+
+[node name="ItemHud" type="Node3D"]
+script = ExtResource("1_rie1f")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+unique_name_in_owner = true
+cast_shadow = 0
+billboard = 1
+transparent = false
+
+[node name="SubViewport" type="SubViewport" parent="Sprite3D"]
+unique_name_in_owner = true
+size = Vector2i(300, 300)
+
+[node name="ItemHud2D" parent="Sprite3D/SubViewport" instance=ExtResource("2_ydsxc")]
+unique_name_in_owner = true

@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3 uid="uid://6pulmyjrif0q"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qr3pv"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+albedo_color = Color(0.6156, 0.81, 0.7128, 0)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_x5t6r"]
+material = SubResource("StandardMaterial3D_qr3pv")
+size = Vector2(4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_u4a6a"]
+size = Vector3(4, 0.01, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n62sd"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+albedo_color = Color(0.352, 0.352, 0.352, 0)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1s248"]
+material = SubResource("StandardMaterial3D_n62sd")
+size = Vector2(4, 4)
+
+[node name="SpaceLibrary" type="Node3D"]
+
+[node name="FreeSpace" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_x5t6r")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="FreeSpace"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FreeSpace/StaticBody3D"]
+shape = SubResource("BoxShape3D_u4a6a")
+
+[node name="TurretBase" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_1s248")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="TurretBase"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TurretBase/StaticBody3D"]
+shape = SubResource("BoxShape3D_u4a6a")

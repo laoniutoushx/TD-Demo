@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "asset_sha256": "9f88a5e160e5926b8161e66147c8e57292c3ebc99ab2bf0e1c20122c385d48c0",
+  "bindings": [
+    {
+      "id": "mat_75d2d72ebfd45d3bb80b671c7acd0a7a",
+      "source_name": "Fox_Character_Atlas",
+      "role": "body",
+      "resource": "res://Asserts/Pipeline/tower_fox_battle_mage_base_v001/fox_2k.tres"
+    }
+  ],
+  "note": "Atlas contains fur, metal, leather, cloth. Project frozen style has no common recipe; candidate awaits P11 review."
+}

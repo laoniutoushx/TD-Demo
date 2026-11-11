@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://cr204fvc37686"]
+
+[ext_resource type="Script" uid="uid://di7jhxb20hgok" path="res://System/item_system/domain/item_resource.gd" id="1_h3s57"]
+[ext_resource type="PackedScene" uid="uid://g2pp4vopotbr" path="res://Unit/turret/scenes/Teleporter_1.tscn" id="2_ff0ii"]
+[ext_resource type="Script" uid="uid://cwoilst65vmq6" path="res://Unit/enemy/EnemyResource.gd" id="3_jbjsj"]
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="4_gigtb"]
+[ext_resource type="Resource" uid="uid://cmq42rp4ss8x0" path="res://Unit/turret/resources/Teleporter_2.tres" id="5_vx2e0"]
+[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="6_v2cyi"]
+[ext_resource type="Script" uid="uid://d16rx3mg1e028" path="res://System/skill_system/resources/building/building_level_up.gd" id="7_7by67"]
+
+[sub_resource type="Resource" id="Resource_02sfj"]
+script = ExtResource("4_gigtb")
+code = "building_level_up"
+title = "升级"
+desc = "升级当前单位为指定 ${TARGET_UNIT}"
+icon_path = "building_level_up"
+cooldown = 60.0
+stock = 1
+disable_check = 13
+release_type = 2
+target_type = 8
+effect_type = 4
+building_res = ExtResource("5_vx2e0")
+building_level_up_time = 5.0
+skill_script = ExtResource("7_7by67")
+
+[resource]
+script = ExtResource("3_jbjsj")
+clz_name = "teleporter_1"
+model_path = ExtResource("2_ff0ii")
+title = "魔法塔 I"
+desc = "一个普通的魔法塔"
+icon_path = "res://Asserts/Images/icon/turret/teletoper.png"
+element_phase = 31
+unit_move_type = 1
+unit_cate = 2
+armor_type = 2
+mana_cost = 100.0
+money_cost = 0.0
+max_health = 10000.0
+max_mana = 500.0
+move_speed = 5.0
+turn_speed = 10.0
+attack_speed = 0.5
+attack_range = 20.0
+attack_value = 100.0
+unit_growth_factor = 0.01
+projectile_speed = 300.0
+mana_recove_rate_factor = 2.0
+anim_attack = null
+anim_run = null
+anim_walk = null
+anim_idle = null
+anim_death = null
+anim_release = null
+skill_metas = Array[ExtResource("4_gigtb")]([SubResource("Resource_02sfj")])

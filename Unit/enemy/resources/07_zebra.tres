@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="EnemyResource" load_steps=5 format=3 uid="uid://bun6vgjb8esia"]
+
+[ext_resource type="Script" uid="uid://di7jhxb20hgok" path="res://System/item_system/domain/item_resource.gd" id="1_7ig40"]
+[ext_resource type="PackedScene" uid="uid://1i4oo6hdjlbj" path="res://Unit/enemy/scenes/zebra.tscn" id="2_mkm6v"]
+[ext_resource type="Script" uid="uid://cwoilst65vmq6" path="res://Unit/enemy/EnemyResource.gd" id="3_rf7fr"]
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="4_2wbnn"]
+
+[resource]
+script = ExtResource("3_rf7fr")
+clz_name = "07_zebra"
+model_path = ExtResource("2_mkm6v")
+title = "斑马"
+desc = "这片丛林并非一直如此充满诅咒和危险。在很久以前，这里曾是各种生灵和平共处的天堂，其中就包括一群拥有独特黑白条纹的斑马。它们以其敏捷的身姿和群体行动而闻名。然而，当诅咒蔓延，扭曲了丛林中的一切时，这些斑马也受到了影响。它们的条纹变得更加扭曲和混乱，仿佛流动的黑暗能量，而原本温顺的性格则被一种焦躁和破坏欲所取代。它们不再成群结队，而是各自为战，带着一种莫名的愤怒冲击着任何阻碍它们前进的事物。"
+icon_path = "res://Asserts/Images/icon/enemy/pug.png"
+aabb_scale = 1.0
+aabb_height_scale = 1.0
+element_phase = 16
+unit_move_type = 1
+unit_cate = 1
+armor_amount = 0.0
+armor_type = 10
+is_mesh_outline = false
+is_mesh_standing = true
+mana_cost = 10.0
+wood_cost = 10.0
+money_cost = 10.0
+money_reward = 120
+wood_reward = -1
+max_health = 20000.0
+max_mana = 200.0
+move_speed = 7.0
+turn_speed = 0.0
+attack_speed = 100.0
+attack_range = 0.0
+attack_num = 1
+bounce_times = 0
+bounce_distance = 20
+bounce_decay_factor = 0.3
+attack_value = 0.0
+unit_growth_factor = 1.0
+projectile_speed = 100.0
+health_recove_rate_factor = 0.0
+mana_recove_rate_factor = 0.0
+anim_attack = ""
+anim_run = "Armature|Run"
+anim_walk = "Armature|Walk"
+anim_idle = "Armature|Idle"
+anim_death = "Armature|Death"
+anim_release = ""
+anim_speed_factor = 1.0
+anim_ack_point = 0.03
+audio_death = "马叫声01_爱给网_aigei_com"
+is_selected_circle = true
+component_systems = 0
+pickup_velocity = 1000.0
+item_metas = Array[ExtResource("1_7ig40")]([])
+skill_metas = Array[ExtResource("4_2wbnn")]([])

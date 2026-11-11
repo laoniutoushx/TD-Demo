@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="EnemyResource" load_steps=11 format=3 uid="uid://batuffvaegvkn"]
+
+[ext_resource type="PackedScene" uid="uid://cru16mbhnwx85" path="res://Unit/turret/scenes/turret.tscn" id="1_o0rv6"]
+[ext_resource type="Script" uid="uid://di7jhxb20hgok" path="res://System/item_system/domain/item_resource.gd" id="1_qx5mg"]
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="2_l8ipb"]
+[ext_resource type="Script" uid="uid://cwoilst65vmq6" path="res://Unit/enemy/EnemyResource.gd" id="2_nv5yp"]
+[ext_resource type="Resource" uid="uid://dpnj33orc37b" path="res://System/skill_system/resources/damage/thunder_chain.tres" id="5_hvj38"]
+[ext_resource type="Resource" uid="uid://x4bivjxncvqm" path="res://System/skill_system/resources/damage/thunderclap.tres" id="6_vkqtv"]
+[ext_resource type="Resource" uid="uid://btoskpfy832ny" path="res://System/skill_system/resources/damage/fire_rain.tres" id="7_lee7t"]
+[ext_resource type="Resource" uid="uid://bx5jjj52jdb13" path="res://System/skill_system/resources/effect/rage_power.tres" id="8_3t7p0"]
+[ext_resource type="Resource" uid="uid://c4aggapaqdacr" path="res://System/skill_system/resources/effect/slow_power.tres" id="9_vpwkd"]
+[ext_resource type="Resource" uid="uid://dl1lo36ln1nip" path="res://System/skill_system/resources/effect/critical_hit.tres" id="10_gmjqh"]
+
+[resource]
+script = ExtResource("2_nv5yp")
+clz_name = "turret"
+model_path = ExtResource("1_o0rv6")
+title = "基础塔 Lv 1"
+desc = "一个普通的塔"
+icon_path = "res://Asserts/Images/icon/skill icon/27.png"
+aabb_scale = 1.0
+aabb_height_scale = 1.0
+element_phase = 31
+unit_move_type = 1
+unit_cate = 1
+armor_amount = 0.0
+armor_type = 2
+is_mesh_outline = false
+is_mesh_standing = false
+mana_cost = 10.0
+wood_cost = -1.0
+money_cost = 0.0
+money_reward = -1
+wood_reward = -1
+max_health = 10000.0
+max_mana = 100.0
+move_speed = 5.0
+turn_speed = 10.0
+attack_speed = 0.5
+attack_range = 10.0
+attack_num = 1
+bounce_times = 0
+bounce_distance = 20
+bounce_decay_factor = 0.3
+attack_value = 25.0
+unit_growth_factor = 0.01
+projectile_speed = 200.0
+health_recove_rate_factor = 0.0
+mana_recove_rate_factor = 1.0
+anim_attack = null
+anim_run = "Armature|Jump"
+anim_walk = null
+anim_idle = null
+anim_death = "death"
+anim_release = null
+anim_speed_factor = 1.0
+anim_ack_point = 0.03
+is_selected_circle = true
+component_systems = 0
+pickup_velocity = 1000.0
+item_metas = Array[ExtResource("1_qx5mg")]([])
+skill_metas = Array[ExtResource("2_l8ipb")]([ExtResource("5_hvj38"), ExtResource("6_vkqtv"), ExtResource("7_lee7t"), ExtResource("8_3t7p0"), ExtResource("9_vpwkd"), ExtResource("10_gmjqh")])

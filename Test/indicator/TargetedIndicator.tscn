@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cfkgmuw8ts8h1"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_pevc1"]
+
+[node name="TargetedIndicator" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(48, 46)
+texture = SubResource("CompressedTexture2D_pevc1")

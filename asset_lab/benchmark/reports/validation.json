@@ -1,0 +1,109 @@
+{
+	"input_checks": {
+		"F1_F2": true,
+		"home": true,
+		"light_camera": true,
+		"node_count_after": 131.0,
+		"node_count_before": 131.0,
+		"original_and_benchmark": true
+	},
+	"lod_hysteresis": [
+		[
+			14.5,
+			0
+		],
+		[
+			15.3,
+			1
+		],
+		[
+			14.5,
+			1
+		],
+		[
+			12.5,
+			0
+		],
+		[
+			31.0,
+			2
+		],
+		[
+			27.0,
+			2
+		],
+		[
+			25.0,
+			1
+		]
+	],
+	"motion_frames": 240,
+	"performance": {
+		"gpu_p95_ms": 2.77800011634827,
+		"note": "Single tree only; uncapped render, no screenshot readbacks in sampling loop.",
+		"resolution": "(2560.0, 1440.0)",
+		"samples": 180,
+		"wall_p95_ms": 3.363
+	},
+	"reference_combinations": 15,
+	"renderer": "Forward+ Vulkan",
+	"snapshots": [
+		"original_polyhaven_reference",
+		"style0_light0_camera0",
+		"style0_light0_camera1",
+		"style0_light0_camera2",
+		"style0_light1_camera0",
+		"style0_light1_camera1",
+		"style0_light1_camera2",
+		"style0_light2_camera0",
+		"style0_light2_camera1",
+		"style0_light2_camera2",
+		"style1_light0_camera0",
+		"style1_light0_camera1",
+		"style1_light0_camera2",
+		"style1_light1_camera0",
+		"style1_light1_camera1",
+		"style1_light1_camera2",
+		"style1_light2_camera0",
+		"style1_light2_camera1",
+		"style1_light2_camera2",
+		"style2_light0_camera0",
+		"style2_light0_camera1",
+		"style2_light0_camera2",
+		"style2_light1_camera0",
+		"style2_light1_camera1",
+		"style2_light1_camera2",
+		"style2_light2_camera0",
+		"style2_light2_camera1",
+		"style2_light2_camera2",
+		"quarter_resolution",
+		"sun_energy_0.0",
+		"sun_energy_0.5",
+		"sun_energy_1.5",
+		"sun_reversed",
+		"lod_0",
+		"lod_1",
+		"lod_2",
+		"orbit_false_000",
+		"orbit_false_020",
+		"orbit_false_040",
+		"orbit_false_060",
+		"orbit_false_080",
+		"orbit_false_100",
+		"orbit_true_000",
+		"orbit_true_020",
+		"orbit_true_040",
+		"orbit_true_060",
+		"orbit_true_080",
+		"orbit_true_100",
+		"sbs_benchmark_oblique",
+		"sbs_benchmark_topdown",
+		"sbs_meshy_broadleaf",
+		"sbs_fab_tree1"
+	],
+	"triangles": [
+		7953,
+		3991,
+		882
+	]
+}

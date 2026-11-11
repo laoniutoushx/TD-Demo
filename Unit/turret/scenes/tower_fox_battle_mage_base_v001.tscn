@@ -1,0 +1,59 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Asserts/Pipeline/tower_fox_battle_mage_base_v001/mage_adapter.gd" id="1"]
+[ext_resource type="PackedScene" path="res://Asserts/Pipeline/tower_fox_battle_mage_base_v001/model.glb" id="2"]
+[ext_resource type="PackedScene" path="res://Components/hud/hud.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://generic-scenes-and-nodes/3d/FadedCircle3D.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://Components/fire_pos/fire_pos_cmp.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://VFX/projectiles/black_bird/vfx_black_bird_running.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://Components/range_indicator/range_indicator.tscn" id="7"]
+
+[sub_resource type="CylinderShape3D" id="HitShape"]
+height = 4.91031503677368
+radius = 0.9820630073547361
+
+[sub_resource type="CylinderShape3D" id="AttackShape"]
+height = 4.91031503677368
+radius = 20.0
+
+[node name="HumanMage" type="Node3D" groups=["friend"]]
+script = ExtResource("1")
+hand_bone = &"LeftHand"
+socket_offset = Vector3(0.0, 0.0, 0.0)
+material_plan_path = "res://Asserts/Pipeline/tower_fox_battle_mage_base_v001/material_plan.json"
+
+[node name="Pivot" type="Node3D" parent="."]
+scale = Vector3(2.45515751838684, 2.45515751838684, 2.45515751838684)
+
+[node name="Visual" parent="Pivot" instance=ExtResource("2")]
+rotation = Vector3(0, 3.141592653589793, 0)
+
+[node name="FirePosCmp" parent="." instance=ExtResource("5")]
+fire_animation = &"attack_normal"
+fire_projectile = ExtResource("6")
+
+[node name="Hud" parent="." instance=ExtResource("3")]
+position = Vector3(0, 5.41031503677368, 0)
+
+[node name="HealthAnchor" type="Marker3D" parent="."]
+position = Vector3(0, 5.41031503677368, 0)
+
+[node name="FadedCircle3D" parent="." instance=ExtResource("4")]
+
+[node name="RangeIndicator" parent="." instance=ExtResource("7")]
+
+[node name="AttackingScope" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AttackingScope"]
+position = Vector3(0, 2.45515751838684, 0)
+shape = SubResource("AttackShape")
+
+[node name="AttackedScope" type="Area3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AttackedScope"]
+position = Vector3(0, 2.45515751838684, 0)
+shape = SubResource("HitShape")

@@ -1,0 +1,12 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="PackedScene" path="res://asset_lab/tree_01.tscn" id="1"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_0_2_Tree_mid_tree_small_02_LOD0_0.tres" id="2"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_0_2_Tree_mid_tree_small_02_LOD0_1.tres" id="3"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_0_2_Tree_mid_tree_small_02_LOD0_2.tres" id="4"]
+[node name="ReferenceTree" type="Node3D"]
+[node name="Model" parent="." instance=ExtResource("1")]
+[node name="Tree_mid_tree_small_02_LOD0" parent="Model" index="0"]
+surface_material_override/0 = ExtResource("2")
+surface_material_override/1 = ExtResource("3")
+surface_material_override/2 = ExtResource("4")
+[editable path="Model"]

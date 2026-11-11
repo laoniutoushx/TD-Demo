@@ -1,0 +1,263 @@
+class_name Buff extends BuffTpl
+
+
+
+# Reference
+var res: BuffResource   # buff 元信息
+
+var entity: String      # 引用实例类型 Clazz  (e.g. BaseUnit/Skill/LevelComp/Item/Buff)
+var prop: String        # 实例对应属性名称
+
+var reference_instance: Variant        # 引用实例（Skill、Item、Unit） Buff 来源
+
+var unit: BaseUnit      # 作用单位（如果是技能 buff，则为技能对应的单位）
+var slot: BaseSlot
+
+
+
+# basic properity
+@export_group("Buff Meta Steup")
+@export var id: StringName
+@export var code: String
+
+
+## buff 类型（可以同时符合多个类型）
+@export_flags("BUFF", "DEBUFF", "DAMAGE", "HEAL", "RESTRICT", "STATUS") var type: int
+
+@export var title: String
+@export var desc: String
+@export var icon_path: String
+@export var vfx: Dictionary  # buff 特效 资源列表（可以有多个）
+
+
+# buff properity
+# 值单位类型
+var _value: float   # buff 记录的修改前的属性值
+@export var value: float
+@export var value_unit: BuffResource.VALUE_UNIT
+
+var _value_dir: int # buff 记录的属性值方向（原始位 0 和 1， 这里映射为 0 => 1, 1 => -1 ，方便计算正负数）
+@export var value_dir: int:
+    set(value):
+        value_dir = value
+        if value_dir == 0:
+            _value_dir = 1
+        else:
+            _value_dir = -1
+        
+
+
+@export var cooldown: float     
+@export var max_overlay_num: int    
+
+# What state the turret is in
+enum BUFF_STATE {
+	Idle,
+    Cool_Down
+}
+var current_state: BUFF_STATE = BUFF_STATE.Idle
+
+
+@export var priority: int   # 优先级
+@export var exclude_level: BuffResource.EXCLUDE_LEVEL = BuffResource.EXCLUDE_LEVEL.ALL   # 排除级别（叠加方式）
+
+
+
+
+# buff logic action
+@export var buff_script: Script
+
+
+# Inner Variable
+var buff_instance: Variant
+var cool_down_timer: CommonUtil.Cimer
+var __buff_stack_num: int = 0     # buff 创建次数（程序内部调用）
+
+var prop_value_delta: float = 0.0   # buff 属性值变化量（buff 叠加时，属性值变化量）
+
+## 独立概率器是否初始化
+var _prob_controller: ProbabilityController = null
+var prob_callback: Callable
+var is_prob := false
+
+
+
+func _ready() -> void:
+    super._ready()
+
+    # 内部变量赋值 _value
+    _value = value
+
+    # 当冷却时间大于 -1 ，表示当前 buff 需要开启倒计时
+    if cooldown > 0:
+        # 初始化 buff timer
+        cool_down_timer = CommonUtil.create_timer(cooldown)
+        add_child(cool_down_timer)
+
+    # 初始化独立概率控制器
+    if is_prob:
+        _prob_controller = prob_callback.call()
+
+    # 监听技能等级事件
+    if reference_instance and reference_instance is Skill:
+        reference_instance.skill_level_up.connect(_on_skill_level_up)
+
+
+
+func _on_skill_level_up(skill: Skill, level: int) -> void:
+    # 技能升级时，刷新 buff 属性值
+    if skill and is_instance_valid(skill):
+        refresh()
+
+
+
+func change_state(state: BUFF_STATE) -> void:
+    current_state = state
+    match current_state:
+        BUFF_STATE.Idle:
+            if cool_down_timer:
+                cool_down_timer.stop()
+
+        BUFF_STATE.Cool_Down:            
+            if cool_down_timer:
+                cool_down_timer.start()
+
+
+func apply(_reference: Variant, _target: Variant) -> bool:
+    # buff exclude level 检查
+    if not is_fit_exclude_level(self, _target):
+        print("buff code %s exclude level %s" % [self.code, self.exclude_level])
+        return false 
+
+    # 引用单位存在
+    if _target: 
+        reference_instance = _reference
+        unit = _target
+
+        # 添加到节点树
+        unit.add_child(self)
+
+        # 属性修改
+        if prop:
+            # 添加 buff
+            # _reference.add_child(buff_instance)
+
+            # reference_instance 属性值修改
+            var ref_val = unit.get(prop)
+            _value = ref_val
+
+
+            if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+                prop_value_delta = ref_val * value / 100 * _value_dir
+                ref_val += prop_value_delta
+
+
+            elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+                prop_value_delta = value * _value_dir
+                ref_val += prop_value_delta
+
+
+
+            unit.set(prop, ref_val)
+
+            # print("REF_VAL %s" % ref_val)
+
+        return true
+    
+    return false
+
+        
+
+
+
+func remove(_target: Variant) -> bool:
+
+    
+    # reference_instance 属性值修改
+    if _target:
+
+        if prop:
+            var ref_val = _target.get(prop)
+
+
+            if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+                # ref_val -= ref_val / (1.0 + value / 100 * _value_dir)
+                ref_val -= prop_value_delta
+
+
+            elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+                # ref_val -= value * _value_dir
+                ref_val -= prop_value_delta
+
+
+
+            _target.set(prop, ref_val)
+            # 恢复为当前 buff 修改前的数值
+            # _reference.set(prop, _value)
+
+            # 删除 buff（这里暂时不调用 remove_child，此处方法是在 触发 buff queue_free 时调用的）
+            # (_reference as Node).remove_child(self)
+            # (_reference as Node).remove_child.call_deferred(self)
+
+            # print("REF_VAL %s" % ref_val)
+
+        return true
+
+    return false        
+
+
+
+# 判断排除等级
+func is_fit_exclude_level(_buff: Buff, _target: Variant) -> bool:
+    # 
+    if _buff.exclude_level == BuffResource.EXCLUDE_LEVEL.ALL:
+        return true
+
+    if _buff.exclude_level == BuffResource.EXCLUDE_LEVEL.TYPE:
+        # 获取已有第一个 buff
+        if _target.buff_map.size() == 0:
+            return true
+
+        var bm: Buff = _target.buff_map.values()[0]
+        if CommonUtil.has_overlapping_flags(_buff.type, bm.type):
+            return true	
+        else: 
+            return false
+
+    if _buff.exclude_level == BuffResource.EXCLUDE_LEVEL.SELF:
+        for bm: Buff in _target.buff_map.values():
+            if bm.code != _buff.code:
+                return false
+        return true
+    
+    if _buff.exclude_level == BuffResource.EXCLUDE_LEVEL.NONE:
+        return _target.buff_map.size() == 0
+
+    return true
+
+
+# 空接口， buff 自己实现内部逻辑
+func refresh() -> void:
+    # reference_instance 属性值修改
+    if unit:
+        if prop:
+            # reference_instance 属性值修改
+            var ref_val = unit.get(prop)
+            ref_val = (ref_val - prop_value_delta) # 撤回 buff 数值
+            _value = ref_val
+
+
+            if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+                prop_value_delta = ref_val * value / 100 * _value_dir
+                ref_val += prop_value_delta
+
+
+            elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+                prop_value_delta = value * _value_dir
+                ref_val += prop_value_delta
+
+
+            # Keep the modifier magnitude; ref_val is the final attribute, not its effect.
+            
+            # 更新单位属性值
+            unit.set(prop, ref_val)

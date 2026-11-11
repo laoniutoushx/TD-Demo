@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="SkillMetaResource" load_steps=4 format=3 uid="uid://btoskpfy832ny"]
+
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="1_k0j1h"]
+[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="2_voe6e"]
+[ext_resource type="Script" uid="uid://ce34cauu0lay" path="res://System/skill_system/resources/damage/fire_rain.gd" id="2_xxo4j"]
+
+[resource]
+script = ExtResource("1_k0j1h")
+code = "fire_rain"
+title = "火焰雨"
+desc = "从空中召唤一批火焰，砸向地面，对范围目标造成伤害"
+icon_path = "619"
+level = 1
+level_up_gap = 1
+max_level = 3
+level_limit = -1
+init_release = false
+auto_release = false
+cooldown = 10.0
+mana_cost = 10.0
+damage_range = 5.0
+match_range = 30.0
+range = 5.0
+release_distance = 20.0
+stock = 1
+value = 5.0
+value_ext = {}
+run_distance = 10.0
+epoch = 1
+init_num = 15
+cast_duration = -1.0
+internal_time = 0.3
+start_time = 0.1
+end_time = 0.1
+wave = 5
+projection_speed = 1.0
+probability = 0.25
+disable_check = 1
+release_type = 16
+target_type = 33
+effect_type = 1
+building_level_up_time = -1.0
+wood_cost = 10.0
+money_cost = 10.0
+skill_script = ExtResource("2_xxo4j")
+skill_level_config = Array[ExtResource("1_k0j1h")]([null])
+skill_buff_config = Array[ExtResource("2_voe6e")]([])

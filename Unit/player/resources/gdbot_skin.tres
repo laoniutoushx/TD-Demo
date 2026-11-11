@@ -1,0 +1,282 @@
+[gd_resource type="Resource" script_class="EnemyResource" load_steps=30 format=3 uid="uid://sa00lx2hfecc"]
+
+[ext_resource type="Script" uid="uid://di7jhxb20hgok" path="res://System/item_system/domain/item_resource.gd" id="1_2sp2u"]
+[ext_resource type="PackedScene" uid="uid://bdyptm7smjixm" path="res://Unit/player/gdbot/gdbot_skin.tscn" id="1_x8mob"]
+[ext_resource type="Resource" uid="uid://5metv6bqqctl" path="res://System/item_system/resources/axe.tres" id="2_2osqj"]
+[ext_resource type="Script" uid="uid://cwoilst65vmq6" path="res://Unit/enemy/EnemyResource.gd" id="2_usrqw"]
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="3_j65fo"]
+[ext_resource type="Resource" uid="uid://x4bivjxncvqm" path="res://System/skill_system/resources/damage/thunderclap.tres" id="4_vdhal"]
+[ext_resource type="Resource" uid="uid://btoskpfy832ny" path="res://System/skill_system/resources/damage/fire_rain.tres" id="6_6vxlu"]
+[ext_resource type="Resource" uid="uid://dpnj33orc37b" path="res://System/skill_system/resources/damage/thunder_chain.tres" id="7_jsd2q"]
+[ext_resource type="Resource" uid="uid://batuffvaegvkn" path="res://Unit/turret/resources/turret.tres" id="9_r63e7"]
+[ext_resource type="PackedScene" uid="uid://cru16mbhnwx85" path="res://Unit/turret/scenes/turret.tscn" id="10_k5htt"]
+[ext_resource type="Resource" uid="uid://cefokvd7tj07l" path="res://System/skill_system/resources/damage/storm_hammer.tres" id="10_semu7"]
+[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="11_cyjaq"]
+[ext_resource type="Script" uid="uid://bd1uecf3lfsln" path="res://System/skill_system/resources/building/building_base_turret.gd" id="12_03rxs"]
+[ext_resource type="Resource" uid="uid://7n44576jnsc1" path="res://Unit/turret/resources/Bomber_1.tres" id="14_s7ueq"]
+[ext_resource type="Resource" uid="uid://cr204fvc37686" path="res://Unit/turret/resources/Teleporter_1.tres" id="14_xmssx"]
+[ext_resource type="PackedScene" uid="uid://u1iq3xrerays" path="res://Unit/turret/scenes/Bomber_1.tscn" id="15_5ehoc"]
+[ext_resource type="PackedScene" uid="uid://g2pp4vopotbr" path="res://Unit/turret/scenes/Teleporter_1.tscn" id="15_n1t0i"]
+[ext_resource type="Resource" uid="uid://bm3kcjrhtayri" path="res://System/skill_system/resources/effect/force_field.tres" id="16_2yx4i"]
+[ext_resource type="Resource" uid="uid://c4aggapaqdacr" path="res://System/skill_system/resources/effect/slow_power.tres" id="17_f5vvt"]
+[ext_resource type="Resource" uid="uid://bs6w3mufvu6f1" path="res://System/skill_system/resources/damage/ice_strom.tres" id="20_eh75n"]
+[ext_resource type="Resource" uid="uid://bil715vnpxxw" path="res://Unit/turret/resources/Queen.tres" id="21_c060r"]
+[ext_resource type="PackedScene" uid="uid://cueiau552hmu4" path="res://Unit/turret/scenes/Queen.tscn" id="22_frovs"]
+[ext_resource type="Resource" uid="uid://b6shk3h11o5m7" path="res://Unit/turret/resources/Fox_Mega.tres" id="23_fqpgp"]
+[ext_resource type="PackedScene" uid="uid://bn6y16r1niwsj" path="res://Unit/turret/scenes/Fox_Mega.tscn" id="23_xpone"]
+
+[sub_resource type="Resource" id="Resource_b101j"]
+script = ExtResource("3_j65fo")
+code = "building_base_turret"
+title = "基础塔"
+desc = "在指定位置建造一个防御塔"
+icon_path = "default"
+level = 0
+level_up_gap = 1
+max_level = 3
+init_release = false
+auto_release = false
+cooldown = 1.0
+mana_cost = 10.0
+damage_range = 5.0
+match_range = 30.0
+range = 5.0
+release_distance = 10.0
+stock = 1
+value = 0.0
+value_ext = {}
+run_distance = 10.0
+epoch = 1
+init_num = 1
+internal_time = 0.1
+start_time = 0.1
+end_time = 0.1
+wave = 1
+projection_speed = 1.0
+disable_check = 13
+release_type = 1
+target_type = 1
+effect_type = 4
+building_scene = ExtResource("10_k5htt")
+building_res = ExtResource("9_r63e7")
+building_level_up_time = -1.0
+wood_cost = 10.0
+money_cost = 10.0
+skill_script = ExtResource("12_03rxs")
+skill_level_config = Array[ExtResource("3_j65fo")]([])
+skill_buff_config = Array[ExtResource("11_cyjaq")]([])
+
+[sub_resource type="Resource" id="Resource_3kxur"]
+script = ExtResource("3_j65fo")
+code = "building_base_turret_2"
+title = "基础塔"
+desc = "在指定位置建造一个防御塔"
+icon_path = "default"
+level = 0
+level_up_gap = 1
+max_level = 3
+init_release = false
+auto_release = false
+cooldown = 1.0
+mana_cost = 10.0
+damage_range = 5.0
+match_range = 30.0
+range = 5.0
+release_distance = 10.0
+stock = 1
+value = 0.0
+value_ext = {}
+run_distance = 10.0
+epoch = 1
+init_num = 1
+internal_time = 0.1
+start_time = 0.1
+end_time = 0.1
+wave = 1
+projection_speed = 1.0
+disable_check = 13
+release_type = 1
+target_type = 1
+effect_type = 4
+building_scene = ExtResource("15_5ehoc")
+building_res = ExtResource("14_s7ueq")
+building_level_up_time = -1.0
+wood_cost = 10.0
+money_cost = 10.0
+skill_script = ExtResource("12_03rxs")
+skill_level_config = Array[ExtResource("3_j65fo")]([])
+skill_buff_config = Array[ExtResource("11_cyjaq")]([])
+
+[sub_resource type="Resource" id="Resource_4g75c"]
+script = ExtResource("3_j65fo")
+code = "building_base_turret_3"
+title = "基础塔"
+desc = "在指定位置建造一个防御塔"
+icon_path = "default"
+level = 0
+level_up_gap = 1
+max_level = 3
+init_release = false
+auto_release = false
+cooldown = 1.0
+mana_cost = 10.0
+damage_range = 5.0
+match_range = 30.0
+range = 5.0
+release_distance = 10.0
+stock = 1
+value = 0.0
+value_ext = {}
+run_distance = 10.0
+epoch = 1
+init_num = 1
+internal_time = 0.1
+start_time = 0.1
+end_time = 0.1
+wave = 1
+projection_speed = 1.0
+disable_check = 13
+release_type = 1
+target_type = 1
+effect_type = 4
+building_scene = ExtResource("15_n1t0i")
+building_res = ExtResource("14_xmssx")
+building_level_up_time = -1.0
+wood_cost = 10.0
+money_cost = 10.0
+skill_script = ExtResource("12_03rxs")
+skill_level_config = Array[ExtResource("3_j65fo")]([])
+skill_buff_config = Array[ExtResource("11_cyjaq")]([])
+
+[sub_resource type="Resource" id="Resource_fqpgp"]
+script = ExtResource("3_j65fo")
+code = "building_base_turret_5"
+title = "女王"
+desc = "在指定位置建造一个防御塔"
+icon_path = "default"
+level = 0
+level_up_gap = 1
+max_level = 3
+init_release = false
+auto_release = false
+cooldown = 1.0
+mana_cost = 10.0
+damage_range = 5.0
+match_range = 30.0
+range = 5.0
+release_distance = 10.0
+stock = 1
+value = 0.0
+value_ext = {}
+run_distance = 10.0
+epoch = 1
+init_num = 1
+internal_time = 0.1
+start_time = 0.1
+end_time = 0.1
+wave = 1
+projection_speed = 1.0
+disable_check = 13
+release_type = 1
+target_type = 1
+effect_type = 4
+building_scene = ExtResource("22_frovs")
+building_res = ExtResource("21_c060r")
+building_level_up_time = -1.0
+wood_cost = 10.0
+money_cost = 10.0
+skill_script = ExtResource("12_03rxs")
+skill_level_config = Array[ExtResource("3_j65fo")]([])
+skill_buff_config = Array[ExtResource("11_cyjaq")]([])
+
+[sub_resource type="Resource" id="Resource_i7wfd"]
+script = ExtResource("3_j65fo")
+code = "building_base_turret_6"
+title = "狐狸"
+desc = "在指定位置建造一个防御塔"
+icon_path = "default"
+level = 0
+level_up_gap = 1
+max_level = 3
+init_release = false
+auto_release = false
+cooldown = 1.0
+mana_cost = 10.0
+damage_range = 5.0
+match_range = 30.0
+range = 5.0
+release_distance = 10.0
+stock = 1
+value = 0.0
+value_ext = {}
+run_distance = 10.0
+epoch = 1
+init_num = 1
+internal_time = 0.1
+start_time = 0.1
+end_time = 0.1
+wave = 1
+projection_speed = 1.0
+disable_check = 13
+release_type = 1
+target_type = 1
+effect_type = 4
+building_scene = ExtResource("23_xpone")
+building_res = ExtResource("23_fqpgp")
+building_level_up_time = -1.0
+wood_cost = 10.0
+money_cost = 10.0
+skill_script = ExtResource("12_03rxs")
+skill_level_config = Array[ExtResource("3_j65fo")]([])
+skill_buff_config = Array[ExtResource("11_cyjaq")]([])
+
+[resource]
+script = ExtResource("2_usrqw")
+clz_name = "gdbot_skin"
+model_path = ExtResource("1_x8mob")
+title = "戈多"
+desc = "戈多"
+icon_path = "res://Asserts/Images/icon/player/gdbot.png"
+aabb_scale = 1.0
+aabb_height_scale = 1.0
+element_phase = 31
+unit_move_type = 1
+unit_cate = 1
+armor_amount = 0.0
+armor_type = 20
+is_mesh_outline = false
+is_mesh_standing = false
+mana_cost = 10.0
+wood_cost = 10.0
+money_cost = 10.0
+money_reward = -1
+wood_reward = -1
+max_health = 20.0
+max_mana = 650.0
+move_speed = 10.0
+turn_speed = 0.0
+attack_speed = 100.0
+attack_range = 0.0
+attack_num = 1
+bounce_times = 0
+bounce_distance = 20
+bounce_decay_factor = 0.3
+attack_value = 0.0
+unit_growth_factor = 1.0
+projectile_speed = 30.0
+health_recove_rate_factor = 0.0
+mana_recove_rate_factor = 0.0
+vfx_projectile_name = ""
+anim_attack = null
+anim_run = "running"
+anim_walk = null
+anim_idle = null
+anim_death = "destory"
+anim_release = "simple_punch"
+anim_speed_factor = 1.0
+anim_ack_point = 0.03
+is_selected_circle = true
+component_systems = 0
+pickup_velocity = 1000.0
+item_metas = Array[ExtResource("1_2sp2u")]([ExtResource("2_2osqj")])
+skill_metas = Array[ExtResource("3_j65fo")]([ExtResource("7_jsd2q"), ExtResource("4_vdhal"), ExtResource("6_6vxlu"), SubResource("Resource_b101j"), ExtResource("10_semu7"), SubResource("Resource_3kxur"), ExtResource("16_2yx4i"), ExtResource("17_f5vvt"), SubResource("Resource_4g75c"), ExtResource("20_eh75n"), SubResource("Resource_fqpgp"), SubResource("Resource_i7wfd")])

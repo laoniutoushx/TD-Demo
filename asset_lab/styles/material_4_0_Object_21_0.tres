@@ -1,0 +1,18 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Bark_C_baseColor.png" id="1_1suyv"]
+[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Bark_C_normal.png" id="2_0wn7u"]
+[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Bark_C_metallicRoughness.png" id="3_qyiw4"]
+
+[resource]
+resource_name = "Bark_C"
+cull_mode = 2
+albedo_color = Color(1.08, 1.04, 1, 1)
+albedo_texture = ExtResource("1_1suyv")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("3_qyiw4")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("2_0wn7u")
+texture_filter = 5
+metadata/_gltf_primary_texture_coord = 0

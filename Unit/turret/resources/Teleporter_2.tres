@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://cmq42rp4ss8x0"]
+
+[ext_resource type="Script" uid="uid://di7jhxb20hgok" path="res://System/item_system/domain/item_resource.gd" id="1_agqy1"]
+[ext_resource type="PackedScene" uid="uid://dbouc0hqkcev1" path="res://Unit/turret/scenes/Teleporter_2.tscn" id="2_agqy1"]
+[ext_resource type="Script" uid="uid://cwoilst65vmq6" path="res://Unit/enemy/EnemyResource.gd" id="3_4iwet"]
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="4_de4vl"]
+[ext_resource type="Resource" uid="uid://b5idjs30p01vq" path="res://Unit/turret/resources/Teleporter_3.tres" id="6_kt3c4"]
+[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="7_agqy1"]
+[ext_resource type="Resource" uid="uid://btoskpfy832ny" path="res://System/skill_system/resources/damage/fire_rain.tres" id="7_r66yw"]
+[ext_resource type="Script" uid="uid://d16rx3mg1e028" path="res://System/skill_system/resources/building/building_level_up.gd" id="8_cu3uv"]
+
+[sub_resource type="Resource" id="Resource_4iwet"]
+script = ExtResource("4_de4vl")
+code = "building_level_up"
+title = "升级"
+desc = "升级当前单位为指定 ${TARGET_UNIT}"
+icon_path = "building_level_up"
+cooldown = 60.0
+stock = 1
+disable_check = 13
+release_type = 2
+target_type = 8
+effect_type = 4
+building_res = ExtResource("6_kt3c4")
+building_level_up_time = 5.0
+skill_script = ExtResource("8_cu3uv")
+
+[resource]
+script = ExtResource("3_4iwet")
+clz_name = "teleporter_2"
+model_path = ExtResource("2_agqy1")
+title = "魔法塔 II"
+desc = "中级魔法塔"
+icon_path = "res://Asserts/Images/icon/turret/teletoper.png"
+element_phase = 31
+unit_move_type = 1
+unit_cate = 2
+armor_type = 2
+mana_cost = 10.0
+money_cost = 50.0
+max_health = 10000.0
+max_mana = 500.0
+move_speed = 5.0
+turn_speed = 10.0
+attack_speed = 0.4
+attack_range = 20.0
+attack_value = 500.0
+unit_growth_factor = 0.02
+projectile_speed = 300.0
+mana_recove_rate_factor = 2.0
+anim_attack = null
+anim_run = null
+anim_walk = null
+anim_idle = null
+anim_death = null
+anim_release = null
+skill_metas = Array[ExtResource("4_de4vl")]([ExtResource("7_r66yw"), SubResource("Resource_4iwet")])

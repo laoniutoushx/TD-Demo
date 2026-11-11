@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="EnemyResource" load_steps=7 format=3 uid="uid://cs0lrsvor327p"]
+
+[ext_resource type="Script" uid="uid://di7jhxb20hgok" path="res://System/item_system/domain/item_resource.gd" id="1_1mklm"]
+[ext_resource type="PackedScene" uid="uid://cjgsocu8i6efm" path="res://Unit/enemy/scenes/capsule.tscn" id="1_7phoe"]
+[ext_resource type="Script" uid="uid://cwoilst65vmq6" path="res://Unit/enemy/EnemyResource.gd" id="1_taj0b"]
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="3_788m7"]
+[ext_resource type="Resource" uid="uid://bm3kcjrhtayri" path="res://System/skill_system/resources/effect/force_field.tres" id="5_msick"]
+[ext_resource type="Resource" uid="uid://w7qj0bg1wsuy" path="res://System/skill_system/resources/effect/missing.tres" id="6_bhyq6"]
+
+[resource]
+script = ExtResource("1_taj0b")
+clz_name = "00_capsule"
+model_path = ExtResource("1_7phoe")
+title = "？？？"
+desc = "？？？"
+icon_path = "res://Asserts/Images/icon/enemy/capsule.png"
+aabb_scale = 1.0
+aabb_height_scale = 1.0
+element_phase = 2
+unit_move_type = 1
+unit_cate = 1
+armor_amount = 0.0
+armor_type = 10
+magic_resistance = 0.0
+is_mesh_outline = false
+is_mesh_standing = true
+mana_cost = 10.0
+wood_cost = 10.0
+money_cost = 10.0
+money_reward = 10
+wood_reward = 1
+max_health = 5000.0
+max_mana = 200.0
+move_speed = 5.0
+turn_speed = 0.0
+attack_speed = 100.0
+attack_range = 0.0
+attack_num = 1
+bounce_times = 0
+bounce_distance = 20
+bounce_decay_factor = 0.3
+attack_value = 0.0
+unit_growth_factor = 1.0
+projectile_speed = 100.0
+health_recove_rate_factor = 0.0
+mana_recove_rate_factor = 0.0
+anim_attack = null
+anim_run = ""
+anim_walk = null
+anim_idle = ""
+anim_death = "destory"
+anim_release = null
+anim_speed_factor = 1.0
+anim_ack_point = 0.03
+audio_death = ""
+is_selected_circle = true
+component_systems = 0
+pickup_velocity = 1000.0
+item_metas = Array[ExtResource("1_1mklm")]([])
+skill_metas = Array[ExtResource("3_788m7")]([ExtResource("5_msick"), ExtResource("6_bhyq6")])

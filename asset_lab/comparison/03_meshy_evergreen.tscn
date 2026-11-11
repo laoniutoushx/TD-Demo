@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://meshy_assets/pilot_tree.glb" id="1_pmwj8"]
+
+[node name="TreeCandidate" type="Node3D" unique_id=555446644]
+
+[node name="pilot_tree" type="Node3D" parent="." unique_id=929550432 instance=ExtResource("1_pmwj8")]
+transform = Transform3D(2.3696074, 0, 0, 0, 2.3696074, 0, 0, 0, 2.3696074, 0.019964926, 2.251197, 0.0040219394)

@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://d00chkod5txim"]
+
+[ext_resource type="Script" uid="uid://cj7y8kelphsm1" path="res://Components/hud/hud.gd" id="1_3krhh"]
+[ext_resource type="PackedScene" uid="uid://c6fbveb8morud" path="res://Components/health_mana_bar/health_mana_bar.tscn" id="1_c27l5"]
+[ext_resource type="PackedScene" uid="uid://xkdh3o2wdatp" path="res://Components/level/level_bar.tscn" id="2_cm4jw"]
+
+[node name="Hud" type="Node3D"]
+script = ExtResource("1_3krhh")
+
+[node name="HealthManaBar3D" parent="." instance=ExtResource("1_c27l5")]
+
+[node name="LevelBar3D" parent="." instance=ExtResource("2_cm4jw")]
+offset = Vector2(1.21, 0.845)

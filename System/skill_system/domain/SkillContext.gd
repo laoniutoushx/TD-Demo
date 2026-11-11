@@ -1,0 +1,35 @@
+class_name SkillContext
+
+var skill: Skill
+var target: BaseUnit
+var source: BaseUnit
+var target_position: Vector3
+
+# 技能范围定义回调
+var skill_scope_delegate: Callable
+
+
+# building about
+# var building_origin_pos: Vector3
+var building: BaseUnit
+var callback: Callable
+var cost_paid := false
+var release_id := 0
+
+func snapshot() -> SkillContext:
+	var copy := SkillContext.new(skill, target, source, target_position)
+	copy.building = building
+	copy.callback = callback
+	copy.skill_scope_delegate = skill_scope_delegate
+	copy.cost_paid = cost_paid
+	copy.release_id = release_id
+	return copy
+
+
+func _init(skill: Skill, target: BaseUnit, source: BaseUnit, position: Vector3) -> void:
+	# @export var target_type: SkillMetaResource.SKILL_RELEASE_TYPE	# 0: 地面, 1: 目标, 2: 无目标
+
+	self.source = source
+	self.skill = skill
+	self.target_position = position
+	self.target = target

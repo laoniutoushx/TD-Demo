@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c6uju1b4n0rt1"]
+
+[ext_resource type="Script" uid="uid://imlc75rsfukp" path="res://System/talent_system/TalentSystem.gd" id="1_wvrqm"]
+
+[node name="TalentSystem" type="Node3D"]
+script = ExtResource("1_wvrqm")

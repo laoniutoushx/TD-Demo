@@ -1,0 +1,14 @@
+{
+  "bindings": [
+    {
+      "id": "mat_body",
+      "source_name": "BodyMat",
+      "resource": "res://tests/pipeline_body.tres"
+    },
+    {
+      "id": "mat_staff",
+      "source_name": "StaffMat",
+      "resource": "res://tests/pipeline_staff.tres"
+    }
+  ]
+}

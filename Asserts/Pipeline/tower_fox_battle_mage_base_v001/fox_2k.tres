@@ -1,0 +1,20 @@
+[gd_resource type="ORMMaterial3D" load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://Asserts/Pipeline/tower_fox_battle_mage_base_v001/textures/tower_fox_battle_mage_base_v001_base_color_2k.png" id="base_color"]
+[ext_resource type="Texture2D" path="res://Asserts/Pipeline/tower_fox_battle_mage_base_v001/textures/tower_fox_battle_mage_base_v001_normal_2k.png" id="normal"]
+[ext_resource type="Texture2D" path="res://Asserts/Pipeline/tower_fox_battle_mage_base_v001/textures/tower_fox_battle_mage_base_v001_orm_2k.png" id="orm"]
+
+[resource]
+resource_name = "Fox_Character_Atlas"
+albedo_color = Color(1, 1, 1, 1)
+albedo_texture = ExtResource("base_color")
+normal_enabled = true
+normal_texture = ExtResource("normal")
+normal_scale = 0.35
+orm_texture = ExtResource("orm")
+roughness = 1.0
+metallic = 1.0
+cull_mode = 0
+transparency = 0
+emission_enabled = false
+metadata/pipeline_material_id = "mat_75d2d72ebfd45d3bb80b671c7acd0a7a"

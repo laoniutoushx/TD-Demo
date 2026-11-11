@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://meshy_assets/broadleaf_tree.glb" id="1_xjcnp"]
+
+[node name="TreeCandidate" type="Node3D" unique_id=1156453110]
+
+[node name="broadleaf_tree" type="Node3D" parent="." unique_id=1778084298 instance=ExtResource("1_xjcnp")]
+transform = Transform3D(2.904323, 0, 0, 0, 2.904323, 0, 0, 0, 2.904323, 0.0114217, 2.2490366, 0.09179755)

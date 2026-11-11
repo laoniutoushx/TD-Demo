@@ -1,0 +1,499 @@
+[gd_resource type="Resource" script_class="LevelResource" load_steps=74 format=3 uid="uid://cfjres2fis310"]
+
+[ext_resource type="PackedScene" uid="uid://bxibobasihqmy" path="res://Levels/level_1/Level1.tscn" id="1_n8mn6"]
+[ext_resource type="Script" uid="uid://dbmpwe6whmw1r" path="res://Levels/level_resource.gd" id="1_oc6p8"]
+[ext_resource type="Script" uid="uid://dkj2hwe7n0kae" path="res://Waves/WaveResource.gd" id="3_o0ugr"]
+[ext_resource type="Script" uid="uid://4w0o5ddi0bta" path="res://Unit/enemy/EnemySpawnResource.gd" id="4_gg7ch"]
+
+[sub_resource type="Resource" id="Resource_2tx4y"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "00_capsule"
+spawn_start_delay = 0.0
+spawn_interval = 5.0
+enemy_amount = 1
+
+[sub_resource type="Resource" id="Resource_6jk0d"]
+script = ExtResource("3_o0ugr")
+start_delay = 3.0
+next_wave_delay = 3.0
+level_code = "Level1"
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_2tx4y")])
+
+[sub_resource type="Resource" id="Resource_nciru"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "01_cow"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 2
+
+[sub_resource type="Resource" id="Resource_n08pb"]
+script = ExtResource("3_o0ugr")
+start_delay = 3.0
+next_wave_delay = 3.0
+level_code = "Level1"
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_nciru")])
+
+[sub_resource type="Resource" id="Resource_gf1ss"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "02_pig"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_jmrcr"]
+script = ExtResource("3_o0ugr")
+start_delay = 3.0
+next_wave_delay = 3.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_gf1ss")])
+
+[sub_resource type="Resource" id="Resource_xtm6e"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "03_pug"
+spawn_start_delay = 2.0
+spawn_interval = 1.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_c8hpo"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "04_dog"
+spawn_start_delay = 0.0
+spawn_interval = 1.7
+enemy_amount = 15
+
+[sub_resource type="Resource" id="Resource_prnja"]
+script = ExtResource("3_o0ugr")
+start_delay = 3.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_xtm6e"), SubResource("Resource_c8hpo")])
+
+[sub_resource type="Resource" id="Resource_rj64l"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "05_horse"
+spawn_start_delay = 1.5
+spawn_interval = 3.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_68lwm"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "00_boss_forest_guard"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 1
+metadata/_custom_type_script = "uid://4w0o5ddi0bta"
+
+[sub_resource type="Resource" id="Resource_541jc"]
+script = ExtResource("3_o0ugr")
+start_delay = 5.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_rj64l"), SubResource("Resource_68lwm")])
+
+[sub_resource type="Resource" id="Resource_x0enq"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "06_sheep"
+spawn_start_delay = 0.0
+spawn_interval = 3.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_uu4er"]
+script = ExtResource("3_o0ugr")
+start_delay = 5.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_x0enq")])
+
+[sub_resource type="Resource" id="Resource_553at"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "07_zebra"
+spawn_start_delay = 0.0
+spawn_interval = 4.0
+enemy_amount = 5
+
+[sub_resource type="Resource" id="Resource_v1rcb"]
+script = ExtResource("3_o0ugr")
+start_delay = 5.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_553at")])
+
+[sub_resource type="Resource" id="Resource_jeobp"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "08_llama"
+spawn_start_delay = 0.0
+spawn_interval = 3.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_vltjb"]
+script = ExtResource("3_o0ugr")
+start_delay = 5.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_jeobp")])
+
+[sub_resource type="Resource" id="Resource_war0u"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "alpaca"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_85fqy"]
+script = ExtResource("3_o0ugr")
+start_delay = 5.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_war0u")])
+
+[sub_resource type="Resource" id="Resource_nkb28"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "alpaking"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_1spbx"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_nkb28")])
+
+[sub_resource type="Resource" id="Resource_wq84q"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "alpaking_evolved"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_1s1qy"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_wq84q")])
+
+[sub_resource type="Resource" id="Resource_bq5y7"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "bull"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_fr1x6"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_bq5y7")])
+
+[sub_resource type="Resource" id="Resource_qnwjn"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "armabee"
+spawn_start_delay = 0.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_l30v3"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "armabee_evolved"
+spawn_start_delay = 8.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_ksva3"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_qnwjn"), SubResource("Resource_l30v3")])
+
+[sub_resource type="Resource" id="Resource_yfqol"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "deer"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_qs3l6"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_yfqol")])
+
+[sub_resource type="Resource" id="Resource_3ihgv"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "demon"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_nataj"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_3ihgv")])
+
+[sub_resource type="Resource" id="Resource_q3j4m"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "donkey"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_d6cqm"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_q3j4m")])
+
+[sub_resource type="Resource" id="Resource_leq2f"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "dragon_evolved"
+spawn_start_delay = 0.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_smhp8"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "dragon"
+spawn_start_delay = 2.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_2qqb3"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_leq2f"), SubResource("Resource_smhp8")])
+
+[sub_resource type="Resource" id="Resource_80355"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "fox"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_41y0t"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_80355")])
+
+[sub_resource type="Resource" id="Resource_huaj3"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "ghost"
+spawn_start_delay = 4.0
+spawn_interval = 8.0
+enemy_amount = 2
+
+[sub_resource type="Resource" id="Resource_6ry35"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "ghost_skull"
+spawn_start_delay = null
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_7v11m"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_huaj3"), SubResource("Resource_6ry35")])
+
+[sub_resource type="Resource" id="Resource_ecvut"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "glub"
+spawn_start_delay = 0.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_kari3"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "glub_evolved"
+spawn_start_delay = 2.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_mk00v"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_ecvut"), SubResource("Resource_kari3")])
+
+[sub_resource type="Resource" id="Resource_6yifj"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "goleling"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_6y6xv"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "goleling_evolved"
+spawn_start_delay = 2.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_wcf2n"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_6yifj"), SubResource("Resource_6y6xv")])
+
+[sub_resource type="Resource" id="Resource_b4qir"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "horse_another"
+spawn_start_delay = 0.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_jw4mh"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "horse_white"
+spawn_start_delay = 2.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_fpvur"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_b4qir"), SubResource("Resource_jw4mh")])
+
+[sub_resource type="Resource" id="Resource_u1f81"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "husky"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_s1nhg"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_u1f81")])
+
+[sub_resource type="Resource" id="Resource_amkg1"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "hywirl"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_rngne"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_amkg1")])
+
+[sub_resource type="Resource" id="Resource_l5f55"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "pigeon"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_8dkl4"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_l5f55")])
+
+[sub_resource type="Resource" id="Resource_x5306"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "render"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_k75ba"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_x5306")])
+
+[sub_resource type="Resource" id="Resource_5aqfc"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "shibaInu"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_iirum"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_5aqfc")])
+
+[sub_resource type="Resource" id="Resource_i5gw3"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "squidle"
+spawn_start_delay = 2.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_rthdg"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "stag"
+spawn_start_delay = 0.0
+spawn_interval = 4.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_8ufbt"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_i5gw3"), SubResource("Resource_rthdg")])
+
+[sub_resource type="Resource" id="Resource_u7vr4"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "tribal"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_r1rdf"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_u7vr4")])
+
+[sub_resource type="Resource" id="Resource_v24dk"]
+script = ExtResource("4_gg7ch")
+enemy_res_name = "wolf"
+spawn_start_delay = 0.0
+spawn_interval = 2.0
+enemy_amount = 10
+
+[sub_resource type="Resource" id="Resource_47ru1"]
+script = ExtResource("3_o0ugr")
+start_delay = 0.0
+next_wave_delay = 5.0
+level_code = ""
+enemy_spawner_resource = Array[ExtResource("4_gg7ch")]([SubResource("Resource_v24dk")])
+
+[resource]
+script = ExtResource("1_oc6p8")
+code = "level1"
+name = "level1"
+scene = ExtResource("1_n8mn6")
+start_delay = 5.0
+end_delay = 10.0
+waves = Array[ExtResource("3_o0ugr")]([SubResource("Resource_6jk0d"), SubResource("Resource_n08pb"), SubResource("Resource_jmrcr"), SubResource("Resource_prnja"), SubResource("Resource_541jc"), SubResource("Resource_uu4er"), SubResource("Resource_v1rcb"), SubResource("Resource_vltjb"), SubResource("Resource_85fqy"), SubResource("Resource_1spbx"), SubResource("Resource_1s1qy"), SubResource("Resource_fr1x6"), SubResource("Resource_ksva3"), SubResource("Resource_qs3l6"), SubResource("Resource_nataj"), SubResource("Resource_d6cqm"), SubResource("Resource_2qqb3"), SubResource("Resource_41y0t"), SubResource("Resource_7v11m"), null, SubResource("Resource_mk00v"), SubResource("Resource_wcf2n"), SubResource("Resource_fpvur"), SubResource("Resource_s1nhg"), SubResource("Resource_rngne"), SubResource("Resource_8dkl4"), SubResource("Resource_k75ba"), SubResource("Resource_iirum"), SubResource("Resource_8ufbt"), SubResource("Resource_r1rdf"), SubResource("Resource_47ru1")])

@@ -1,0 +1,54 @@
+[gd_scene load_steps=7 format=3 uid="uid://rjlc25jw3bsc"]
+
+[ext_resource type="Texture2D" uid="uid://x5sgfshxo4xh" path="res://Asserts/textures/vfx/蜀门特效_tlogin007_爱给网_aigei_com.png" id="3_5swh3"]
+[ext_resource type="AudioStream" uid="uid://bjra508h0s5t8" path="res://Asserts/waves/skill/怪物攻击技能音效boss_skill18_爱给网_aigei_com.mp3" id="4_5swh3"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_534o8"]
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 1.0
+initial_velocity_max = 1.0
+gravity = Vector3(0, 250, 0)
+radial_accel_min = -300.0
+radial_accel_max = -300.0
+tangential_accel_min = 10.0
+tangential_accel_max = 10.0
+attractor_interaction_enabled = false
+
+[sub_resource type="Curve" id="Curve_bnrvo"]
+_data = [Vector2(0, 0), 0.0, 3.42835, 0, 0, Vector2(0.501672, 0.690897), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.78835, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_be2n0"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+disable_fog = true
+vertex_color_use_as_albedo = true
+albedo_color = Color(1.3, 1.2, 1.2, 1)
+albedo_texture = ExtResource("3_5swh3")
+use_particle_trails = true
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_5swh3"]
+material = SubResource("StandardMaterial3D_be2n0")
+size = 1.5
+curve = SubResource("Curve_bnrvo")
+
+[node name="FunnelTornado" type="Node3D"]
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+amount = 35
+lifetime = 6.0
+preprocess = 5.0
+fixed_fps = 24
+local_coords = true
+trail_enabled = true
+trail_lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_534o8")
+draw_pass_1 = SubResource("RibbonTrailMesh_5swh3")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_5swh3")
+volume_db = 30.0
+autoplay = true

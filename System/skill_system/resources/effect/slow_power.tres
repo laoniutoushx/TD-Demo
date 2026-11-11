@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="SkillMetaResource" load_steps=8 format=3 uid="uid://c4aggapaqdacr"]
+
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="1_uq73k"]
+[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="2_knc3n"]
+[ext_resource type="Script" uid="uid://dkap88po4kr05" path="res://System/skill_system/resources/effect/slow_power.gd" id="3_5xmgm"]
+[ext_resource type="Script" uid="uid://dhf7xdpvnn7gv" path="res://System/buff_system/resources/power_buff.gd" id="3_suvox"]
+[ext_resource type="Script" uid="uid://cya1pifwbgjdk" path="res://addons/script_property_selector/property_selector_resource.gd" id="4_8hlgh"]
+
+[sub_resource type="Resource" id="Resource_wqbbn"]
+script = ExtResource("4_8hlgh")
+selected_script_name = ""
+selected_properties = Array[String]([])
+
+[sub_resource type="Resource" id="Resource_12f74"]
+script = ExtResource("2_knc3n")
+id = &""
+code = "move_speed_power"
+entity = ""
+prop = "move_speed"
+property_selector = SubResource("Resource_wqbbn")
+type = 50
+title = "降低移动速度"
+desc = "降低移动速度"
+icon_path = "ice_storm"
+vfx = {}
+value = 50.0
+value_unit = 0
+value_dir = 1
+cooldown = 3.5
+max_overlay_num = 1
+priority = 0
+exclude_level = 3
+buff_script = ExtResource("3_suvox")
+
+[resource]
+script = ExtResource("1_uq73k")
+code = "slow_power"
+title = "减速"
+desc = "降低目标 ${value}% 移动速度"
+icon_path = "1158"
+level = 1
+level_up_gap = 1
+max_level = 3
+level_limit = -1
+init_release = true
+auto_release = false
+cooldown = 11.0
+mana_cost = -1.0
+damage_range = 5.0
+match_range = 30.0
+range = 10.0
+release_distance = 10.0
+stock = 1
+value = 0.0
+value_ext = {}
+run_distance = 10.0
+epoch = 1
+init_num = 1
+cast_duration = -1.0
+internal_time = 0.2
+start_time = 0.1
+end_time = 0.1
+wave = 5
+projection_speed = 1.0
+probability = 0.25
+disable_check = 1
+release_type = 34
+target_type = 38
+effect_type = 16
+building_level_up_time = -1.0
+wood_cost = -1.0
+money_cost = -1.0
+skill_script = ExtResource("3_5xmgm")
+skill_level_config = Array[ExtResource("1_uq73k")]([])
+skill_buff_config = Array[ExtResource("2_knc3n")]([SubResource("Resource_12f74")])

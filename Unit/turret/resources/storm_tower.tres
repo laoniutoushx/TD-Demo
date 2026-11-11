@@ -1,0 +1,84 @@
+[gd_resource type="Resource" script_class="EnemyResource" format=3 uid="uid://d20fwfuv5wl6l"]
+
+[ext_resource type="Script" uid="uid://di7jhxb20hgok" path="res://System/item_system/domain/item_resource.gd" id="1_ghd3t"]
+[ext_resource type="PackedScene" uid="uid://lb1p6hi1qybm" path="res://Unit/turret/scenes/storm_tower.tscn" id="2_ghd3t"]
+[ext_resource type="Script" uid="uid://cwoilst65vmq6" path="res://Unit/enemy/EnemyResource.gd" id="3_m1vtd"]
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="4_l051c"]
+[ext_resource type="Resource" uid="uid://bs6w3mufvu6f1" path="res://System/skill_system/resources/damage/ice_strom.tres" id="5_s7gaa"]
+[ext_resource type="Resource" uid="uid://dpnj33orc37b" path="res://System/skill_system/resources/damage/thunder_chain.tres" id="6_ghd3t"]
+[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="7_l051c"]
+[ext_resource type="Script" uid="uid://caib52nmgh5qd" path="res://System/buff_system/resources/rate_buff.gd" id="8_unpxs"]
+[ext_resource type="Script" uid="uid://cya1pifwbgjdk" path="res://addons/script_property_selector/property_selector_resource.gd" id="9_n5lnq"]
+[ext_resource type="Script" uid="uid://iturnmfrfl23" path="res://System/skill_system/resources/effect/recovery.gd" id="10_puhur"]
+
+[sub_resource type="Resource" id="Resource_wqbbn"]
+script = ExtResource("9_n5lnq")
+
+[sub_resource type="Resource" id="Resource_4i4s6"]
+script = ExtResource("7_l051c")
+code = "health_rate_buff"
+prop = "health_recove_rate_factor"
+property_selector = SubResource("Resource_wqbbn")
+type = 35
+title = "速率"
+desc = "修改目标指定属性速率值"
+value = 1.0
+value_unit = 1
+buff_script = ExtResource("8_unpxs")
+
+[sub_resource type="Resource" id="Resource_7c8df"]
+script = ExtResource("7_l051c")
+code = "mana_rate_buff"
+prop = "mana_recove_rate_factor"
+property_selector = SubResource("Resource_wqbbn")
+type = 35
+title = "速率"
+desc = "修改目标指定属性速率值"
+value = 1.0
+value_unit = 1
+buff_script = ExtResource("8_unpxs")
+
+[sub_resource type="Resource" id="Resource_v4q60"]
+script = ExtResource("4_l051c")
+code = "recovery"
+title = "恢复速率"
+desc = "每秒恢复目标 {0} 点生命值和 {1} 点魔法"
+icon_path = "recovery"
+init_release = true
+value = 2.0
+release_type = 2
+target_type = 46
+effect_type = 24
+skill_script = ExtResource("10_puhur")
+skill_buff_config = Array[ExtResource("7_l051c")]([SubResource("Resource_4i4s6"), SubResource("Resource_7c8df")])
+
+[resource]
+script = ExtResource("3_m1vtd")
+clz_name = "storm_tower"
+model_path = ExtResource("2_ghd3t")
+title = "风暴塔"
+desc = "范围伤害和群体控制，提供减速和持续伤害。"
+icon_path = "res://Asserts/Images/icon/turret/storm_tower.png"
+element_phase = 31
+unit_move_type = 1
+unit_cate = 1
+armor_type = 2
+mana_cost = 10.0
+money_cost = 0.0
+max_health = 100.0
+max_mana = 3000.0
+move_speed = 5.0
+turn_speed = 10.0
+attack_speed = 0.5
+attack_range = 37.0
+attack_value = 200.0
+unit_growth_factor = 0.01
+projectile_speed = 300.0
+mana_recove_rate_factor = 1.0
+anim_attack = null
+anim_run = "Armature|Jump"
+anim_walk = null
+anim_idle = null
+anim_death = "death"
+anim_release = null
+skill_metas = Array[ExtResource("4_l051c")]([ExtResource("5_s7gaa"), ExtResource("6_ghd3t"), SubResource("Resource_v4q60")])

@@ -1,0 +1,17 @@
+{
+	"cells": 180,
+	"draw_calls": 693.0,
+	"frames": 600,
+	"gpu": "NVIDIA GeForce RTX 3060",
+	"label": "after",
+	"p50_ms": 7.389,
+	"p95_ms": 8.876,
+	"p99_ms": 9.164,
+	"quality": "high",
+	"resolution": [
+		1920,
+		1080
+	],
+	"triangles": 7729198.0,
+	"video_memory_bytes": 1477686336.0
+}

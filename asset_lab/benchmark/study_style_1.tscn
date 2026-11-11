@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="PackedScene" path="res://asset_lab/benchmark/models/leaf_spray_study.glb" id="1"]
+[ext_resource type="Material" path="res://asset_lab/benchmark/materials/leaves_1.tres" id="leaf"]
+[ext_resource type="Material" path="res://asset_lab/benchmark/materials/bark_1.tres" id="bark"]
+[node name="LeafStudy" type="Node3D"]
+[node name="Model" parent="." instance=ExtResource("1")]
+[node name="LeafClump_00_001" parent="Model" index="0"]
+lod_bias = 100.0
+surface_material_override/0 = ExtResource("leaf")
+[node name="LeafClump_01_001" parent="Model" index="1"]
+lod_bias = 100.0
+surface_material_override/0 = ExtResource("leaf")
+[node name="TwigBranches_LOD0_001" parent="Model" index="2"]
+lod_bias = 100.0
+surface_material_override/0 = ExtResource("bark")
+[editable path="Model"]

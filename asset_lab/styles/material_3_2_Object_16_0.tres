@@ -1,0 +1,36 @@
+[gd_resource type="ShaderMaterial" format=3]
+
+[ext_resource type="Shader" path="res://asset_lab/styles/stylized.gdshader" id="1_rwchm"]
+[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Tree_leaf_baseColor.png" id="2_v20kx"]
+[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Tree_leaf_normal.png" id="3_ss6x0"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_rwchm")
+shader_parameter/base_map = ExtResource("2_v20kx")
+shader_parameter/normal_map = ExtResource("3_ss6x0")
+shader_parameter/orm_roughness_channel = 0
+shader_parameter/has_normal = true
+shader_parameter/has_orm = false
+shader_parameter/cutout = true
+shader_parameter/is_combined_mesh = false
+shader_parameter/style = 2
+shader_parameter/foliage_core_color = Color(0.105882354, 0.2, 0.09019608, 1)
+shader_parameter/foliage_shadow_color = Color(0.1764706, 0.3372549, 0.12156863, 1)
+shader_parameter/foliage_mid_color = Color(0.30980393, 0.50980395, 0.14901961, 1)
+shader_parameter/foliage_lit_color = Color(0.5411765, 0.6901961, 0.15686275, 1)
+shader_parameter/foliage_rim_color = Color(0.8235294, 0.9254902, 0.3372549, 1)
+shader_parameter/bark_lit_color = Color(0.50980395, 0.38431373, 0.28235295, 1)
+shader_parameter/bark_shadow_color = Color(0.18039216, 0.15686275, 0.21176471, 1)
+shader_parameter/normal_sphere_blend = 0.9
+shader_parameter/normal_cluster_blend = 0.52
+shader_parameter/cluster_scale = 1.1811660575866698
+shader_parameter/canopy_bottom_darken = 0.34
+shader_parameter/max_saturation = 0.65
+shader_parameter/texture_detail_weight = 0.14
+shader_parameter/rim_strength = 0.44
+shader_parameter/instance_variation = null
+shader_parameter/wind_strength = null
+shader_parameter/tree_transform = Projection(0.62317777, 0, 0, 0, 0, 0.62317777, 0, 0, 0, 0, 0.62317777, 0, 0.19090104, 0.015821664, -0.42421585, 1)
+shader_parameter/canopy_center = Vector3(-2.3841858e-07, 2.79, 0)
+shader_parameter/tree_height = 4.5

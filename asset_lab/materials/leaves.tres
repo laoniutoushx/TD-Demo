@@ -1,0 +1,20 @@
+[gd_resource type="ORMMaterial3D" format=3 uid="uid://clawgeyxu4pl5"]
+
+[ext_resource type="Texture2D" uid="uid://bphq0yiclclyq" path="res://asset_lab/reference_polyhaven/tree_leaves_base.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://dw7d375ii8bjf" path="res://asset_lab/reference_polyhaven/tree_leaves_normal.jpg" id="2"]
+[ext_resource type="Texture2D" uid="uid://djq0muhrlow4i" path="res://asset_lab/reference_polyhaven/tree_leaves_orm.jpg" id="3"]
+
+[resource]
+resource_name = "FoliagePBR_leaves"
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 1
+alpha_antialiasing_edge = 0.2
+cull_mode = 2
+albedo_texture = ExtResource("1")
+orm_texture = ExtResource("3")
+normal_enabled = true
+normal_texture = ExtResource("2")
+backlight_enabled = true
+backlight = Color(0.2, 0.24, 0.12, 1)
+texture_filter = 5

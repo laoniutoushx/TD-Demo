@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://2stxp3tokjwq"]
+
+[ext_resource type="Texture2D" uid="uid://mfbpevuvekus" path="res://Asserts/Images/indicator/skill_release_indicator.png" id="1_5uq1c"]
+[ext_resource type="Script" uid="uid://3gb1t2x20cto" path="res://Player/player_skill_scope_indicator.gd" id="1_i7fiu"]
+
+[node name="PlayerSkillScopeIndicator" type="Node3D"]
+script = ExtResource("1_i7fiu")
+
+[node name="SklillReleaseIndicator" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.82005, 0)
+size = Vector3(10, 10, 10)
+texture_albedo = ExtResource("1_5uq1c")
+emission_energy = 16.0
+modulate = Color(0, 0.329667, 0.86, 1)

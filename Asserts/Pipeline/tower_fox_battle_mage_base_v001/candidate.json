@@ -1,0 +1,28 @@
+{
+  "model_sha256": "9f88a5e160e5926b8161e66147c8e57292c3ebc99ab2bf0e1c20122c385d48c0",
+  "candidate_only": true,
+  "height": 4.91031503677368,
+  "game_scale": 2.45515751838684,
+  "material": {
+    "id": "mat_75d2d72ebfd45d3bb80b671c7acd0a7a",
+    "source_name": "Fox_Character_Atlas",
+    "role": "body",
+    "resource": "res://Asserts/Pipeline/tower_fox_battle_mage_base_v001/fox_2k.tres"
+  },
+  "hand_bone": "LeftHand",
+  "socket_offset": [
+    0,
+    0,
+    0
+  ],
+  "attack_phase": 0.45,
+  "projectile": "existing black_bird placeholder",
+  "user_game_source_untouched": true,
+  "unverified": [
+    "material style",
+    "staff and socket",
+    "attack timing",
+    "building UI",
+    "gameplay and performance"
+  ]
+}

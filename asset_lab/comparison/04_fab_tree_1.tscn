@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://fab_candidates/08/tree_1.gltf" id="1_hpqge"]
+
+[node name="TreeCandidate" type="Node3D" unique_id=1890037992]
+
+[node name="Sketchfab_Scene" type="Node3D" parent="." unique_id=181036740 instance=ExtResource("1_hpqge")]
+transform = Transform3D(0.62317777, 0, 0, 0, 0.62317777, 0, 0, 0, 0.62317777, -2.6133988, 0.015821664, -0.42421585)

@@ -1,0 +1,47 @@
+[gd_scene load_steps=16 format=3]
+[ext_resource type="PackedScene" path="res://asset_lab/comparison/04_fab_tree_1.tscn" id="1"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_4_0.tres" id="2"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_5_0.tres" id="3"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_6_0.tres" id="4"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_7_0.tres" id="5"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_8_0.tres" id="6"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_9_0.tres" id="7"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_10_0.tres" id="8"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_11_0.tres" id="9"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_12_0.tres" id="10"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_13_0.tres" id="11"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_14_0.tres" id="12"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_15_0.tres" id="13"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_16_0.tres" id="14"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_3_0_Object_17_0.tres" id="15"]
+[node name="ReferenceTree" type="Node3D"]
+[node name="Model" parent="." instance=ExtResource("1")]
+[node name="Object_4" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="0"]
+surface_material_override/0 = ExtResource("2")
+[node name="Object_5" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="1"]
+surface_material_override/0 = ExtResource("3")
+[node name="Object_6" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="2"]
+surface_material_override/0 = ExtResource("4")
+[node name="Object_7" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="3"]
+surface_material_override/0 = ExtResource("5")
+[node name="Object_8" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="4"]
+surface_material_override/0 = ExtResource("6")
+[node name="Object_9" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="5"]
+surface_material_override/0 = ExtResource("7")
+[node name="Object_10" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="6"]
+surface_material_override/0 = ExtResource("8")
+[node name="Object_11" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="7"]
+surface_material_override/0 = ExtResource("9")
+[node name="Object_12" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="8"]
+surface_material_override/0 = ExtResource("10")
+[node name="Object_13" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="9"]
+surface_material_override/0 = ExtResource("11")
+[node name="Object_14" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="10"]
+surface_material_override/0 = ExtResource("12")
+[node name="Object_15" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="11"]
+surface_material_override/0 = ExtResource("13")
+[node name="Object_16" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="12"]
+surface_material_override/0 = ExtResource("14")
+[node name="Object_17" parent="Model/Sketchfab_Scene/Sketchfab_model/root/GLTF_SceneRootNode/Tree_0" index="13"]
+surface_material_override/0 = ExtResource("15")
+[editable path="Model"]

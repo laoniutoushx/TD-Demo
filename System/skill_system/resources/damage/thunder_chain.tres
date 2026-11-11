@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="SkillMetaResource" load_steps=4 format=3 uid="uid://dpnj33orc37b"]
+
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="1_67cf5"]
+[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="2_oo7f5"]
+[ext_resource type="Script" uid="uid://barieyn4j8plx" path="res://System/skill_system/resources/damage/thunder_chain.gd" id="2_rsmhd"]
+
+[resource]
+script = ExtResource("1_67cf5")
+code = "thunder_chain"
+title = "闪电链"
+desc = "对目标造成闪电伤害，在多个目标间跳转"
+icon_path = "light_chain"
+level = 0
+level_up_gap = 1
+max_level = 3
+level_limit = -1
+init_release = false
+auto_release = false
+cooldown = 5.0
+mana_cost = 10.0
+damage_range = 5.0
+match_range = 15.0
+range = 10.0
+release_distance = 18.0
+stock = 1
+value = 50.0
+value_ext = {}
+run_distance = 10.0
+epoch = 1
+init_num = 1
+cast_duration = -1.0
+internal_time = 0.2
+start_time = 0.1
+end_time = 0.1
+wave = 5
+projection_speed = 1.0
+probability = 0.25
+disable_check = 1
+release_type = 33
+target_type = 34
+effect_type = 1
+building_level_up_time = -1.0
+wood_cost = 10.0
+money_cost = 10.0
+skill_script = ExtResource("2_rsmhd")
+skill_level_config = Array[ExtResource("1_67cf5")]([])
+skill_buff_config = Array[ExtResource("2_oo7f5")]([])

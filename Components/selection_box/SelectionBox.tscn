@@ -1,0 +1,34 @@
+[gd_scene load_steps=5 format=3 uid="uid://dwky2e2vyhklu"]
+
+[ext_resource type="Script" uid="uid://2x4ltwv2ilcv" path="res://Components/selection_box/SelectionBox.gd" id="1_jrxse"]
+[ext_resource type="PackedScene" uid="uid://dk7sa3fkyxks5" path="res://Components/selection_box/RectangularSelection2D.tscn" id="1_odm8a"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v812f"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_biknc"]
+margin = 0.0
+size = Vector3(0, 0, 0)
+
+[node name="SelectionBox" type="Node3D"]
+script = ExtResource("1_jrxse")
+
+[node name="RectangularSelection2D" parent="." instance=ExtResource("1_odm8a")]
+theme_override_styles/panel = SubResource("StyleBoxFlat_v812f")
+metadata/_edit_use_anchors_ = true
+
+[node name="SelectedArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 7
+
+[node name="AreaCollision" type="CollisionShape3D" parent="SelectedArea"]
+shape = SubResource("BoxShape3D_biknc")
+disabled = true
+
+[connection signal="area_entered" from="SelectedArea" to="." method="_on_selected_area_area_entered"]
+[connection signal="area_exited" from="SelectedArea" to="." method="_on_selected_area_area_exited"]

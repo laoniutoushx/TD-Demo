@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://asset_lab/comparison/02_meshy_broadleaf.tscn" id="1"]
+[ext_resource type="Material" path="res://asset_lab/styles/material_1_0_Mesh_0_0.tres" id="2"]
+[node name="ReferenceTree" type="Node3D"]
+[node name="Model" parent="." instance=ExtResource("1")]
+[node name="Mesh_0" parent="Model/broadleaf_tree" index="0"]
+surface_material_override/0 = ExtResource("2")
+[editable path="Model"]

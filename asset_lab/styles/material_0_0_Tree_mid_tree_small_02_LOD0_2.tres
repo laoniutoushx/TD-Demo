@@ -1,0 +1,14 @@
+[gd_resource type="ORMMaterial3D" format=3]
+
+[ext_resource type="Texture2D" path="res://asset_lab/reference_polyhaven/tree_trunk_base.jpg" id="1_70gdr"]
+[ext_resource type="Texture2D" path="res://asset_lab/reference_polyhaven/tree_trunk_normal.jpg" id="2_j3fcj"]
+[ext_resource type="Texture2D" path="res://asset_lab/reference_polyhaven/tree_trunk_orm.jpg" id="3_0d23t"]
+
+[resource]
+resource_name = "OpaquePBR_trunk"
+albedo_color = Color(1.08, 1.04, 1, 1)
+albedo_texture = ExtResource("1_70gdr")
+orm_texture = ExtResource("3_0d23t")
+normal_enabled = true
+normal_texture = ExtResource("2_j3fcj")
+texture_filter = 5

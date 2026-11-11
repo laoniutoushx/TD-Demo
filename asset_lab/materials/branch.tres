@@ -1,0 +1,13 @@
+[gd_resource type="ORMMaterial3D" format=3 uid="uid://bajaa7k77wjls"]
+
+[ext_resource type="Texture2D" uid="uid://cf7e76jcqs6yw" path="res://asset_lab/reference_polyhaven/tree_branch_base.jpg" id="1"]
+[ext_resource type="Texture2D" uid="uid://dsn2wdoromi6g" path="res://asset_lab/reference_polyhaven/tree_branch_normal.jpg" id="2"]
+[ext_resource type="Texture2D" uid="uid://ovoqtdjbcbhr" path="res://asset_lab/reference_polyhaven/tree_branch_orm.jpg" id="3"]
+
+[resource]
+resource_name = "OpaquePBR_branch"
+albedo_texture = ExtResource("1")
+orm_texture = ExtResource("3")
+normal_enabled = true
+normal_texture = ExtResource("2")
+texture_filter = 5

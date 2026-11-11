@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://dyj5ef3ay7ot0"]
+
+[ext_resource type="Script" uid="uid://cb2myjgx6f2f" path="res://Unit/enemy/enemy.gd" id="1_ueu5r"]
+[ext_resource type="PackedScene" uid="uid://tpqcre5g6n6b" path="res://Asserts/Models/ulimate monster/glTF/Armabee_Evolved.gltf" id="4_442pv"]
+[ext_resource type="PackedScene" uid="uid://djg6ewxcqfyp7" path="res://generic-scenes-and-nodes/3d/FadedCircle3D.tscn" id="4_eftx5"]
+[ext_resource type="PackedScene" uid="uid://bxwu6lrqgowbs" path="res://Components/level/level_comp.tscn" id="5_yq5t4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8iqam"]
+size = Vector3(2.278, 4.5, 3.57592)
+
+[node name="Enemy" type="PathFollow3D" groups=["enemy"]]
+use_model_front = true
+script = ExtResource("1_ueu5r")
+
+[node name="AttackedScope" type="Area3D" parent="." groups=["enemy"]]
+unique_name_in_owner = true
+transform = Transform3D(1.26425, 0, 0, 0, 1.26425, -1.90896e-07, 0, 1.90896e-07, 1.26425, 0, 0, 0)
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AttackedScope" groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, -5.68434e-14, 0, 5.68434e-14, 1, 0.00344238, 2.04319, 0.158014)
+shape = SubResource("BoxShape3D_8iqam")
+
+[node name="FadedCircle3D" parent="." instance=ExtResource("4_eftx5")]
+radius = 3.0
+width = 54.17
+inner_edge_width = 57.102
+outer_edge_width = 15.601
+color = Color(0.178664, 0.602868, 0.508376, 1)
+
+[node name="LevelComp" parent="." instance=ExtResource("5_yq5t4")]
+
+[node name="Armabee_Evolved3" parent="." instance=ExtResource("4_442pv")]
