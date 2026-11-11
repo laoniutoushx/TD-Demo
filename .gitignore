@@ -4,3 +4,4 @@
 /py/conda_pkgs
 *.tmp
 *.log
+~*
