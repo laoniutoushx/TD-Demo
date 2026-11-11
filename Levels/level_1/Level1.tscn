@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://bxibobasihqmy"]
+[gd_scene load_steps=47 format=3 uid="uid://bxibobasihqmy"]
 
 [ext_resource type="Script" uid="uid://jiitdpiccclv" path="res://Levels/level_1/level.gd" id="1_chftm"]
 [ext_resource type="PackedScene" uid="uid://boulaxdrcplpg" path="res://RayPickerCamera/ray_picker_camera.tscn" id="1_elhju"]
@@ -52,7 +52,7 @@ background_mode = 2
 sky = SubResource("Sky_v10")
 ambient_light_source = 2
 ambient_light_color = Color(0.466667, 0.615686, 0.768627, 1)
-ambient_light_energy = 0.48
+ambient_light_energy = 0.36
 reflected_light_source = 2
 tonemap_mode = 3
 tonemap_exposure = 1.02
@@ -72,7 +72,7 @@ glow_intensity = 0.22
 glow_hdr_threshold = 1.25
 volumetric_fog_enabled = true
 volumetric_fog_density = 0.0
-volumetric_fog_length = 90.0
+volumetric_fog_length = 65.0
 volumetric_fog_detail_spread = 0.7
 volumetric_fog_ambient_inject = 0.02
 volumetric_fog_temporal_reprojection_enabled = true
@@ -80,6 +80,12 @@ volumetric_fog_temporal_reprojection_amount = 0.82
 adjustment_enabled = true
 adjustment_contrast = 1.04
 adjustment_saturation = 1.06
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_v10"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 46.0
+dof_blur_far_transition = 20.0
+dof_blur_amount = 0.025
 
 [sub_resource type="Resource" id="Resource_vqpk2"]
 script = ExtResource("5_xcclr")
@@ -140,7 +146,7 @@ environment = SubResource("Environment_tk0br")
 transform = Transform3D(-0.707107, 0, 0.707107, 0.374709, 0.848048, 0.374709, -0.599661, 0.529919, -0.599661, 0, 10, 0)
 rotation_degrees = Vector3(-32, -135, 0)
 light_color = Color(1, 0.87451, 0.717647, 1)
-light_energy = 1.40
+light_energy = 1.75
 light_volumetric_fog_energy = 3.2
 shadow_enabled = true
 shadow_bias = 0.025
@@ -185,8 +191,9 @@ skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
 [node name="RayPickerCamera" parent="." node_paths=PackedStringArray("grid_map") instance=ExtResource("1_elhju")]
-transform = Transform3D(1, 0, 0, 0, 0.317305, 0.948324, 0, -0.948324, 0.317305, -3.87054, 32, 11.1057)
-fov = 70.0
+transform = Transform3D(1, 0, 0, 0, 0.529919, 0.848048, 0, -0.848048, 0.529919, -4, 26.5, 11.5)
+fov = 54.0
+attributes = SubResource("CameraAttributesPractical_v10")
 grid_map = NodePath("../GridMap")
 
 [node name="GridMap" type="GridMap" parent="."]
@@ -277,8 +284,8 @@ cell_mesh_indicator_scene = ExtResource("14_g50c0")
 [node name="Environment" type="Node3D" parent="."]
 
 [node name="ContinuousForestAir" type="FogVolume" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 3.5, -5)
-size = Vector3(85, 9, 55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 4, -5)
+size = Vector3(60, 11, 42)
 material = SubResource("ShaderMaterial_forest_air")
 
 [node name="MonsterRoad" type="Node3D" parent="Environment"]
@@ -295,18 +302,21 @@ path_node_path = NodePath("../../Path3D")
 grid_map_path = NodePath("../../GridMap")
 
 [node name="FogVolume2" type="FogVolume" parent="Environment"]
+visible = false
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -68.0338, 1, -13.5129)
 layers = 524288
 size = Vector3(30.9623, 2, 80)
 material = SubResource("FogMaterial_ck2aa")
 
 [node name="FogVolume3" type="FogVolume" parent="Environment"]
+visible = false
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -4.49606, 1, -43.9635)
 layers = 524288
 size = Vector3(21.0512, 2, 100.583)
 material = SubResource("FogMaterial_ck2aa")
 
 [node name="FogVolume4" type="FogVolume" parent="Environment"]
+visible = false
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5.64912, 1, 34.8732)
 layers = 524288
 size = Vector3(21.0512, 2, 135.874)

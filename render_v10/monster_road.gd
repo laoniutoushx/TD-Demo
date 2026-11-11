@@ -97,19 +97,9 @@ func build_road(curve: Curve3D) -> void:
 				curb.material_override = mats[(index + 4) % mats.size()]
 			add_child(curb)
 
-		# Water Puddle every ~12 slabs
-		if index > 2 and index % 12 == 5 and water_mat:
-			var puddle := MeshInstance3D.new()
-			puddle.name = "Puddle_%03d" % index
-			puddle.mesh = _puddle_mesh(rng)
-			puddle.material_override = water_mat
-			var center_pos := _sample(route, distances, (start + finish) * 0.5)
-			# Offset slightly to one side of the road
-			var side_offset := (1.0 if index % 2 == 0 else -1.0) * half_w * 0.35
-			var dir := (_sample(route, distances, minf(length, (start + finish) * 0.5 + 0.05)) - _sample(route, distances, maxf(0.0, (start + finish) * 0.5 - 0.05))).normalized()
-			var normal := Vector3(-dir.z, 0, dir.x)
-			puddle.position = center_pos + normal * side_offset + Vector3(0, slab_height + 0.004, 0)
-			add_child(puddle)
+		# Water Puddle disabled per design requirements (不启用水洼)
+		# if index > 2 and index % 12 == 5 and water_mat:
+		# 	...
 
 static func _sample(route: Array[Vector3], distances: Array[float], d: float) -> Vector3:
 	d = clampf(d, 0, distances[-1])

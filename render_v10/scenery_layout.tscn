@@ -13,499 +13,625 @@
 [node name="SceneryLayout" type="Node3D"]
 
 [node name="tree0_000" parent="." instance=ExtResource("tree0")]
-position = Vector3(-54, 0, 12)
-rotation = Vector3(0, 0.0, 0)
-metadata/target_size = 5.0
+position = Vector3(-38.0, 0, 14.0)
+rotation = Vector3(0, 0.4, 0)
+metadata/target_size = 6.2
 metadata/kind = "tree0"
 
 [node name="tree1_001" parent="." instance=ExtResource("tree1")]
-position = Vector3(-51, 0, 14)
-rotation = Vector3(0, 1.73, 0)
+position = Vector3(-34.0, 0, 10.0)
+rotation = Vector3(0, 1.2, 0)
 metadata/target_size = 5.8
 metadata/kind = "tree1"
 
 [node name="tree0_002" parent="." instance=ExtResource("tree0")]
-position = Vector3(-49, 0, 10)
-rotation = Vector3(0, 3.46, 0)
-metadata/target_size = 6.6
+position = Vector3(22.0, 0, 2.0)
+rotation = Vector3(0, 2.1, 0)
+metadata/target_size = 6.5
 metadata/kind = "tree0"
 
 [node name="tree1_003" parent="." instance=ExtResource("tree1")]
-position = Vector3(-50, 0, -9)
-rotation = Vector3(0, 1.73, 0)
-metadata/target_size = 5.0
+position = Vector3(26.0, 0, -2.0)
+rotation = Vector3(0, 3.4, 0)
+metadata/target_size = 6.0
 metadata/kind = "tree1"
 
-[node name="tree0_004" parent="." instance=ExtResource("tree0")]
-position = Vector3(-47, 0, -7)
-rotation = Vector3(0, 3.46, 0)
-metadata/target_size = 5.8
+[node name="tree3_004" parent="." instance=ExtResource("tree3")]
+position = Vector3(-34.0, 0, -10.0)
+rotation = Vector3(0, 0.8, 0)
+metadata/target_size = 6.8
+metadata/kind = "tree3"
+
+[node name="tree0_005" parent="." instance=ExtResource("tree0")]
+position = Vector3(-38.0, 0, -14.0)
+rotation = Vector3(0, 2.5, 0)
+metadata/target_size = 6.4
 metadata/kind = "tree0"
 
-[node name="tree1_005" parent="." instance=ExtResource("tree1")]
-position = Vector3(-45, 0, -11)
-rotation = Vector3(0, 5.1899999999999995, 0)
-metadata/target_size = 6.6
-metadata/kind = "tree1"
-
-[node name="tree0_006" parent="." instance=ExtResource("tree0")]
-position = Vector3(-50, 0, -27)
-rotation = Vector3(0, 3.46, 0)
-metadata/target_size = 5.0
-metadata/kind = "tree0"
+[node name="tree4_006" parent="." instance=ExtResource("tree4")]
+position = Vector3(30.0, 0, -22.0)
+rotation = Vector3(0, 1.7, 0)
+metadata/target_size = 6.5
+metadata/kind = "tree4"
 
 [node name="tree1_007" parent="." instance=ExtResource("tree1")]
-position = Vector3(-47, 0, -25)
-rotation = Vector3(0, 5.1899999999999995, 0)
-metadata/target_size = 5.8
+position = Vector3(34.0, 0, -26.0)
+rotation = Vector3(0, 4.2, 0)
+metadata/target_size = 6.0
 metadata/kind = "tree1"
 
 [node name="tree0_008" parent="." instance=ExtResource("tree0")]
-position = Vector3(-45, 0, -29)
-rotation = Vector3(0, 6.92, 0)
-metadata/target_size = 6.6
+position = Vector3(-18.0, 0, 18.0)
+rotation = Vector3(0, 0.5, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree0"
 
 [node name="tree1_009" parent="." instance=ExtResource("tree1")]
-position = Vector3(-32, 0, -44)
-rotation = Vector3(0, 5.1899999999999995, 0)
-metadata/target_size = 5.0
+position = Vector3(-2.0, 0, 18.0)
+rotation = Vector3(0, 1.9, 0)
+metadata/target_size = 7.0
 metadata/kind = "tree1"
 
 [node name="tree0_010" parent="." instance=ExtResource("tree0")]
-position = Vector3(-29, 0, -42)
-rotation = Vector3(0, 6.92, 0)
-metadata/target_size = 5.8
+position = Vector3(14.0, 0, 18.0)
+rotation = Vector3(0, 3.1, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree0"
 
 [node name="tree2_011" parent="." instance=ExtResource("tree2")]
-position = Vector3(-27, 0, -46)
-rotation = Vector3(0, 8.65, 0)
-metadata/target_size = 6.6
+position = Vector3(22.0, 0, -42.0)
+rotation = Vector3(0, 0.9, 0)
+metadata/target_size = 7.5
 metadata/kind = "tree2"
 
 [node name="tree0_012" parent="." instance=ExtResource("tree0")]
-position = Vector3(-14, 0, -44)
-rotation = Vector3(0, 6.92, 0)
-metadata/target_size = 5.0
+position = Vector3(26.0, 0, -38.0)
+rotation = Vector3(0, 2.6, 0)
+metadata/target_size = 7.2
 metadata/kind = "tree0"
 
-[node name="tree1_013" parent="." instance=ExtResource("tree1")]
-position = Vector3(-11, 0, -42)
-rotation = Vector3(0, 8.65, 0)
-metadata/target_size = 5.8
-metadata/kind = "tree1"
+[node name="tree0_013" parent="." instance=ExtResource("tree0")]
+position = Vector3(-50, 0, -28)
+rotation = Vector3(0, 0.0, 0)
+metadata/target_size = 6.0
+metadata/kind = "tree0"
 
 [node name="tree1_014" parent="." instance=ExtResource("tree1")]
-position = Vector3(-9, 0, -46)
-rotation = Vector3(0, 10.379999999999999, 0)
-metadata/target_size = 6.6
+position = Vector3(-47, 0, -26)
+rotation = Vector3(0, 1.73, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree1"
 
-[node name="tree1_015" parent="." instance=ExtResource("tree1")]
-position = Vector3(6, 0, -30)
-rotation = Vector3(0, 8.65, 0)
-metadata/target_size = 5.0
-metadata/kind = "tree1"
-
-[node name="tree0_016" parent="." instance=ExtResource("tree0")]
-position = Vector3(9, 0, -28)
-rotation = Vector3(0, 10.379999999999999, 0)
-metadata/target_size = 5.8
+[node name="tree0_015" parent="." instance=ExtResource("tree0")]
+position = Vector3(-45, 0, -30)
+rotation = Vector3(0, 3.46, 0)
+metadata/target_size = 7.6
 metadata/kind = "tree0"
+
+[node name="tree1_016" parent="." instance=ExtResource("tree1")]
+position = Vector3(-42, 0, -40)
+rotation = Vector3(0, 1.73, 0)
+metadata/target_size = 6.0
+metadata/kind = "tree1"
 
 [node name="tree0_017" parent="." instance=ExtResource("tree0")]
-position = Vector3(11, 0, -32)
-rotation = Vector3(0, 12.11, 0)
-metadata/target_size = 6.6
+position = Vector3(-39, 0, -38)
+rotation = Vector3(0, 3.46, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree0"
 
-[node name="tree0_018" parent="." instance=ExtResource("tree0")]
-position = Vector3(28, 0, -44)
-rotation = Vector3(0, 10.379999999999999, 0)
-metadata/target_size = 5.0
-metadata/kind = "tree0"
-
-[node name="tree1_019" parent="." instance=ExtResource("tree1")]
-position = Vector3(31, 0, -42)
-rotation = Vector3(0, 12.11, 0)
-metadata/target_size = 5.8
+[node name="tree1_018" parent="." instance=ExtResource("tree1")]
+position = Vector3(-37, 0, -42)
+rotation = Vector3(0, 5.1899999999999995, 0)
+metadata/target_size = 7.6
 metadata/kind = "tree1"
 
-[node name="tree4_020" parent="." instance=ExtResource("tree4")]
-position = Vector3(33, 0, -46)
-rotation = Vector3(0, 13.84, 0)
-metadata/target_size = 6.6
-metadata/kind = "tree4"
-
-[node name="tree1_021" parent="." instance=ExtResource("tree1")]
-position = Vector3(40, 0, -22)
-rotation = Vector3(0, 12.11, 0)
-metadata/target_size = 5.0
-metadata/kind = "tree1"
-
-[node name="tree0_022" parent="." instance=ExtResource("tree0")]
-position = Vector3(43, 0, -20)
-rotation = Vector3(0, 13.84, 0)
-metadata/target_size = 5.8
+[node name="tree0_019" parent="." instance=ExtResource("tree0")]
+position = Vector3(-32, 0, -44)
+rotation = Vector3(0, 3.46, 0)
+metadata/target_size = 6.0
 metadata/kind = "tree0"
 
-[node name="tree1_023" parent="." instance=ExtResource("tree1")]
-position = Vector3(45, 0, -24)
-rotation = Vector3(0, 15.57, 0)
-metadata/target_size = 6.6
+[node name="tree1_020" parent="." instance=ExtResource("tree1")]
+position = Vector3(-29, 0, -42)
+rotation = Vector3(0, 5.1899999999999995, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree1"
 
-[node name="tree0_024" parent="." instance=ExtResource("tree0")]
-position = Vector3(40, 0, 1)
-rotation = Vector3(0, 13.84, 0)
-metadata/target_size = 5.0
+[node name="tree0_021" parent="." instance=ExtResource("tree0")]
+position = Vector3(-27, 0, -46)
+rotation = Vector3(0, 6.92, 0)
+metadata/target_size = 7.6
 metadata/kind = "tree0"
 
-[node name="tree1_025" parent="." instance=ExtResource("tree1")]
-position = Vector3(43, 0, 3)
-rotation = Vector3(0, 15.57, 0)
-metadata/target_size = 5.8
+[node name="tree1_022" parent="." instance=ExtResource("tree1")]
+position = Vector3(-22, 0, -42)
+rotation = Vector3(0, 5.1899999999999995, 0)
+metadata/target_size = 6.0
 metadata/kind = "tree1"
 
-[node name="tree0_026" parent="." instance=ExtResource("tree0")]
-position = Vector3(45, 0, -1)
-rotation = Vector3(0, 17.3, 0)
-metadata/target_size = 6.6
+[node name="tree0_023" parent="." instance=ExtResource("tree0")]
+position = Vector3(-19, 0, -40)
+rotation = Vector3(0, 6.92, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree0"
 
-[node name="tree1_027" parent="." instance=ExtResource("tree1")]
-position = Vector3(18, 0, 26)
-rotation = Vector3(0, 15.57, 0)
-metadata/target_size = 5.0
-metadata/kind = "tree1"
-
-[node name="tree0_028" parent="." instance=ExtResource("tree0")]
-position = Vector3(21, 0, 28)
-rotation = Vector3(0, 17.3, 0)
-metadata/target_size = 5.8
-metadata/kind = "tree0"
-
-[node name="tree3_029" parent="." instance=ExtResource("tree3")]
-position = Vector3(23, 0, 24)
-rotation = Vector3(0, 19.03, 0)
-metadata/target_size = 6.6
+[node name="tree3_024" parent="." instance=ExtResource("tree3")]
+position = Vector3(-17, 0, -44)
+rotation = Vector3(0, 8.65, 0)
+metadata/target_size = 7.6
 metadata/kind = "tree3"
 
-[node name="tree1_030" parent="." instance=ExtResource("tree1")]
-position = Vector3(-38, 0, 14)
-rotation = Vector3(0, 0.0, 0)
-metadata/target_size = 2.8
+[node name="tree0_025" parent="." instance=ExtResource("tree0")]
+position = Vector3(-12, 0, -44)
+rotation = Vector3(0, 6.92, 0)
+metadata/target_size = 6.0
+metadata/kind = "tree0"
+
+[node name="tree1_026" parent="." instance=ExtResource("tree1")]
+position = Vector3(-9, 0, -42)
+rotation = Vector3(0, 8.65, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree1"
+
+[node name="tree1_027" parent="." instance=ExtResource("tree1")]
+position = Vector3(-7, 0, -46)
+rotation = Vector3(0, 10.379999999999999, 0)
+metadata/target_size = 7.6
+metadata/kind = "tree1"
+
+[node name="tree1_028" parent="." instance=ExtResource("tree1")]
+position = Vector3(-2, 0, -42)
+rotation = Vector3(0, 8.65, 0)
+metadata/target_size = 6.0
+metadata/kind = "tree1"
+
+[node name="tree0_029" parent="." instance=ExtResource("tree0")]
+position = Vector3(1, 0, -40)
+rotation = Vector3(0, 10.379999999999999, 0)
+metadata/target_size = 6.8
+metadata/kind = "tree0"
+
+[node name="tree0_030" parent="." instance=ExtResource("tree0")]
+position = Vector3(3, 0, -44)
+rotation = Vector3(0, 12.11, 0)
+metadata/target_size = 7.6
+metadata/kind = "tree0"
 
 [node name="tree0_031" parent="." instance=ExtResource("tree0")]
-position = Vector3(26, 0, 2)
-rotation = Vector3(0, 1.5, 0)
-metadata/target_size = 2.8
+position = Vector3(8, 0, -44)
+rotation = Vector3(0, 10.379999999999999, 0)
+metadata/target_size = 6.0
 metadata/kind = "tree0"
 
-[node name="tree0_032" parent="." instance=ExtResource("tree0")]
-position = Vector3(-38, 0, -14)
-rotation = Vector3(0, 3.0, 0)
-metadata/target_size = 2.8
-metadata/kind = "tree0"
-
-[node name="tree1_033" parent="." instance=ExtResource("tree1")]
-position = Vector3(34, 0, -26)
-rotation = Vector3(0, 4.5, 0)
-metadata/target_size = 2.8
+[node name="tree1_032" parent="." instance=ExtResource("tree1")]
+position = Vector3(11, 0, -42)
+rotation = Vector3(0, 12.11, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree1"
 
-[node name="tree0_034" parent="." instance=ExtResource("tree0")]
-position = Vector3(22, 0, -42)
-rotation = Vector3(0, 6.0, 0)
-metadata/target_size = 3.0
-metadata/kind = "tree0"
+[node name="tree4_033" parent="." instance=ExtResource("tree4")]
+position = Vector3(13, 0, -46)
+rotation = Vector3(0, 13.84, 0)
+metadata/target_size = 7.6
+metadata/kind = "tree4"
+
+[node name="tree1_034" parent="." instance=ExtResource("tree1")]
+position = Vector3(18, 0, -42)
+rotation = Vector3(0, 12.11, 0)
+metadata/target_size = 6.0
+metadata/kind = "tree1"
 
 [node name="tree0_035" parent="." instance=ExtResource("tree0")]
-position = Vector3(26, 0, -38)
-rotation = Vector3(0, 7.5, 0)
-metadata/target_size = 3.0
+position = Vector3(21, 0, -40)
+rotation = Vector3(0, 13.84, 0)
+metadata/target_size = 6.8
 metadata/kind = "tree0"
 
 [node name="tree1_036" parent="." instance=ExtResource("tree1")]
-position = Vector3(-18, 0, 18)
-rotation = Vector3(0, 9.0, 0)
-metadata/target_size = 3.0
+position = Vector3(23, 0, -44)
+rotation = Vector3(0, 15.57, 0)
+metadata/target_size = 7.6
 metadata/kind = "tree1"
 
 [node name="tree0_037" parent="." instance=ExtResource("tree0")]
-position = Vector3(14, 0, 18)
-rotation = Vector3(0, 10.5, 0)
-metadata/target_size = 3.0
+position = Vector3(28, 0, -44)
+rotation = Vector3(0, 13.84, 0)
+metadata/target_size = 6.0
 metadata/kind = "tree0"
 
-[node name="column_038" parent="." instance=ExtResource("column")]
+[node name="tree1_038" parent="." instance=ExtResource("tree1")]
+position = Vector3(31, 0, -42)
+rotation = Vector3(0, 15.57, 0)
+metadata/target_size = 6.8
+metadata/kind = "tree1"
+
+[node name="tree0_039" parent="." instance=ExtResource("tree0")]
+position = Vector3(33, 0, -46)
+rotation = Vector3(0, 17.3, 0)
+metadata/target_size = 7.6
+metadata/kind = "tree0"
+
+[node name="tree1_040" parent="." instance=ExtResource("tree1")]
+position = Vector3(38, 0, -32)
+rotation = Vector3(0, 15.57, 0)
+metadata/target_size = 6.0
+metadata/kind = "tree1"
+
+[node name="tree0_041" parent="." instance=ExtResource("tree0")]
+position = Vector3(41, 0, -30)
+rotation = Vector3(0, 17.3, 0)
+metadata/target_size = 6.8
+metadata/kind = "tree0"
+
+[node name="tree2_042" parent="." instance=ExtResource("tree2")]
+position = Vector3(43, 0, -34)
+rotation = Vector3(0, 19.03, 0)
+metadata/target_size = 7.6
+metadata/kind = "tree2"
+
+[node name="tree0_043" parent="." instance=ExtResource("tree0")]
+position = Vector3(-51.5, 0, 18)
+rotation = Vector3(0, 0.0, 0)
+metadata/target_size = 5.8
+metadata/kind = "tree0"
+
+[node name="tree1_044" parent="." instance=ExtResource("tree1")]
+position = Vector3(-48.5, 0, 19.5)
+rotation = Vector3(0, 1.4, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree1"
+
+[node name="tree1_045" parent="." instance=ExtResource("tree1")]
+position = Vector3(-35.5, 0, 22)
+rotation = Vector3(0, 1.4, 0)
+metadata/target_size = 5.8
+metadata/kind = "tree1"
+
+[node name="tree2_046" parent="." instance=ExtResource("tree2")]
+position = Vector3(-32.5, 0, 23.5)
+rotation = Vector3(0, 2.8, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree2"
+
+[node name="tree2_047" parent="." instance=ExtResource("tree2")]
+position = Vector3(-23.5, 0, 20)
+rotation = Vector3(0, 2.8, 0)
+metadata/target_size = 5.8
+metadata/kind = "tree2"
+
+[node name="tree0_048" parent="." instance=ExtResource("tree0")]
+position = Vector3(-20.5, 0, 21.5)
+rotation = Vector3(0, 4.199999999999999, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree0"
+
+[node name="tree0_049" parent="." instance=ExtResource("tree0")]
+position = Vector3(-9.5, 0, 22)
+rotation = Vector3(0, 4.199999999999999, 0)
+metadata/target_size = 5.8
+metadata/kind = "tree0"
+
+[node name="tree1_050" parent="." instance=ExtResource("tree1")]
+position = Vector3(-6.5, 0, 23.5)
+rotation = Vector3(0, 5.6, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree1"
+
+[node name="tree1_051" parent="." instance=ExtResource("tree1")]
+position = Vector3(4.5, 0, 21)
+rotation = Vector3(0, 5.6, 0)
+metadata/target_size = 5.8
+metadata/kind = "tree1"
+
+[node name="tree2_052" parent="." instance=ExtResource("tree2")]
+position = Vector3(7.5, 0, 22.5)
+rotation = Vector3(0, 7.0, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree2"
+
+[node name="tree2_053" parent="." instance=ExtResource("tree2")]
+position = Vector3(18.5, 0, 22)
+rotation = Vector3(0, 7.0, 0)
+metadata/target_size = 5.8
+metadata/kind = "tree2"
+
+[node name="tree0_054" parent="." instance=ExtResource("tree0")]
+position = Vector3(21.5, 0, 23.5)
+rotation = Vector3(0, 8.399999999999999, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree0"
+
+[node name="tree0_055" parent="." instance=ExtResource("tree0")]
+position = Vector3(30.5, 0, 18)
+rotation = Vector3(0, 8.399999999999999, 0)
+metadata/target_size = 5.8
+metadata/kind = "tree0"
+
+[node name="tree1_056" parent="." instance=ExtResource("tree1")]
+position = Vector3(33.5, 0, 19.5)
+rotation = Vector3(0, 9.799999999999999, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree1"
+
+[node name="tree0_057" parent="." instance=ExtResource("tree0")]
+position = Vector3(-46.0, 0, 10)
+rotation = Vector3(0, 0.0, 0)
+metadata/target_size = 6.2
+metadata/kind = "tree0"
+
+[node name="tree1_058" parent="." instance=ExtResource("tree1")]
+position = Vector3(-49.0, 0, 2)
+rotation = Vector3(0, 1.8, 0)
+metadata/target_size = 6.7
+metadata/kind = "tree1"
+
+[node name="tree0_059" parent="." instance=ExtResource("tree0")]
+position = Vector3(-46.0, 0, -6)
+rotation = Vector3(0, 3.6, 0)
+metadata/target_size = 7.2
+metadata/kind = "tree0"
+
+[node name="tree1_060" parent="." instance=ExtResource("tree1")]
+position = Vector3(-49.0, 0, -14)
+rotation = Vector3(0, 5.4, 0)
+metadata/target_size = 6.2
+metadata/kind = "tree1"
+
+[node name="tree0_061" parent="." instance=ExtResource("tree0")]
+position = Vector3(-46.0, 0, -22)
+rotation = Vector3(0, 7.2, 0)
+metadata/target_size = 6.7
+metadata/kind = "tree0"
+
+[node name="tree1_062" parent="." instance=ExtResource("tree1")]
+position = Vector3(39.0, 0, 6)
+rotation = Vector3(0, 0.0, 0)
+metadata/target_size = 6.0
+metadata/kind = "tree1"
+
+[node name="tree0_063" parent="." instance=ExtResource("tree0")]
+position = Vector3(42.0, 0, -2)
+rotation = Vector3(0, 2.1, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree0"
+
+[node name="tree1_064" parent="." instance=ExtResource("tree1")]
+position = Vector3(39.0, 0, -10)
+rotation = Vector3(0, 4.2, 0)
+metadata/target_size = 7.2
+metadata/kind = "tree1"
+
+[node name="tree0_065" parent="." instance=ExtResource("tree0")]
+position = Vector3(42.0, 0, -18)
+rotation = Vector3(0, 6.300000000000001, 0)
+metadata/target_size = 6.0
+metadata/kind = "tree0"
+
+[node name="tree1_066" parent="." instance=ExtResource("tree1")]
+position = Vector3(39.0, 0, -26)
+rotation = Vector3(0, 8.4, 0)
+metadata/target_size = 6.6
+metadata/kind = "tree1"
+
+[node name="column_067" parent="." instance=ExtResource("column")]
 position = Vector3(-38, 0, 10)
 rotation = Vector3(0, 0.2, 0)
 metadata/target_size = 3.6
 metadata/kind = "column"
 
-[node name="column_039" parent="." instance=ExtResource("column")]
+[node name="column_068" parent="." instance=ExtResource("column")]
 position = Vector3(-34, 0, 10)
 rotation = Vector3(0, 0.2, 0)
 metadata/target_size = 2.5
 metadata/kind = "column"
 
-[node name="column_040" parent="." instance=ExtResource("column")]
+[node name="column_069" parent="." instance=ExtResource("column")]
 position = Vector3(22, 0, 2)
 rotation = Vector3(0, 0.2, 0)
 metadata/target_size = 3.2
 metadata/kind = "column"
 
-[node name="column_041" parent="." instance=ExtResource("column")]
+[node name="column_070" parent="." instance=ExtResource("column")]
 position = Vector3(-34, 0, -10)
 rotation = Vector3(0, 0.2, 0)
 metadata/target_size = 3.5
 metadata/kind = "column"
 
-[node name="column_042" parent="." instance=ExtResource("column")]
+[node name="column_071" parent="." instance=ExtResource("column")]
 position = Vector3(30, 0, -22)
 rotation = Vector3(0, 0.2, 0)
 metadata/target_size = 3.2
 metadata/kind = "column"
 
-[node name="column_043" parent="." instance=ExtResource("column")]
+[node name="column_072" parent="." instance=ExtResource("column")]
 position = Vector3(-14, 0, 14)
 rotation = Vector3(0, 0.2, 0)
 metadata/target_size = 2.8
 metadata/kind = "column"
 
-[node name="fallen_044" parent="." instance=ExtResource("fallen")]
+[node name="fallen_073" parent="." instance=ExtResource("fallen")]
 position = Vector3(-38, 0, -10)
 rotation = Vector3(1.5708, 0.55, 0)
 metadata/target_size = 2.3
 metadata/kind = "fallen"
 
-[node name="fallen_045" parent="." instance=ExtResource("fallen")]
+[node name="fallen_074" parent="." instance=ExtResource("fallen")]
 position = Vector3(26, 0, -2)
 rotation = Vector3(1.5708, 0.55, 0)
 metadata/target_size = 2.3
 metadata/kind = "fallen"
 
-[node name="fallen_046" parent="." instance=ExtResource("fallen")]
+[node name="fallen_075" parent="." instance=ExtResource("fallen")]
 position = Vector3(34, 0, -22)
 rotation = Vector3(1.5708, 0.55, 0)
 metadata/target_size = 2.3
 metadata/kind = "fallen"
 
-[node name="rock_047" parent="." instance=ExtResource("rock")]
-position = Vector3(-37.3, 0, 10.55)
-rotation = Vector3(0, 0.0, 0)
-metadata/target_size = 0.65
-metadata/kind = "rock"
-
-[node name="shrub_048" parent="." instance=ExtResource("shrub")]
-position = Vector3(-38.2, 0, 10.2)
-rotation = Vector3(0, 0, 0)
-metadata/target_size = 0.8
-metadata/kind = "shrub"
-
-[node name="rock_049" parent="." instance=ExtResource("rock")]
+[node name="rock_076" parent="." instance=ExtResource("rock")]
 position = Vector3(-33.3, 0, 10.55)
 rotation = Vector3(0, 2.4, 0)
 metadata/target_size = 0.8300000000000001
 metadata/kind = "rock"
 
-[node name="shrub_050" parent="." instance=ExtResource("shrub")]
+[node name="shrub_077" parent="." instance=ExtResource("shrub")]
 position = Vector3(-34.2, 0, 10.2)
-rotation = Vector3(0, 1, 0)
-metadata/target_size = 1.05
+rotation = Vector3(0, 1.1, 0)
+metadata/target_size = 1.1
 metadata/kind = "shrub"
 
-[node name="rock_051" parent="." instance=ExtResource("rock")]
+[node name="rock_078" parent="." instance=ExtResource("rock")]
 position = Vector3(-37.3, 0, 14.55)
 rotation = Vector3(0, 4.8, 0)
 metadata/target_size = 1.01
 metadata/kind = "rock"
 
-[node name="shrub_052" parent="." instance=ExtResource("shrub")]
+[node name="shrub_079" parent="." instance=ExtResource("shrub")]
 position = Vector3(-38.2, 0, 14.2)
-rotation = Vector3(0, 2, 0)
-metadata/target_size = 0.8
+rotation = Vector3(0, 2.2, 0)
+metadata/target_size = 0.85
 metadata/kind = "shrub"
 
-[node name="rock_053" parent="." instance=ExtResource("rock")]
-position = Vector3(22.7, 0, 2.55)
-rotation = Vector3(0, 7.199999999999999, 0)
-metadata/target_size = 0.65
-metadata/kind = "rock"
-
-[node name="shrub_054" parent="." instance=ExtResource("shrub")]
-position = Vector3(21.8, 0, 2.2)
-rotation = Vector3(0, 3, 0)
-metadata/target_size = 1.05
-metadata/kind = "shrub"
-
-[node name="rock_055" parent="." instance=ExtResource("rock")]
+[node name="rock_080" parent="." instance=ExtResource("rock")]
 position = Vector3(26.7, 0, 2.55)
 rotation = Vector3(0, 9.6, 0)
 metadata/target_size = 0.8300000000000001
 metadata/kind = "rock"
 
-[node name="shrub_056" parent="." instance=ExtResource("shrub")]
+[node name="shrub_081" parent="." instance=ExtResource("shrub")]
 position = Vector3(25.8, 0, 2.2)
-rotation = Vector3(0, 4, 0)
-metadata/target_size = 0.8
+rotation = Vector3(0, 4.4, 0)
+metadata/target_size = 0.85
 metadata/kind = "shrub"
 
-[node name="rock_057" parent="." instance=ExtResource("rock")]
+[node name="rock_082" parent="." instance=ExtResource("rock")]
 position = Vector3(26.7, 0, -1.45)
 rotation = Vector3(0, 12.0, 0)
 metadata/target_size = 1.01
 metadata/kind = "rock"
 
-[node name="shrub_058" parent="." instance=ExtResource("shrub")]
+[node name="shrub_083" parent="." instance=ExtResource("shrub")]
 position = Vector3(25.8, 0, -1.8)
-rotation = Vector3(0, 5, 0)
-metadata/target_size = 1.05
+rotation = Vector3(0, 5.5, 0)
+metadata/target_size = 1.1
 metadata/kind = "shrub"
 
-[node name="rock_059" parent="." instance=ExtResource("rock")]
-position = Vector3(-33.3, 0, -9.45)
-rotation = Vector3(0, 14.399999999999999, 0)
-metadata/target_size = 0.65
-metadata/kind = "rock"
-
-[node name="shrub_060" parent="." instance=ExtResource("shrub")]
-position = Vector3(-34.2, 0, -9.8)
-rotation = Vector3(0, 6, 0)
-metadata/target_size = 0.8
-metadata/kind = "shrub"
-
-[node name="rock_061" parent="." instance=ExtResource("rock")]
+[node name="rock_084" parent="." instance=ExtResource("rock")]
 position = Vector3(-37.3, 0, -9.45)
 rotation = Vector3(0, 16.8, 0)
 metadata/target_size = 0.8300000000000001
 metadata/kind = "rock"
 
-[node name="shrub_062" parent="." instance=ExtResource("shrub")]
+[node name="shrub_085" parent="." instance=ExtResource("shrub")]
 position = Vector3(-38.2, 0, -9.8)
-rotation = Vector3(0, 7, 0)
-metadata/target_size = 1.05
+rotation = Vector3(0, 7.700000000000001, 0)
+metadata/target_size = 1.1
 metadata/kind = "shrub"
 
-[node name="rock_063" parent="." instance=ExtResource("rock")]
+[node name="rock_086" parent="." instance=ExtResource("rock")]
 position = Vector3(-37.3, 0, -13.45)
 rotation = Vector3(0, 19.2, 0)
 metadata/target_size = 1.01
 metadata/kind = "rock"
 
-[node name="shrub_064" parent="." instance=ExtResource("shrub")]
+[node name="shrub_087" parent="." instance=ExtResource("shrub")]
 position = Vector3(-38.2, 0, -13.8)
-rotation = Vector3(0, 8, 0)
-metadata/target_size = 0.8
+rotation = Vector3(0, 8.8, 0)
+metadata/target_size = 0.85
 metadata/kind = "shrub"
 
-[node name="rock_065" parent="." instance=ExtResource("rock")]
-position = Vector3(30.7, 0, -21.45)
-rotation = Vector3(0, 21.599999999999998, 0)
-metadata/target_size = 0.65
-metadata/kind = "rock"
-
-[node name="shrub_066" parent="." instance=ExtResource("shrub")]
-position = Vector3(29.8, 0, -21.8)
-rotation = Vector3(0, 9, 0)
-metadata/target_size = 1.05
-metadata/kind = "shrub"
-
-[node name="rock_067" parent="." instance=ExtResource("rock")]
+[node name="rock_088" parent="." instance=ExtResource("rock")]
 position = Vector3(34.7, 0, -21.45)
 rotation = Vector3(0, 24.0, 0)
 metadata/target_size = 0.8300000000000001
 metadata/kind = "rock"
 
-[node name="shrub_068" parent="." instance=ExtResource("shrub")]
+[node name="shrub_089" parent="." instance=ExtResource("shrub")]
 position = Vector3(33.8, 0, -21.8)
-rotation = Vector3(0, 10, 0)
-metadata/target_size = 0.8
+rotation = Vector3(0, 11.0, 0)
+metadata/target_size = 0.85
 metadata/kind = "shrub"
 
-[node name="rock_069" parent="." instance=ExtResource("rock")]
+[node name="rock_090" parent="." instance=ExtResource("rock")]
 position = Vector3(34.7, 0, -25.45)
 rotation = Vector3(0, 26.4, 0)
 metadata/target_size = 1.01
 metadata/kind = "rock"
 
-[node name="shrub_070" parent="." instance=ExtResource("shrub")]
+[node name="shrub_091" parent="." instance=ExtResource("shrub")]
 position = Vector3(33.8, 0, -25.8)
-rotation = Vector3(0, 11, 0)
-metadata/target_size = 1.05
+rotation = Vector3(0, 12.100000000000001, 0)
+metadata/target_size = 1.1
 metadata/kind = "shrub"
 
-[node name="rock_071" parent="." instance=ExtResource("rock")]
+[node name="rock_092" parent="." instance=ExtResource("rock")]
 position = Vector3(-13.3, 0, 14.55)
 rotation = Vector3(0, 28.799999999999997, 0)
 metadata/target_size = 0.65
 metadata/kind = "rock"
 
-[node name="shrub_072" parent="." instance=ExtResource("shrub")]
+[node name="shrub_093" parent="." instance=ExtResource("shrub")]
 position = Vector3(-14.2, 0, 14.2)
-rotation = Vector3(0, 12, 0)
-metadata/target_size = 0.8
+rotation = Vector3(0, 13.200000000000001, 0)
+metadata/target_size = 0.85
 metadata/kind = "shrub"
 
-[node name="rock_073" parent="." instance=ExtResource("rock")]
+[node name="rock_094" parent="." instance=ExtResource("rock")]
 position = Vector3(-9.3, 0, 10.55)
 rotation = Vector3(0, 33.6, 0)
 metadata/target_size = 1.01
 metadata/kind = "rock"
 
-[node name="shrub_074" parent="." instance=ExtResource("shrub")]
+[node name="shrub_095" parent="." instance=ExtResource("shrub")]
 position = Vector3(-10.2, 0, 10.2)
-rotation = Vector3(0, 14, 0)
-metadata/target_size = 0.8
+rotation = Vector3(0, 15.400000000000002, 0)
+metadata/target_size = 0.85
 metadata/kind = "shrub"
 
-[node name="pot_075" parent="." instance=ExtResource("pot")]
+[node name="pot_096" parent="." instance=ExtResource("pot")]
 position = Vector3(-37.4, 0, 10.6)
 rotation = Vector3(0, 1.2, 0)
 metadata/target_size = 0.48
 metadata/kind = "pot"
 
-[node name="pot_076" parent="." instance=ExtResource("pot")]
+[node name="pot_097" parent="." instance=ExtResource("pot")]
 position = Vector3(22.7, 0, 2.5)
 rotation = Vector3(0, 1.2, 0)
 metadata/target_size = 0.48
 metadata/kind = "pot"
 
-[node name="pot_077" parent="." instance=ExtResource("pot")]
+[node name="pot_098" parent="." instance=ExtResource("pot")]
 position = Vector3(-33.5, 0, -10.6)
 rotation = Vector3(0, 1.2, 0)
 metadata/target_size = 0.48
 metadata/kind = "pot"
 
-[node name="pot_078" parent="." instance=ExtResource("pot")]
+[node name="pot_099" parent="." instance=ExtResource("pot")]
 position = Vector3(30.6, 0, -22.7)
 rotation = Vector3(0, 1.2, 0)
 metadata/target_size = 0.48
 metadata/kind = "pot"
 
-[node name="pot_079" parent="." instance=ExtResource("pot")]
+[node name="pot_100" parent="." instance=ExtResource("pot")]
 position = Vector3(-13.2, 0, 14.7)
 rotation = Vector3(0, 1.2, 0)
 metadata/target_size = 0.48
 metadata/kind = "pot"
 
-[node name="brazier_080" parent="." instance=ExtResource("brazier")]
+[node name="brazier_101" parent="." instance=ExtResource("brazier")]
 position = Vector3(-35.2, 0, 10.4)
-rotation = Vector3(0, 0, 0)
+rotation = Vector3(0, 0.0, 0)
 metadata/target_size = 0.55
 metadata/kind = "brazier"
 
-[node name="brazier_081" parent="." instance=ExtResource("brazier")]
-position = Vector3(23, 0, 2.9)
-rotation = Vector3(0, 0, 0)
+[node name="brazier_102" parent="." instance=ExtResource("brazier")]
+position = Vector3(23.0, 0, 2.9)
+rotation = Vector3(0, 0.0, 0)
 metadata/target_size = 0.55
 metadata/kind = "brazier"
 
-[node name="brazier_082" parent="." instance=ExtResource("brazier")]
+[node name="brazier_103" parent="." instance=ExtResource("brazier")]
 position = Vector3(-34.7, 0, -10.9)
-rotation = Vector3(0, 0, 0)
+rotation = Vector3(0, 0.0, 0)
 metadata/target_size = 0.55
 metadata/kind = "brazier"

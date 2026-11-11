@@ -59,9 +59,17 @@ func _prepare_asset(asset: Node3D) -> void:
 	asset.scale *= float(asset.get_meta("target_size")) / maxf(dimension, 0.001)
 	bounds = model_bounds(asset, Transform3D(asset.basis, Vector3.ZERO))
 	asset.position -= Vector3(bounds.get_center().x, bounds.position.y + 0.025, bounds.get_center().z)
-	bounds = model_bounds(asset, asset.transform)
-	asset.set_meta("ground_bounds", bounds)
-	if not footprint_clear(bounds):
+	
+	# Ground clearance check:
+	# For trees, the aerial canopy spreads far above (Y > 3.5m); only the trunk occupies ground footprint.
+	var check_bounds: AABB
+	if kind.begins_with("tree"):
+		check_bounds = AABB(asset.position - Vector3(0.5, 0.1, 0.5), Vector3(1.0, 1.2, 1.0))
+	else:
+		check_bounds = model_bounds(asset, asset.transform)
+	asset.set_meta("ground_bounds", check_bounds)
+	
+	if not footprint_clear(check_bounds):
 		rejected_assets.append(str(asset.name))
 		asset.visible = false
 		return
@@ -79,34 +87,82 @@ func _apply_mat_recursive(node: Node, material: Material) -> void:
 
 func _build_groundcover(layout: Node3D) -> void:
 	# Shared mesh batches are spatially partitioned to retain useful frustum culling.
-	var source := (load("res://render_v10/assets/fern_0_lod1.glb") as PackedScene).instantiate()
-	var mesh_node: MeshInstance3D = source.find_children("*", "MeshInstance3D", true, false)[0]
-	var mesh: Mesh = mesh_node.mesh
-	var batches := {}
+	var fern0_source := (load("res://render_v10/assets/fern_0_lod1.glb") as PackedScene).instantiate()
+	var fern0_mesh: Mesh = fern0_source.find_children("*", "MeshInstance3D", true, false)[0].mesh
+	var fern1_source := (load("res://render_v10/assets/fern_1_lod1.glb") as PackedScene).instantiate()
+	var fern1_mesh: Mesh = fern1_source.find_children("*", "MeshInstance3D", true, false)[0].mesh
+	
+	var batches_0 := {}
+	var batches_1 := {}
+	
+	# 1. Roadside curb-hugging ferns along the entire monster road:
+	var total_len: float = road_curve.get_baked_length()
+	var d: float = 2.5
+	while d < total_len - 2.5:
+		var pt: Vector3 = road_curve.sample_baked(d)
+		var pt_next: Vector3 = road_curve.sample_baked(minf(d + 0.4, total_len))
+		var fwd: Vector3 = (pt_next - pt).normalized()
+		var right: Vector3 = Vector3(-fwd.z, 0.0, fwd.x)
+		for side in [-1.0, 1.0]:
+			var offset_dist: float = 1.45 + rng.randf_range(0.05, 0.60)
+			var pos: Vector3 = pt + right * float(side * offset_dist)
+			pos.y = 0.01
+			var closest: Vector3 = road_curve.get_closest_point(pos)
+			var dist_to_road: float = Vector2(pos.x - closest.x, pos.z - closest.z).length()
+			if dist_to_road >= 1.35 and dist_to_road <= 2.25:
+				var angle: float = rng.randf_range(0, TAU)
+				var sc: float = rng.randf_range(0.42, 0.75)
+				var transform := Transform3D(Basis(Vector3.UP, angle).scaled(Vector3.ONE * sc), pos)
+				var key := Vector2i(floori(pos.x / 16.0), floori(pos.z / 16.0))
+				if int(d * 10) % 2 == 0:
+					if not batches_0.has(key): batches_0[key] = []
+					batches_0[key].append(transform)
+				else:
+					if not batches_1.has(key): batches_1[key] = []
+					batches_1[key].append(transform)
+		d += 2.2
+	
+	# 2. Ferns clustered around visible layout assets (trees, rocks, columns):
 	for asset in layout.get_children():
 		if not asset.visible: continue
 		var center: Vector3 = asset.position
-		for i in 5:
-			var angle := rng.randf_range(0, TAU)
-			var position := Vector3(center.x + cos(angle) * rng.randf_range(.6, 1.5), .01, center.z + sin(angle) * rng.randf_range(.6, 1.5))
-			var scale_value := rng.randf_range(.35, .65)
-			var transform := Transform3D(Basis(Vector3.UP, angle).scaled(Vector3.ONE * scale_value), position)
-			if not footprint_clear(transform * mesh.get_aabb()): continue
-			var key := Vector2i(floori(position.x / 16), floori(position.z / 16))
-			if not batches.has(key): batches[key] = []
-			batches[key].append(transform)
-	for key in batches:
-		var multimesh := MultiMesh.new()
-		multimesh.transform_format = MultiMesh.TRANSFORM_3D
-		multimesh.mesh = mesh
-		multimesh.instance_count = batches[key].size()
-		for i in multimesh.instance_count: multimesh.set_instance_transform(i, batches[key][i])
-		var instance := MultiMeshInstance3D.new()
-		instance.multimesh = multimesh
-		instance.material_override = plant_material
-		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		add_child(instance)
-	source.free()
+		var count: int = 6 if str(asset.get_meta("kind")).begins_with("tree") else 3
+		for i in count:
+			var angle: float = rng.randf_range(0, TAU)
+			var r: float = rng.randf_range(0.8, 2.2)
+			var pos: Vector3 = Vector3(center.x + cos(angle) * r, 0.01, center.z + sin(angle) * r)
+			var closest: Vector3 = road_curve.get_closest_point(pos)
+			if Vector2(pos.x - closest.x, pos.z - closest.z).length() < 1.35:
+				continue
+			var sc: float = rng.randf_range(0.38, 0.68)
+			var transform := Transform3D(Basis(Vector3.UP, angle).scaled(Vector3.ONE * sc), pos)
+			var key := Vector2i(floori(pos.x / 16.0), floori(pos.z / 16.0))
+			if i % 2 == 0:
+				if not batches_0.has(key): batches_0[key] = []
+				batches_0[key].append(transform)
+			else:
+				if not batches_1.has(key): batches_1[key] = []
+				batches_1[key].append(transform)
+	
+	# Instantiate MultiMeshes for fern0 and fern1
+	for mesh_pair in [[fern0_mesh, batches_0], [fern1_mesh, batches_1]]:
+		var m: Mesh = mesh_pair[0]
+		var b_dict: Dictionary = mesh_pair[1]
+		for key in b_dict:
+			var multimesh := MultiMesh.new()
+			multimesh.transform_format = MultiMesh.TRANSFORM_3D
+			multimesh.mesh = m
+			multimesh.instance_count = b_dict[key].size()
+			for i in multimesh.instance_count:
+				multimesh.set_instance_transform(i, b_dict[key][i])
+			var instance := MultiMeshInstance3D.new()
+			instance.multimesh = multimesh
+			instance.material_override = plant_material
+			instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			add_child(instance)
+	
+	fern0_source.free()
+	fern1_source.free()
 
 func _init_materials() -> void:
 	mats.edge = _create_std_mat(Color(0.63, 0.63, 0.58), 1.0, 0.0)
