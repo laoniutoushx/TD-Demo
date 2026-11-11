@@ -87,6 +87,7 @@ func run(v):
     v.camera_index=camera;v.apply_camera()
     await frames(20)
     await screenshot("canopy_refined_style%d_camera%d"%[style,camera])
+  print("TREE_REVIEW_OK: three styles, two camera views")
   get_tree().quit()
   return
  await test_input(v)
@@ -105,7 +106,7 @@ func run(v):
   v.lod_index=lod;v.refresh()
   report.triangles.append(measure(v.tree))
   assert(v.lod_option.get_item_text(lod).contains(str(report.triangles[lod])),"Stale LOD labels")
- for i in 3:assert(report.triangles[i]>0 and report.triangles[i]<=[8000,4000,1500][i])
+ for i in 3:assert(report.triangles[i]>0 and report.triangles[i]<=[34000,18000,6000][i])
  v.lod_index=0
  for style in 3:
   v.style_index=style;v.refresh()

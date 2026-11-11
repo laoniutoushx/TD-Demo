@@ -6,11 +6,14 @@ class_name RuinsBuilder
 var rng := RandomNumberGenerator.new()
 var mats := {}
 var plant_material: ShaderMaterial
+var meadow_material: ShaderMaterial
 var rock_material: ShaderMaterial
 var column_material: ShaderMaterial
 var protected_cells: Array[Rect2] = []
 var rejected_assets: Array[String] = []
 var tree_mesh_cache: Dictionary = {}
+var groundcover_stats := {"grass": 0, "ferns": 0, "batches": 0, "meadow_grass": 0}
+const Terrain = preload("res://render_v10/terrain.gd")
 var road_curve: Curve3D
 
 func _ready() -> void:
@@ -53,23 +56,25 @@ func footprint_clear(bounds: AABB) -> bool:
 
 func _prepare_asset(asset: Node3D) -> void:
 	var kind: String = asset.get_meta("kind")
-	if kind == "tree0": _merge_tree(asset, kind)
+	if kind in ["tree0", "tree1"]: _merge_tree(asset, kind)
 	var bounds := model_bounds(asset, Transform3D(asset.basis, Vector3.ZERO))
-	var dimension := bounds.size.y if kind == "column" else maxf(bounds.size.x, bounds.size.z)
-	asset.scale *= float(asset.get_meta("target_size")) / maxf(dimension, 0.001)
+	var height_sized := kind == "column" or asset.has_meta("target_height")
+	var dimension := bounds.size.y if height_sized else maxf(bounds.size.x, bounds.size.z)
+	var size: float = asset.get_meta("target_height", asset.get_meta("target_size"))
+	asset.scale *= size / maxf(dimension, 0.001)
 	bounds = model_bounds(asset, Transform3D(asset.basis, Vector3.ZERO))
-	asset.position -= Vector3(bounds.get_center().x, bounds.position.y + 0.025, bounds.get_center().z)
-	
-	# Ground clearance check:
-	# For trees, the aerial canopy spreads far above (Y > 3.5m); only the trunk occupies ground footprint.
-	var check_bounds: AABB
+	# Keep the authored trunk anchor; an asymmetric crown must not move its root.
+	asset.position -= Vector3(0 if kind.begins_with("tree") else bounds.get_center().x, bounds.position.y + 0.025, 0 if kind.begins_with("tree") else bounds.get_center().z)
+	var ground_height := Terrain.sample_ground_height(asset.position.x, asset.position.z)
+	asset.position.y += ground_height
+	bounds = model_bounds(asset, asset.transform)
+	asset.set_meta("ground_bounds", bounds)
+	var footprint := bounds
 	if kind.begins_with("tree"):
-		check_bounds = AABB(asset.position - Vector3(0.5, 0.1, 0.5), Vector3(1.0, 1.2, 1.0))
-	else:
-		check_bounds = model_bounds(asset, asset.transform)
-	asset.set_meta("ground_bounds", check_bounds)
-	
-	if not footprint_clear(check_bounds):
+		# Mature buttress roots extend past the shaft; include their true scale.
+		var root_radius: float = maxf(.35,size/9.82*1.1) if kind in ["tree0","tree1"] else .35
+		footprint = AABB(Vector3(asset.position.x-root_radius, 0, asset.position.z-root_radius), Vector3(root_radius*2,1,root_radius*2))
+	if not footprint_clear(footprint):
 		rejected_assets.append(str(asset.name))
 		asset.visible = false
 		return
@@ -77,6 +82,7 @@ func _prepare_asset(asset: Node3D) -> void:
 	if kind == "column": material = column_material
 	if kind in ["rock", "fallen"]: material = rock_material
 	_apply_mat_recursive(asset, material)
+	_set_ground_height(asset, ground_height)
 
 func _apply_mat_recursive(node: Node, material: Material) -> void:
 	if node is MeshInstance3D and material: node.material_override = material
@@ -85,86 +91,100 @@ func _apply_mat_recursive(node: Node, material: Material) -> void:
 		node.collision_mask = 0
 	for child in node.get_children(): _apply_mat_recursive(child, material)
 
+func _set_ground_height(node: Node, height: float) -> void:
+	if node is MeshInstance3D:
+		node.set_instance_shader_parameter("ground_height", height)
+	for child in node.get_children(): _set_ground_height(child, height)
+
+func _grass_mesh() -> ArrayMesh:
+	var surface := SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for blade in 18:
+		var angle := rng.randf_range(0, TAU)
+		var root := Vector3(cos(angle),0,sin(angle)) * rng.randf_range(0,.18)
+		var side := Vector3(-sin(angle),0,cos(angle)) * rng.randf_range(.009,.018)
+		var height := rng.randf_range(.05,.15)
+		var middle := root + Vector3(cos(angle)*.035,height*.65,sin(angle)*.035)
+		var tip := root + Vector3(cos(angle)*.075,height,sin(angle)*.075)
+		for vertex in [root-side,middle+side,root+side,root-side,tip,middle+side]:
+			surface.set_color(Color(.20,.29,.075).lerp(Color(.40,.47,.16),clampf(vertex.y/height,0,1)))
+			surface.set_uv(Vector2(0,vertex.y/height))
+			surface.add_vertex(vertex)
+	surface.generate_normals()
+	return surface.commit()
+
 func _build_groundcover(layout: Node3D) -> void:
-	# Shared mesh batches are spatially partitioned to retain useful frustum culling.
-	var fern0_source := (load("res://render_v10/assets/fern_0_lod1.glb") as PackedScene).instantiate()
-	var fern0_mesh: Mesh = fern0_source.find_children("*", "MeshInstance3D", true, false)[0].mesh
+	var source := (load("res://render_v10/assets/fern_0_lod1.glb") as PackedScene).instantiate()
+	var fern: Mesh = source.find_children("*", "MeshInstance3D", true, false)[0].mesh
 	var fern1_source := (load("res://render_v10/assets/fern_1_lod1.glb") as PackedScene).instantiate()
-	var fern1_mesh: Mesh = fern1_source.find_children("*", "MeshInstance3D", true, false)[0].mesh
-	
-	var batches_0 := {}
-	var batches_1 := {}
-	
-	# 1. Roadside curb-hugging ferns along the entire monster road:
-	var total_len: float = road_curve.get_baked_length()
-	var d: float = 2.5
-	while d < total_len - 2.5:
-		var pt: Vector3 = road_curve.sample_baked(d)
-		var pt_next: Vector3 = road_curve.sample_baked(minf(d + 0.4, total_len))
-		var fwd: Vector3 = (pt_next - pt).normalized()
-		var right: Vector3 = Vector3(-fwd.z, 0.0, fwd.x)
-		for side in [-1.0, 1.0]:
-			var offset_dist: float = 1.45 + rng.randf_range(0.05, 0.60)
-			var pos: Vector3 = pt + right * float(side * offset_dist)
-			pos.y = 0.01
-			var closest: Vector3 = road_curve.get_closest_point(pos)
-			var dist_to_road: float = Vector2(pos.x - closest.x, pos.z - closest.z).length()
-			if dist_to_road >= 1.35 and dist_to_road <= 2.25:
-				var angle: float = rng.randf_range(0, TAU)
-				var sc: float = rng.randf_range(0.42, 0.75)
-				var transform := Transform3D(Basis(Vector3.UP, angle).scaled(Vector3.ONE * sc), pos)
-				var key := Vector2i(floori(pos.x / 16.0), floori(pos.z / 16.0))
-				if int(d * 10) % 2 == 0:
-					if not batches_0.has(key): batches_0[key] = []
-					batches_0[key].append(transform)
-				else:
-					if not batches_1.has(key): batches_1[key] = []
-					batches_1[key].append(transform)
-		d += 2.2
-	
-	# 2. Ferns clustered around visible layout assets (trees, rocks, columns):
+	var fern1: Mesh = fern1_source.find_children("*", "MeshInstance3D", true, false)[0].mesh
+	var grass := _grass_mesh()
+	var batches := {}
+	# Low, non-colliding meadow grass can grow in buildable cells. Only the road
+	# is excluded; tall ferns and solid props keep the full placement clearance.
+	for z in range(-43, 24):
+		for x in range(-55, 45):
+			var position := Vector3(x+rng.randf_range(-.45,.45),0,z+rng.randf_range(-.45,.45))
+			var nearest := road_curve.get_closest_point(position)
+			var distance := Vector2(position.x-nearest.x,position.z-nearest.z).length()
+			if distance < 1.90: continue
+			var patch := .5 + .23*sin(position.x*.27+sin(position.z*.31)*1.8) + .20*sin(position.z*.63-position.x*.19)
+			if rng.randf() > smoothstep(.19,.76,patch)*.88: continue
+			position.y = Terrain.sample_ground_height(position.x,position.z)+.003
+			var scale_factor := rng.randf_range(.55,1.0)
+			var transform := Transform3D(Basis(Vector3.UP,rng.randf_range(0,TAU)).scaled(Vector3.ONE*scale_factor),position)
+			var tint := Color(1.0,1.03,.90).lerp(Color(1.23,1.05,.70),rng.randf()*.55)
+			_add_groundcover(batches,grass,transform,0,tint)
+			groundcover_stats.grass += 1
+			for cell in protected_cells:
+				if cell.has_point(Vector2(position.x,position.z)):
+					groundcover_stats.meadow_grass += 1
+					break
+	# Fern islands follow tree shade and ruins rather than identical root rings.
 	for asset in layout.get_children():
 		if not asset.visible: continue
-		var center: Vector3 = asset.position
-		var count: int = 6 if str(asset.get_meta("kind")).begins_with("tree") else 3
+		var kind: String = asset.get_meta("kind")
+		var count := 28 if kind.begins_with("tree") else rng.randi_range(3,8)
 		for i in count:
-			var angle: float = rng.randf_range(0, TAU)
-			var r: float = rng.randf_range(0.8, 2.2)
-			var pos: Vector3 = Vector3(center.x + cos(angle) * r, 0.01, center.z + sin(angle) * r)
-			var closest: Vector3 = road_curve.get_closest_point(pos)
-			if Vector2(pos.x - closest.x, pos.z - closest.z).length() < 1.35:
-				continue
-			var sc: float = rng.randf_range(0.38, 0.68)
-			var transform := Transform3D(Basis(Vector3.UP, angle).scaled(Vector3.ONE * sc), pos)
-			var key := Vector2i(floori(pos.x / 16.0), floori(pos.z / 16.0))
-			if i % 2 == 0:
-				if not batches_0.has(key): batches_0[key] = []
-				batches_0[key].append(transform)
-			else:
-				if not batches_1.has(key): batches_1[key] = []
-				batches_1[key].append(transform)
-	
-	# Instantiate MultiMeshes for fern0 and fern1
-	for mesh_pair in [[fern0_mesh, batches_0], [fern1_mesh, batches_1]]:
-		var m: Mesh = mesh_pair[0]
-		var b_dict: Dictionary = mesh_pair[1]
-		for key in b_dict:
-			var multimesh := MultiMesh.new()
-			multimesh.transform_format = MultiMesh.TRANSFORM_3D
-			multimesh.mesh = m
-			multimesh.instance_count = b_dict[key].size()
-			for i in multimesh.instance_count:
-				multimesh.set_instance_transform(i, b_dict[key][i])
-			var instance := MultiMeshInstance3D.new()
-			instance.multimesh = multimesh
-			instance.material_override = plant_material
-			instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			add_child(instance)
-	
-	fern0_source.free()
+			var position: Vector3 = asset.position + Vector3(rng.randf_range(-3,3),0,rng.randf_range(-3,3))
+			position.y = Terrain.sample_ground_height(position.x,position.z) + .005
+			var is_fern := i % 3 != 0
+			var fern_variant := i % 2
+			var mesh: Mesh = (fern if fern_variant == 0 else fern1) if is_fern else grass
+			var size := rng.randf_range(.30,.72) if is_fern else rng.randf_range(.7,1.0)
+			var transform := Transform3D(Basis(Vector3.UP,rng.randf_range(0,TAU)).scaled(Vector3.ONE*size),position)
+			if not footprint_clear(transform * mesh.get_aabb()): continue
+			_add_groundcover(batches,mesh,transform,(1+fern_variant) if is_fern else 0,Color(rng.randf_range(.87,1.05),rng.randf_range(.94,1.10),rng.randf_range(.82,.98)))
+			groundcover_stats["ferns" if is_fern else "grass"] += 1
+	for key in batches:
+		var batch: Dictionary = batches[key]
+		var multimesh := MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.use_custom_data = true
+		multimesh.mesh = batch.mesh
+		multimesh.instance_count = batch.transforms.size()
+		for i in multimesh.instance_count:
+			multimesh.set_instance_transform(i,batch.transforms[i])
+			multimesh.set_instance_custom_data(i,batch.tints[i])
+		var instance := MultiMeshInstance3D.new()
+		instance.name = "Groundcover_"+key
+		instance.multimesh = multimesh
+		instance.material_override = meadow_material if batch.grass else plant_material
+		instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(instance)
+		groundcover_stats.batches += 1
+	source.free()
 	fern1_source.free()
 
+func _add_groundcover(batches: Dictionary, mesh: Mesh, transform: Transform3D, variant: int, tint: Color) -> void:
+	var key := "%d_%d_%d" % [floori(transform.origin.x/16),floori(transform.origin.z/16),variant]
+	if not batches.has(key): batches[key] = {"mesh":mesh,"transforms":[],"tints":[],"grass":variant==0}
+	batches[key].transforms.append(transform)
+	batches[key].tints.append(tint)
+
 func _init_materials() -> void:
+	meadow_material = ShaderMaterial.new()
+	meadow_material.shader = load("res://render_v10/shaders/meadow.gdshader")
 	mats.edge = _create_std_mat(Color(0.63, 0.63, 0.58), 1.0, 0.0)
 	mats.dark = _create_std_mat(Color(0.19, 0.21, 0.16), 0.95, 0.0)
 	mats.metal = _create_std_mat(Color(0.22, 0.23, 0.25), 0.42, 0.65)

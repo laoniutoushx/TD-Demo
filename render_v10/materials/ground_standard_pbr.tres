@@ -1,7 +1,7 @@
 [gd_resource type="ShaderMaterial" load_steps=10 format=3]
 
 [ext_resource type="Shader" path="res://render_v10/shaders/ground.gdshader" id="1_shader"]
-[ext_resource type="Texture2D" path="res://render_v10/textures/soil_balanced.png" id="2_soil"]
+[ext_resource type="Texture2D" path="res://textures/Ground003_2K-JPG_Color.jpg" id="2_soil"]
 [ext_resource type="Texture2D" path="res://textures/Ground003_2K-JPG_NormalGL.jpg" id="3_normal"]
 [ext_resource type="Texture2D" path="res://render_v10/textures/forest_diff.png" id="4_diff"]
 [ext_resource type="Texture2D" path="res://render_v10/textures/forest_nor_gl.png" id="5_forest_norm"]

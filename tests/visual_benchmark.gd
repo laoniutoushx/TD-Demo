@@ -92,5 +92,8 @@ func run() -> void:
 	root.get_texture().get_image().save_png("res://.godot/visual_benchmark.png")
 	level.wave_manager.process_mode = Node.PROCESS_MODE_INHERIT
 	main_scene.process_mode = Node.PROCESS_MODE_INHERIT
-	print("VISUAL_BENCHMARK_OK")
+	if report.visual_target_passed:
+		print("VISUAL_BENCHMARK_OK")
+	else:
+		push_error("Visual benchmark missed frame-time or unit-count threshold: " + JSON.stringify(report))
 	main_scene.request_quit()

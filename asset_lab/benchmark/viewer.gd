@@ -50,6 +50,7 @@ func _ready():
  $Ground.mesh=ground
  $Ground.position=Vector3.ZERO
  get_viewport().msaa_3d=Viewport.MSAA_4X
+ get_viewport().msaa_2d=Viewport.MSAA_DISABLED
  build_ui()
  apply_camera()
  apply_lighting()
@@ -111,6 +112,7 @@ func refresh():
   for s in 3:
    var p="res://asset_lab/benchmark/tree_style_%d_lod_%d.tscn"%[s,lod_index] if tree_index<0 else "res://asset_lab/styles/tree_%d_style_%d.tscn"%[tree_index,s]
    var inst=load(p).instantiate()
+   if tree_index<0:inst.scale=Vector3.ONE*.45
    inst.position=Vector3(offsets[s],0,0)
    add_child(inst)
    if gray:apply_gray(inst)
@@ -122,6 +124,7 @@ func refresh():
  else:
   var path="res://asset_lab/benchmark/tree_style_%d_lod_%d.tscn"%[style_index,lod_index] if tree_index<0 else "res://asset_lab/styles/tree_%d_style_%d.tscn"%[tree_index,style_index]
   tree=load(path).instantiate()
+  if tree_index<0:tree.scale=Vector3.ONE*.45
   add_child(tree)
   if gray:apply_gray(tree)
   set_wind(tree)

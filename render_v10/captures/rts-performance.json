@@ -1,0 +1,26 @@
+[
+	{
+		"draw_calls": 889.0,
+		"enemies": 50,
+		"mean_frame_ms": 16.6882333333333,
+		"p95_frame_ms": 17.504,
+		"quality": "high",
+		"resolution": "(1080, 768)"
+	},
+	{
+		"draw_calls": 960.0,
+		"enemies": 100,
+		"mean_frame_ms": 16.6684666666667,
+		"p95_frame_ms": 17.42,
+		"quality": "high",
+		"resolution": "(1080, 768)"
+	},
+	{
+		"draw_calls": 1266.0,
+		"enemies": 200,
+		"mean_frame_ms": 19.5621666666667,
+		"p95_frame_ms": 22.116,
+		"quality": "high",
+		"resolution": "(1080, 768)"
+	}
+]

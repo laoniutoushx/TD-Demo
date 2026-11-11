@@ -1,0 +1,71 @@
+{
+  "headless/full": {
+    "status": "passed",
+    "marker": "FLOW_TEST_OK",
+    "log_updated": "2026-11-11T21:09:46.664014+08:00"
+  },
+  "forward/full": {
+    "status": "passed",
+    "marker": "FLOW_TEST_OK",
+    "log_updated": "2026-11-11T21:13:38.535882+08:00"
+  },
+  "headless/selection-input": {
+    "status": "passed",
+    "marker": "SELECTION_INPUT_OK",
+    "log_updated": "2026-11-11T21:10:17.299873+08:00"
+  },
+  "forward/selection-input": {
+    "status": "passed",
+    "marker": "SELECTION_INPUT_OK",
+    "log_updated": "2026-11-11T22:10:06.316264+08:00"
+  },
+  "headless/cursor-policy": {
+    "status": "passed",
+    "marker": "CURSOR_POLICY_OK",
+    "log_updated": "2026-11-11T22:26:41.900962+08:00"
+  },
+  "forward/cursor-policy": {
+    "status": "passed",
+    "marker": "CURSOR_POLICY_OK",
+    "log_updated": "2026-11-11T22:10:23.164984+08:00"
+  },
+  "forward/rts-quality": {
+    "status": "passed",
+    "marker": "RTS_QUALITY_OK",
+    "log_updated": "2026-11-11T22:11:30.295671+08:00"
+  },
+  "forward/scene-review": {
+    "status": "passed",
+    "marker": "SCENE_REVIEW_OK",
+    "log_updated": "2026-11-11T22:25:45.708356+08:00"
+  },
+  "forward/battle-review": {
+    "status": "passed",
+    "marker": "SCENE_REVIEW_OK",
+    "log_updated": "2026-11-11T22:32:18.290047+08:00"
+  },
+  "forward/bank-review": {
+    "status": "passed",
+    "marker": "BANK_CAPTURE_OK",
+    "log_updated": "2026-11-11T22:26:04.890859+08:00"
+  },
+  "forward/visual-benchmark": {
+    "status": "passed",
+    "marker": "VISUAL_BENCHMARK_OK",
+    "log_updated": "2026-11-11T22:18:46.952355+08:00"
+  },
+  "forward/tree-review": {
+    "status": "passed",
+    "marker": "TREE_REVIEW_OK",
+    "log_updated": "2026-11-11T22:26:10.118713+08:00"
+  },
+  "forward/edge-scroll": {
+    "status": "deferred",
+    "reason": "User requested testing later; last native attempt interrupted by external mouse movement.",
+    "last_attempt": {
+      "assertions": 96,
+      "failures": 0,
+      "interrupted": true
+    }
+  }
+}

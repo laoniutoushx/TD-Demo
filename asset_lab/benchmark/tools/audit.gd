@@ -2,13 +2,17 @@ extends SceneTree
 var triangles=0
 var surfaces=0
 var vertices_with_color=0
+# Mature crown replaces the old 660-leaf sapling. Budget is explicit; whole-map
+# frame-time acceptance is measured separately by tests/visual_benchmark.gd.
+const MATURE_TRIANGLE_BUDGETS = [34000, 18000, 6000]
 func _initialize():
  for style in 3:
   for lod in 3:
    triangles=0;surfaces=0;vertices_with_color=0
    var model=load("res://asset_lab/benchmark/tree_style_%d_lod_%d.tscn"%[style,lod]).instantiate()
    inspect(model)
-   assert(triangles>0 and triangles<=[8000,4000,1500][lod])
+   assert(triangles>0 and triangles<=MATURE_TRIANGLE_BUDGETS[lod])
+   assert(surfaces==2,"Mature tree must share one bark and one leaf surface")
    assert(vertices_with_color>0,"Lost vertex data")
    assert(model.scale==Vector3.ONE)
    print("PASS style=",style," lod=",lod," triangles=",triangles," surfaces=",surfaces," foliage_vertices=",vertices_with_color)

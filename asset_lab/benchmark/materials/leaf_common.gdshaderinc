@@ -19,7 +19,7 @@ void vertex() {
 void fragment() {
  vec3 base=texture(base_map,UV).rgb;
  vec3 raw_albedo=mix(clean_tint,base,texture_weight);
- // 3-tier cool-shadow to warm-crown progression driven by spray height & shoot tip (COLOR.g)
+ // COLOR.g is neutral per-leaf variation. Directional light supplies crown shading.
  float t=clamp(COLOR.g,0.0,1.0);
  vec3 cool_shift=style_mode==0?vec3(0.68,0.74,0.68):vec3(0.40,0.66,0.64);
  vec3 mid_shift=style_mode==0?vec3(0.92,0.95,0.88):vec3(0.78,0.96,0.74);

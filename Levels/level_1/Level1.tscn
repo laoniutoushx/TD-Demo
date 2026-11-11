@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=3 uid="uid://bxibobasihqmy"]
+[gd_scene load_steps=48 format=3 uid="uid://bxibobasihqmy"]
 
 [ext_resource type="Script" uid="uid://jiitdpiccclv" path="res://Levels/level_1/level.gd" id="1_chftm"]
 [ext_resource type="PackedScene" uid="uid://boulaxdrcplpg" path="res://RayPickerCamera/ray_picker_camera.tscn" id="1_elhju"]
@@ -38,6 +38,8 @@
 
 [ext_resource type="PackedScene" path="res://render_v10/scenery_layout.tscn" id="scenery_layout"]
 
+[ext_resource type="ArrayMesh" path="res://render_v10/assets/terrain.res" id="terrain_mesh"]
+
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_v10"]
 sky_top_color = Color(0.3, 0.46, 0.66, 1)
 sky_horizon_color = Color(0.66, 0.75, 0.85, 1)
@@ -52,7 +54,7 @@ background_mode = 2
 sky = SubResource("Sky_v10")
 ambient_light_source = 2
 ambient_light_color = Color(0.466667, 0.615686, 0.768627, 1)
-ambient_light_energy = 0.36
+ambient_light_energy = 0.48
 reflected_light_source = 2
 tonemap_mode = 3
 tonemap_exposure = 1.02
@@ -82,7 +84,7 @@ adjustment_contrast = 1.04
 adjustment_saturation = 1.06
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_v10"]
-dof_blur_far_enabled = true
+dof_blur_far_enabled = false
 dof_blur_far_distance = 46.0
 dof_blur_far_transition = 20.0
 dof_blur_amount = 0.025
@@ -146,7 +148,7 @@ environment = SubResource("Environment_tk0br")
 transform = Transform3D(-0.707107, 0, 0.707107, 0.374709, 0.848048, 0.374709, -0.599661, 0.529919, -0.599661, 0, 10, 0)
 rotation_degrees = Vector3(-32, -135, 0)
 light_color = Color(1, 0.87451, 0.717647, 1)
-light_energy = 1.75
+light_energy = 1.40
 light_volumetric_fog_energy = 3.2
 shadow_enabled = true
 shadow_bias = 0.025
@@ -186,12 +188,13 @@ shader_params/u_specular = 0.15
 [node name="GroundMesh" type="MeshInstance3D" parent="Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.001, 0)
 layers = 524289
-mesh = SubResource("PlaneMesh_narih")
+mesh = ExtResource("terrain_mesh")
+material_override = ExtResource("ground_pbr_mat")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
 [node name="RayPickerCamera" parent="." node_paths=PackedStringArray("grid_map") instance=ExtResource("1_elhju")]
-transform = Transform3D(1, 0, 0, 0, 0.529919, 0.848048, 0, -0.848048, 0.529919, -4, 26.5, 11.5)
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 6, 36, 22.2075)
 fov = 54.0
 attributes = SubResource("CameraAttributesPractical_v10")
 grid_map = NodePath("../GridMap")
@@ -273,7 +276,7 @@ life = 1
 [node name="RTSController" type="Node3D" parent="." node_paths=PackedStringArray("cam")]
 script = ExtResource("7_xmjyx")
 cam = NodePath("../RayPickerCamera")
-map_bounds = Rect2(-30, -10, 50, 50)
+map_bounds = Rect2(-42, -12.7925, 80, 56)
 
 [node name="WaveManager" type="Node3D" parent="."]
 script = ExtResource("8_iynip")

@@ -3,6 +3,7 @@ render_mode diffuse_burley, specular_schlick_ggx;
 varying vec3 local_position;
 varying vec3 world_normal;
 varying vec3 world_position;
+instance uniform float ground_height = 0.0;
 
 void vertex() {
 	local_position = VERTEX;
@@ -28,7 +29,7 @@ void fragment() {
 	ROUGHNESS = mix(0.84, 0.92, moss_mask);
 	
 	// Soft object-ground contact boundary blending
-	float dirt_mask = smoothstep(0.0, 1.0, clamp(1.0 - (world_position.y - 0.01) / 0.20, 0.0, 1.0));
+	float dirt_mask = smoothstep(0.0, 1.0, clamp(1.0 - (world_position.y - ground_height - 0.01) / 0.20, 0.0, 1.0));
 	vec3 soil_color = vec3(0.18, 0.15, 0.11) * (0.85 + 0.30 * n_macro);
 	ALBEDO = mix(ALBEDO, soil_color, dirt_mask * 0.72);
 	ROUGHNESS = mix(ROUGHNESS, 0.95, dirt_mask);

@@ -1,7 +1,7 @@
 param(
     [string]$GodotExecutable = 'H:\Godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe',
     [ValidateSet('forward', 'headless')][string]$Renderer = 'forward',
-    [ValidateSet('full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'edge-scroll')][string]$Scenario = 'full',
+    [ValidateSet('full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review')][string]$Scenario = 'full',
     [int]$TimeoutSeconds = 180
 )
 
@@ -30,6 +30,22 @@ if ($Scenario -eq 'cursor-policy') {
     if ($Renderer -eq 'headless') { $arguments += '--headless' }
 }
 $marker = 'FLOW_TEST_OK'
+if ($Scenario -in @('scene-review', 'battle-review', 'bank-review', 'visual-benchmark')) {
+    if ($Renderer -eq 'headless') { throw "$Scenario requires native rendering" }
+    $script = if ($Scenario -eq 'visual-benchmark') { 'res://tests/visual_benchmark.gd' } else { 'res://tests/scene_layout_review.gd' }
+    $arguments = @('--path', $projectRoot, '--script', $script, '--log-file', $logPath)
+    $marker = if ($Scenario -eq 'visual-benchmark') { 'VISUAL_BENCHMARK_OK' } else { 'SCENE_REVIEW_OK' }
+    if ($Scenario -eq 'battle-review') { $arguments += @('--', '--battle-sample') }
+    if ($Scenario -eq 'bank-review') {
+        $arguments += @('--', '--bank-only')
+        $marker = 'BANK_CAPTURE_OK'
+    }
+}
+if ($Scenario -eq 'tree-review') {
+    if ($Renderer -eq 'headless') { throw 'tree-review requires native rendering' }
+    $arguments = @('--path', $projectRoot, 'res://asset_lab/tree_comparison.tscn', '--log-file', $logPath, '--', '--review', '--quick')
+    $marker = 'TREE_REVIEW_OK'
+}
 if ($Scenario -eq 'edge-scroll') {
     if ($Renderer -eq 'headless') { throw 'edge-scroll requires a native desktop window' }
     $arguments = @('--path', $projectRoot, '--script', 'res://tests/edge_scroll_smoke.gd', '--log-file', $logPath)

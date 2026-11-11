@@ -9,7 +9,7 @@ uniform sampler2D forest_normal : hint_normal, filter_linear_mipmap_anisotropic,
 uniform sampler2D forest_rough : hint_default_white, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform float layered = 1.0;
 uniform sampler2D road_distance_map : filter_linear, repeat_disable;
-uniform vec4 map_bounds = vec4(-80.0, -70.0, 160.0, 140.0);
+uniform vec4 map_bounds = vec4(-136.0, -88.0, 272.0, 176.0);
 uniform int style_mode = 0;
 varying vec3 world_pos;
 
@@ -40,9 +40,12 @@ void fragment() {
 	vec3 dirt = soil * mix(vec3(0.94, 0.95, 0.94), vec3(1.02, 1.02, 1.0), macro);
 	
 	// Base albedo: mix dirt and lush moss
-	float meadow = smoothstep(2.2, 3.5, broken_edge) * (1.0 - ecology.g);
-	vec3 meadow_color = soil * vec3(0.65, 0.85, 0.43);
-	ALBEDO = mix(dirt * vec3(0.92, 0.97, 0.90), meadow_color, meadow * 0.65);
+	float meadow = smoothstep(1.6, 2.8, broken_edge) * (1.0 - ecology.g * 0.7);
+	float grass_patch = smoothstep(0.28, 0.65, macro * 0.7 + micro * 0.3);
+	vec3 meadow_color = soil * vec3(0.52, 1.05, 0.28);
+	ALBEDO = mix(dirt * vec3(0.85, 0.88, 0.78), meadow_color, meadow * mix(0.38, 0.88, grass_patch));
+	// Small dry flecks and exposed earth break the mown meadow into quiet patches.
+	ALBEDO = mix(ALBEDO, soil * vec3(0.90, 0.84, 0.61), meadow * smoothstep(0.72, 0.85, micro) * 0.28);
 	ALBEDO = mix(ALBEDO, soil * vec3(0.40, 0.62, 0.20), moss);
 
 	// Zone 4: Forest litter layer (starts at 5.5m out, deep under tree canopies)

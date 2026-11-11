@@ -1,0 +1,24 @@
+{
+	"cells": 180,
+	"draw_calls": 807.983333333333,
+	"frames": 600,
+	"gpu": "NVIDIA GeForce RTX 3060",
+	"groundcover": {
+		"batches": 97,
+		"ferns": 1142,
+		"grass": 3455,
+		"meadow_grass": 1339
+	},
+	"label": "scene",
+	"p50_ms": 8.673,
+	"p95_ms": 10.64,
+	"p99_ms": 10.93,
+	"quality": "high",
+	"resolution": [
+		1920,
+		1080
+	],
+	"tree_count": 67.0,
+	"triangles": 5368239.0,
+	"video_memory_bytes": 1445090144.0
+}
