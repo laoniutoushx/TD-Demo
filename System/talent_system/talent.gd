@@ -191,6 +191,12 @@ func _handle_talent_click_cast(screen_pos: Vector2) -> void:
     if CommonUtil.is_flag_set(TalentResource.TALENT_TARGET_TYPE.UNIT, target_type):
         var picked_unit = RTSPicker.pick_unit(camera, screen_pos, _talent_target_unit_cond_matched)
         if picked_unit != null:
+            # 严格施法距离校验（超出距离拒绝施法并提示）
+            if release_distance > 0.0 and is_instance_valid(unit):
+                var dist: float = unit.global_position.distance_to(picked_unit.global_position)
+                if dist > release_distance:
+                    SOS.main.message_bar.set_message("目标超出施法距离")
+                    return
             mouse_click_check = false
             talent_context.target = picked_unit
             talent_context.target_position = picked_unit.global_position
@@ -208,14 +214,27 @@ func _handle_talent_click_cast(screen_pos: Vector2) -> void:
         var ground_pos = RTSPicker.pick_ground(camera, screen_pos)
         if ground_pos != null:
             var target_pos: Vector3 = ground_pos
-            # 施法距离收敛截断（防止超出技能射程）
+            # 施法距离收敛截断（防止超出技能射程，高程以截断处地表为准）
             if release_distance > 0.0 and is_instance_valid(unit):
                 var caster_pos: Vector3 = unit.global_position
                 var offset := target_pos - caster_pos
                 offset.y = 0.0
                 if offset.length() > release_distance:
                     offset = offset.normalized() * release_distance
-                    target_pos = Vector3(caster_pos.x + offset.x, ground_pos.y, caster_pos.z + offset.z)
+                    var clamped_x = caster_pos.x + offset.x
+                    var clamped_z = caster_pos.z + offset.z
+                    var clamped_y = caster_pos.y
+                    var world_3d = camera.get_world_3d()
+                    if world_3d != null and world_3d.direct_space_state != null:
+                        var ray_query = PhysicsRayQueryParameters3D.create(
+                            Vector3(clamped_x, caster_pos.y + 6.0, clamped_z),
+                            Vector3(clamped_x, caster_pos.y - 12.0, clamped_z),
+                            524288 | 1 | 2
+                        )
+                        var hit = world_3d.direct_space_state.intersect_ray(ray_query)
+                        if not hit.is_empty():
+                            clamped_y = hit.position.y
+                    target_pos = Vector3(clamped_x, clamped_y, clamped_z)
             
             mouse_click_check = false
             talent_context.target = null

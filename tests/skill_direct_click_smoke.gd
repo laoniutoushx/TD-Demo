@@ -127,27 +127,52 @@ func run() -> void:
 	print("  - Target position offset from clicked ground ray: %.4f m" % cast_dist)
 	check(cast_dist < 0.1, "Skill target position matches exact mouse click ground position")
 	
-	# 7. 测试单位指向性技能 (风暴之锤)
+	# 7. 测试单位指向性技能 (风暴之锤) 的施法距离限制
 	check(hero.skill_map.has("storm_hammer"), "Hero has storm_hammer skill")
 	var hammer_skill = hero.skill_map.get("storm_hammer")
 	check(hammer_skill != null, "Storm Hammer skill object exists")
 	
-	# 生成敌方单位用于目标命中
+	# 生成敌方单位
 	var enemy = main_scene.unit_system.create_unit(load("res://Unit/enemy/resources/02_pig.tres"), 1)
 	level.add_child(enemy)
-	enemy.global_position = hero.global_position + Vector3(3, 0, 3)
+	
+	# (a) 先测试超距点击: 将敌人放置在 70m 处 (风暴之锤 release_distance = 50m)
+	enemy.global_position = hero.global_position + Vector3(0, 0, 70)
 	await process_frame
 	
 	hammer_skill.change_state(hammer_skill.SKILL_STATE.Targeted_Indicate)
-	check(hammer_skill.current_state == hammer_skill.SKILL_STATE.Targeted_Indicate, "Hammer skill is in Targeted_Indicate")
-	
-	# 屏幕空间坐标对准敌方单位
-	var enemy_screen_pos: Vector2 = camera.unproject_position(enemy.global_position + Vector3(0, 0.5, 0))
-	click(enemy_screen_pos, MOUSE_BUTTON_LEFT)
+	var out_of_range_pos: Vector2 = camera.unproject_position(enemy.global_position + Vector3(0, 0.5, 0))
+	click(out_of_range_pos, MOUSE_BUTTON_LEFT)
 	await process_frame
 	
-	check(hammer_skill.skill_context.target == enemy, "Targeted skill picked correct unit from mouse click")
-	check(hammer_skill.current_state in [hammer_skill.SKILL_STATE.Release, hammer_skill.SKILL_STATE.Cool_Down, hammer_skill.SKILL_STATE.Casting], "Targeted skill entered release on unit click")
+	check(hammer_skill.current_state == hammer_skill.SKILL_STATE.Targeted_Indicate, "Out-of-range enemy click is rejected, skill remains in Targeted_Indicate")
+	check(hammer_skill.skill_context.target == null, "No target locked on out-of-range click")
+	
+	# (b) 测试射程内点击: 将敌人移至 10m 处
+	enemy.global_position = hero.global_position + Vector3(3, 0, 3)
+	await process_frame
+	
+	var in_range_pos: Vector2 = camera.unproject_position(enemy.global_position + Vector3(0, 0.5, 0))
+	click(in_range_pos, MOUSE_BUTTON_LEFT)
+	await process_frame
+	
+	check(hammer_skill.skill_context.target == enemy, "Targeted skill picked correct unit within range")
+	check(hammer_skill.current_state in [hammer_skill.SKILL_STATE.Release, hammer_skill.SKILL_STATE.Cool_Down, hammer_skill.SKILL_STATE.Casting], "Targeted skill entered release on in-range unit click")
+	
+	# 8. 测试 AOE 指示器超距时的吸附截断、不消失与警示色
+	fire_skill.change_state(fire_skill.SKILL_STATE.Circle_Range_Indicate)
+	var far_screen_pt := Vector2(600, 50)
+	player.skill_scope_indicator.sync_screen_position(far_screen_pt)
+	await process_frame
+	
+	check(player.skill_scope_indicator.visible == true, "Indicator remains visible even at far screen coordinates")
+	var ind_dist: float = Vector2(player.skill_scope_indicator.global_position.x - hero.global_position.x, player.skill_scope_indicator.global_position.z - hero.global_position.z).length()
+	print("  - Indicator distance from caster when aimed far: %.2f m (max_range: %.2f m)" % [ind_dist, fire_skill.release_distance])
+	check(abs(ind_dist - fire_skill.release_distance) < 0.2, "Indicator clamped precisely to max release_distance")
+	check(player.skill_scope_indicator.decal.modulate.r > 0.8, "Indicator shows warning color when out of range")
+	
+	key(KEY_ESCAPE)
+	await process_frame
 	
 	# 清理
 	enemy.queue_free()

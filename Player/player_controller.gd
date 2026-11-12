@@ -285,6 +285,8 @@ func refresh_selection_items(item_map: Dictionary, mouse_pos: Vector3, on_select
 func _unhandled_input(event):
 	if event is InputEventMouseMotion:
 		update_hover_state(event.position)
+		if is_instance_valid(skill_scope_indicator) and skill_scope_indicator.visible:
+			skill_scope_indicator.sync_screen_position(event.position)
 		return
 
 	if event is InputEventMouseButton and not BattleInput.pointer_available(get_viewport(), event.position): return
