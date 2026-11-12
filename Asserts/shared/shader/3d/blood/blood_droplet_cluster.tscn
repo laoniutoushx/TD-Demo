@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://e48m2k5l94404"]
+[gd_scene format=3 uid="uid://batrhi8dpxaad"]
 
 [ext_resource type="Texture2D" uid="uid://cqu5ftjrlighg" path="res://Asserts/materials/blood_variants/droplet_scatter/droplet_scatter_albedo.png" id="1_albedo"]
 [ext_resource type="Texture2D" uid="uid://cxwo6b2tbekga" path="res://Asserts/materials/blood_variants/droplet_scatter/droplet_scatter_normal.png" id="2_normal"]

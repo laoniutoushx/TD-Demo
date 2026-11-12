@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://c83k92m3j2202"]
+[gd_scene format=3 uid="uid://c83la2m3j2202"]
 
 [ext_resource type="Texture2D" uid="uid://b2gqpw261bwo6" path="res://Asserts/materials/blood_variants/radial_burst/radial_burst_albedo.png" id="1_albedo"]
 [ext_resource type="Texture2D" uid="uid://b57e0obu0ovb5" path="res://Asserts/materials/blood_variants/radial_burst/radial_burst_normal.png" id="2_normal"]

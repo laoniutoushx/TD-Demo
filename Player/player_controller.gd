@@ -3,13 +3,8 @@ const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
 const RTSPicker = preload("res://Scripts/utils/RTSPicker.gd")
 var _current_hovered_target: Node = null
 
-# Scope Node Define
-@onready var select_area: Area3D = %SelectArea		# （单个单位鼠标高亮检测）
 @onready var item_hud: PackedScene = preload("res://Components/item_indicator/item_hud.tscn")
-
 @onready var selection_box: SelectionBox = %SelectionBox
-@onready var player_skill_scope_indicator: PlayerSkillScopeIndicator = %PlayerSkillScopeIndicator
-@onready var player_skill_target_indicator = %PlayerSkillTargetIndicator
 
 
 # 玩家幸运值（随机因子）
@@ -158,7 +153,6 @@ func _ready() -> void:
 
 	# Signal 监听
 	#SignalBus.ray_picker_regist.emit(click_to_select)
-	SignalBufferSystem.buffer_signal(SignalBus.ray_picker_regist, select_area_pos_sync)
 	SignalBus.unit_logic_death.connect(_on_unit_logic_death)
 	player_idx = get_player_idx()
 	player_group_idx = get_player_group_idx()
@@ -167,9 +161,6 @@ func _ready() -> void:
 
 	# 设置鼠标光标
 	Input.set_custom_mouse_cursor(cursor_default)
-
-	# target_indicator 默认隐藏
-	player_skill_target_indicator.hide()
 
 	# player 初始化 money、wood 值
 	set_money(self, 20)
@@ -213,37 +204,6 @@ func limit_move(center: Vector3, radius: float):
 
 func not_limit_move():
 	is_limit_move = false    
-
-
-
-# TODO 当限制技能释放范围时，也同时限制鼠标移动范围（3d 反向映射 2d 空间）
-# area3d 与 mouse position 同步 （ray picker 回调函数）
-func select_area_pos_sync(ray_cast: RayCast3D) -> void:
-	if not ray_cast.is_colliding(): return
-	# 此处多一个处理，当玩家处在技能提示阶段，准备释放技能时，限制获取到的最大点击位置（鼠标移动限制只针对无法移动单位）
-	var collision_point = ray_cast.get_collision_point()
-	if is_limit_move:
-		# 
-		var current_pos := Vector2(collision_point.x, collision_point.z)
-		var mouse_area_center := Vector2(SOS.main.player_controller.limit_center.x, SOS.main.player_controller.limit_center.z)
-		var distance_to_center = current_pos.distance_to(mouse_area_center)
-
-
-		# print("distance to center %s, _radius %s" % [distance_to_center, SOS.main.player_controller.limit_radius])
-
-		# 如果鼠标超出了圆形范围，将其位置限制到圆形边界
-		if distance_to_center  >= SOS.main.player_controller.limit_radius:
-			var direction = (current_pos - mouse_area_center).normalized()
-			var clamped_pos = mouse_area_center + direction * SOS.main.player_controller.limit_radius
-			
-			select_area.global_position = Vector3(clamped_pos.x, collision_point.y, clamped_pos.y)
-			player_skill_target_indicator.global_position = Vector3(clamped_pos.x, collision_point.y, clamped_pos.y)
-		else:
-			select_area.global_position = collision_point
-			player_skill_target_indicator.global_position = collision_point
-	else:
-		select_area.global_position = collision_point
-		player_skill_target_indicator.global_position = collision_point
 
 
 
@@ -394,21 +354,6 @@ func update_hover_state(screen_pos: Vector2) -> void:
 		# 底部色盘仅在真正单选/框选选中时（refresh_selection_units）才按需创建并显示
 	else:
 		cur_unit_map.clear()
-
-
-
-
-# 单位进入触发（旧物理范围检测已由 RTSPicker 取代，保留空实现兼容旧场景信号绑定）
-func _on_select_area_area_entered(_area: Area3D) -> void:
-	pass
-
-
-# 单位退出触发（旧物理范围检测已由 RTSPicker 取代，保留空实现兼容旧场景信号绑定）
-func _on_select_area_area_exited(_area: Area3D) -> void:
-	pass
-
-
-
 
 
 # listening unit death

@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dm2k38j4l3303"]
+[gd_scene format=3 uid="uid://dm2k38j4l3303"]
 
 [ext_resource type="Texture2D" uid="uid://bdvxihp117oje" path="res://Asserts/materials/blood_variants/directional_streak/directional_streak_albedo.png" id="1_albedo"]
 [ext_resource type="Texture2D" uid="uid://jw6pthd4o00v" path="res://Asserts/materials/blood_variants/directional_streak/directional_streak_normal.png" id="2_normal"]

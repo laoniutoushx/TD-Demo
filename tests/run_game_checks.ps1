@@ -1,7 +1,7 @@
 param(
     [string]$GodotExecutable = 'H:\Godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe',
     [ValidateSet('forward', 'headless')][string]$Renderer = 'forward',
-    [ValidateSet('full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review')][string]$Scenario = 'full',
+    [ValidateSet('full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click')][string]$Scenario = 'full',
     [int]$TimeoutSeconds = 180
 )
 
@@ -23,6 +23,10 @@ if ($Scenario -eq 'rts-quality') {
 }
 if ($Scenario -eq 'selection-input') {
     $arguments = @('--path', $projectRoot, '--script', 'res://tests/selection_input_smoke.gd', '--log-file', $logPath)
+}
+if ($Scenario -eq 'skill-click') {
+    if ($Renderer -eq 'headless') { throw 'skill-click requires native rendering for viewport raycasting and mouse input' }
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/skill_direct_click_smoke.gd', '--log-file', $logPath)
 }
 if ($Renderer -eq 'headless') { $arguments += '--headless' }
 if ($Scenario -eq 'cursor-policy') {
@@ -54,6 +58,7 @@ if ($Scenario -eq 'edge-scroll') {
 if ($Scenario -eq 'cursor-policy') { $marker = 'CURSOR_POLICY_OK' }
 if ($Scenario -eq 'rts-quality') { $marker = 'RTS_QUALITY_OK' }
 if ($Scenario -eq 'selection-input') { $marker = 'SELECTION_INPUT_OK' }
+if ($Scenario -eq 'skill-click') { $marker = 'SKILL_DIRECT_CLICK_OK' }
 if ($Scenario -eq 'menu-exit') {
     $arguments += @('--', '--exit-from-menu')
     $marker = 'MENU_EXIT_OK'

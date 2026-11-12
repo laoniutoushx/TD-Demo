@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bvyv8y1x2w101"]
+[gd_scene format=3 uid="uid://bvyv8y1x2w101"]
 
 [ext_resource type="Texture2D" uid="uid://dldrnk1w1o03v" path="res://Asserts/materials/blood_variants/heavy_pool/heavy_pool_albedo.png" id="1_albedo"]
 [ext_resource type="Texture2D" uid="uid://uwfnnjivqqbd" path="res://Asserts/materials/blood_variants/heavy_pool/heavy_pool_normal.png" id="2_normal"]

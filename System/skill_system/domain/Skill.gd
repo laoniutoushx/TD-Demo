@@ -290,26 +290,66 @@ func skill_disabled_check() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and not BattleInput.pointer_available(get_viewport(), event.position): return
-    if mouse_click_check and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-        # 单位事件监听
-        if current_state == SKILL_STATE.Direction_Indicate or current_state == SKILL_STATE.Circle_Range_Indicate:
-            mouse_click_check = false
-            # 鼠标在 3d 空间中位置
-            # skill_context.target_position =  SOS.main.player_controller.player_mouse_position.global_position
-            # 玩家 circle indicator 在 3d 空间中位置（适配玩家技能范围，防止释放技能超出技能施法范围距离）
-            skill_context.target_position =  SOS.main.player_controller.player_skill_scope_indicator.global_position
+    if not mouse_click_check: return
+    if current_state not in [SKILL_STATE.Targeted_Indicate, SKILL_STATE.Circle_Range_Indicate, SKILL_STATE.Direction_Indicate]:
+        return
+        
+    # ESC 或 鼠标右键 取消施法
+    if (event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE) or \
+       (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_RIGHT):
+        change_state(SKILL_STATE.Idle)
+        get_viewport().set_input_as_handled()
+        return
 
-            change_state(SKILL_STATE.Release)
-            load("res://Scripts/utils/BattleInput.gd").request_cursor_hidden(self, false)
-            get_viewport().set_input_as_handled()
+    # 鼠标左键点击确认释放
+    if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+        if not BattleInput.pointer_available(get_viewport(), event.position): return
+        _handle_skill_click_cast(event.position)
+        get_viewport().set_input_as_handled()
+
+func _handle_skill_click_cast(screen_pos: Vector2) -> void:
+    var camera = get_viewport().get_camera_3d()
+    if camera == null: return
     
-    if event is InputEventKey and event.pressed and event.keycode  == KEY_ESCAPE:
-        if current_state == SKILL_STATE.Targeted_Indicate or current_state == SKILL_STATE.Building_Indicate or current_state == SKILL_STATE.Circle_Range_Indicate:
-            load("res://Scripts/utils/BattleInput.gd").request_cursor_hidden(self, false)
-            change_state(SKILL_STATE.Idle)
+    # 1. 目标单位检查（如果技能支持指向单位）
+    if CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.UNIT, target_type):
+        var picked_unit = RTSPicker.pick_unit(camera, screen_pos, _skill_target_unit_cond_matched)
+        if picked_unit != null:
             mouse_click_check = false
-            get_viewport().set_input_as_handled()
+            skill_context.target = picked_unit
+            skill_context.target_position = picked_unit.global_position
+            change_state(SKILL_STATE.Release)
+            return
+
+    # 2. 地面 / 范围释放检查（包括石头台阶等复杂地貌）
+    var is_floor_or_range := (
+        current_state == SKILL_STATE.Circle_Range_Indicate or
+        current_state == SKILL_STATE.Direction_Indicate or
+        CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.FLOOR, target_type)
+    )
+    
+    if is_floor_or_range:
+        var ground_pos = RTSPicker.pick_ground(camera, screen_pos)
+        if ground_pos != null:
+            var target_pos: Vector3 = ground_pos
+            # 施法距离收敛截断（防止超出技能射程）
+            if release_distance > 0.0 and is_instance_valid(unit):
+                var caster_pos: Vector3 = unit.global_position
+                var offset := target_pos - caster_pos
+                offset.y = 0.0
+                if offset.length() > release_distance:
+                    offset = offset.normalized() * release_distance
+                    target_pos = Vector3(caster_pos.x + offset.x, ground_pos.y, caster_pos.z + offset.z)
+            
+            mouse_click_check = false
+            skill_context.target = null
+            skill_context.target_position = target_pos
+            change_state(SKILL_STATE.Release)
+            return
+
+    # 3. 若仅限目标单位但未点中任何有效单位
+    if CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.UNIT, target_type):
+        SOS.main.message_bar.set_message("没有选中任何有效单位")
 
 
 
@@ -360,8 +400,10 @@ func _on_player_selected_units(unit_map: Dictionary, mouse_pos: Vector3, on_sele
 
 
 # skill target selected unit filter
-func _skill_target_unit_cond_matched(_u: BaseUnit) -> bool:
-
+func _skill_target_unit_cond_matched(target_node: Variant) -> bool:
+    if not (target_node is BaseUnit):
+        return false
+    var _u: BaseUnit = target_node
     var conditions = [
         # friend unit
         CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.FRIEND, target_type) and _u.player_group == SOS.main.player_controller.player_group_idx,
@@ -401,23 +443,22 @@ func change_state(new_state: SKILL_STATE) -> void:
         # player status 变更 DEFAULT
         SOS.main.player_controller.player_status = SOS.main.player_controller.PLAYER_STATUS.DEFAULT
         # player cursor 变更 DEFAULT
-        load("res://Scripts/utils/BattleInput.gd").request_cursor_hidden(self, false)
         SOS.main.player_controller.switch_cursor(Constants.CURSOR_STATUS.DEFAULT)
+        mouse_click_check = false
 
-        slot.icon_texture.material.set_shader_parameter("enable_gradient", false)
-        var tween = create_tween()
-        tween.tween_property(slot, "scale", Vector2(1.0, 1.0), 0.1)
-
+        if slot and is_instance_valid(slot):
+            if slot.icon_texture and slot.icon_texture.material:
+                slot.icon_texture.material.set_shader_parameter("enable_gradient", false)
+            var tween = create_tween()
+            tween.tween_property(slot, "scale", Vector2(1.0, 1.0), 0.1)
 
         var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
         if range_comp:
             range_comp.set_radius(unit.attack_range)
 
-
         # 恢复 cursor 移动
         SOS.main.player_controller.not_limit_move()
 
-            
         if current_state == SKILL_STATE.Building_Indicate:
             # 关闭 BuildingKeyIndicator
             SOS.main.building_key_indicator.show_toggle()
@@ -426,108 +467,58 @@ func change_state(new_state: SKILL_STATE) -> void:
             # 如果切换到 Idle 状态，直接删除 turret（耦合代码）
             if new_state == SKILL_STATE.Idle and SOS.main.turret_manager:
                 SOS.main.turret_manager.cancel_preview()
-                
-
-        if current_state == SKILL_STATE.Circle_Range_Indicate:
-            # 隐藏技能指示器
-            SOS.main.player_controller.player_skill_scope_indicator.hide_indicator()
-
-
-
-        if current_state == SKILL_STATE.Targeted_Indicate:
-
-            # 隐藏技能指示器
-            SOS.main.player_controller.player_skill_target_indicator.hide()
-
-
- 
-    
 
     # 旧状态
     current_state = new_state
 
     match current_state:
         SKILL_STATE.Circle_Range_Indicate:
-            slot.icon_texture.material.set_shader_parameter("enable_gradient", true)
-
-            # 技能框放大
-            var tween = create_tween()
-            tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
+            if slot and is_instance_valid(slot):
+                if slot.icon_texture and slot.icon_texture.material:
+                    slot.icon_texture.material.set_shader_parameter("enable_gradient", true)
+                var tween = create_tween()
+                tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
 
             # 单位技能范围指示
             var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
             if range_comp:
                 range_comp.set_radius(release_distance)
 
-            # 限制 cursor 移动
-            SOS.main.player_controller.limit_move(unit.global_position, release_distance)
-
             # 单位全局技能状态处理
             unit.current_global_skill_state = 1
             # PlayerStatus 切换
             SOS.main.player_controller.player_status = SOS.main.player_controller.PLAYER_STATUS.CHOOSING_TARGETED_UNIT
-            # 技能指示器
-            SOS.main.player_controller.player_skill_scope_indicator.set_indicator_size(range * 2, range * 2)
-            SOS.main.player_controller.player_skill_scope_indicator.show_indicator()
-            # 隐藏鼠标光标
-            load("res://Scripts/utils/BattleInput.gd").request_cursor_hidden(self, true)
+            # 切换为十字准星光标，保持原生鼠标流畅显示，绝不隐藏鼠标
+            SOS.main.player_controller.switch_cursor(Constants.CURSOR_STATUS.TARGETED)
             mouse_click_check = true
-            # 点击任意位置后，释放
 
         SKILL_STATE.Targeted_Indicate:
-            slot.icon_texture.material.set_shader_parameter("enable_gradient", true)
-
-            # 技能框放大
-            var tween = create_tween()
-            tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
+            if slot and is_instance_valid(slot):
+                if slot.icon_texture and slot.icon_texture.material:
+                    slot.icon_texture.material.set_shader_parameter("enable_gradient", true)
+                var tween = create_tween()
+                tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
 
             # 单位技能范围指示
             var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
             if range_comp:
                 range_comp.set_radius(release_distance)
 
-
-            # 限制 cursor 移动
-            SOS.main.player_controller.limit_move(unit.global_position, release_distance)     
-            SOS.main.player_controller.player_skill_target_indicator.show()
-
-
-
             # 单位全局技能状态处理
             unit.current_global_skill_state = 1
-
-            # TODO 可以在此处注册 键盘 Esc 事件，取消 indicator
-            
-
             # PlayerStatus 切换
             SOS.main.player_controller.player_status = SOS.main.player_controller.PLAYER_STATUS.CHOOSING_TARGETED_UNIT
-
-            # 等待3帧
-            await CommonUtil.await_timer(0.1)
-            if current_state != SKILL_STATE.Targeted_Indicate or not is_instance_valid(unit) or not unit.is_alive(): return
-
-            # 切换鼠标光标
-            # SOS.main.player_controller.switch_cursor(Constants.CURSOR_STATUS.TARGETED)
-            # 隐藏鼠标光标（开始捕捉模式）
-            load("res://Scripts/utils/BattleInput.gd").request_cursor_hidden(self, true)
+            # 切换为十字准星光标，保持原生鼠标流畅显示，绝不隐藏鼠标
+            SOS.main.player_controller.switch_cursor(Constants.CURSOR_STATUS.TARGETED)
             mouse_click_check = true
-
-
-            # 监听玩家选择单位信号
-            # 必须选中一个目标，才能切换状态（注意必须选中）
-            # SignalBus.player_selected_units.connect(_on_player_selected_units)
-            set_process(true)
-
-            # TODO 此处改为监听玩家 3d 空间鼠标位置附近碰撞单位，同时鼠标样式调整为 Sprite3D 或 Decel 模式，并禁止鼠标显示
-            # 此时禁用 SelectionBox 与 RectangularSelection2D 的选择，启用程序目标选择
 
 
         SKILL_STATE.Building_Indicate:
-            slot.icon_texture.material.set_shader_parameter("enable_gradient", true)
-
-            # 技能框放大
-            var tween = create_tween()
-            tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
+            if slot and is_instance_valid(slot):
+                if slot.icon_texture and slot.icon_texture.material:
+                    slot.icon_texture.material.set_shader_parameter("enable_gradient", true)
+                var tween = create_tween()
+                tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
 
             # 单位技能范围指示
             # var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
@@ -619,71 +610,7 @@ func change_state(new_state: SKILL_STATE) -> void:
         SKILL_STATE.Disabled:
             CommonUtil.debug_log(["skill [%s] is Disabled" % code])
 
-
-
-# 专门处理 targeted 模式下，玩家选择单位的逻辑        
-func _process(delta: float) -> void:
-    # 监听 target mouse clicked
-    if Input.is_action_just_pressed("click") and BattleInput.pointer_available(get_viewport()):
-        if mouse_click_check and current_state == SKILL_STATE.Targeted_Indicate:
-            
-            # 目标类型检查-地面
-            if CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.FLOOR, target_type):
-                CommonUtil.debug_log(["技能无需目标"])
-                # 停止监听
-                mouse_click_check = false
-                set_process(false)
-
-                skill_context.target_position = SOS.main.player_controller.player_skill_target_indicator.global_position
-                skill_context.target = null
-
-                change_state(SKILL_STATE.Release)
-
-            # 目标类型检查-某个单位
-            if CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.UNIT, target_type):
-                var camera = get_viewport().get_camera_3d()
-                var picked_target = null
-                if camera != null:
-                    picked_target = RTSPicker.pick_unit(camera, get_viewport().get_mouse_position(), _skill_target_unit_cond_matched)
-                
-                if picked_target != null:
-                    mouse_click_check = false
-                    set_process(false)
-                    skill_context.target_position = picked_target.global_position
-                    skill_context.target = picked_target
-                    change_state(SKILL_STATE.Release)
-                else:
-                    var cur_unit_map = SOS.main.player_controller.cur_unit_map
-                    if not cur_unit_map.is_empty():
-                        mouse_click_check = false
-                        set_process(false)
-
-                        var min_unit = null
-                        var min_distance = INF
-                        
-                        for u_key in cur_unit_map.keys():
-                            var _unit = cur_unit_map.get(u_key)
-                            if not _unit:
-                                continue
-                            if not _skill_target_unit_cond_matched(_unit):
-                                continue
-                            var distance = _unit.global_position.distance_squared_to(SOS.main.player_controller.player_skill_target_indicator.global_position)
-                            if distance < min_distance:
-                                min_distance = distance
-                                min_unit = _unit
-                        
-                        if min_unit:
-                            CommonUtil.debug_log(["最近的单位距离: ", min_distance])
-                            CommonUtil.debug_log(["最近的单位: ", min_unit])
-                            skill_context.target_position = SOS.main.player_controller.player_skill_target_indicator.global_position
-                            skill_context.target = min_unit
-                            change_state(SKILL_STATE.Release)
-                        else:
-                            CommonUtil.debug_log(["没有找到最近的单位"])
-                            SOS.main.message_bar.set_message("没有选中任何单位")
-                    else:
-                        CommonUtil.debug_log(["没有选中任何单位"])
-                        SOS.main.message_bar.set_message("没有选中任何单位")
 func _exit_tree() -> void:
-    load("res://Scripts/utils/BattleInput.gd").request_cursor_hidden(self, false)
+    if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+        SOS.main.player_controller.switch_cursor(Constants.CURSOR_STATUS.DEFAULT)
     CommonUtil.release_detached_nodes(buff_map)
