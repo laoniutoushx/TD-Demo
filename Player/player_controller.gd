@@ -77,28 +77,32 @@ func get_outline_material_for_target(target: Variant) -> ShaderMaterial:
 	match category:
 		"ally":
 			mat.set_shader_parameter("outline_color", Color(0.25, 0.95, 0.45, 1.0))
-			mat.set_shader_parameter("outline_thickness", 0.025)
+			mat.set_shader_parameter("outline_thickness", 0.030)
 			mat.set_shader_parameter("pulse_speed", 2.5)
 			mat.set_shader_parameter("pulse_intensity", 0.12)
 			mat.set_shader_parameter("enable_pulse", true)
+			mat.set_shader_parameter("distance_adaptive", true)
 		"enemy":
 			mat.set_shader_parameter("outline_color", Color(1.0, 0.25, 0.25, 1.0))
 			mat.set_shader_parameter("outline_thickness", 0.035)
 			mat.set_shader_parameter("pulse_speed", 3.5)
 			mat.set_shader_parameter("pulse_intensity", 0.18)
 			mat.set_shader_parameter("enable_pulse", true)
+			mat.set_shader_parameter("distance_adaptive", true)
 		"chest":
 			mat.set_shader_parameter("outline_color", Color(1.0, 0.82, 0.15, 1.0))
-			mat.set_shader_parameter("outline_thickness", 0.030)
+			mat.set_shader_parameter("outline_thickness", 0.032)
 			mat.set_shader_parameter("pulse_speed", 2.0)
 			mat.set_shader_parameter("pulse_intensity", 0.15)
 			mat.set_shader_parameter("enable_pulse", true)
+			mat.set_shader_parameter("distance_adaptive", true)
 		_:
 			mat.set_shader_parameter("outline_color", Color(0.35, 0.85, 1.0, 1.0))
-			mat.set_shader_parameter("outline_thickness", 0.025)
+			mat.set_shader_parameter("outline_thickness", 0.030)
 			mat.set_shader_parameter("pulse_speed", 2.5)
 			mat.set_shader_parameter("pulse_intensity", 0.12)
 			mat.set_shader_parameter("enable_pulse", true)
+			mat.set_shader_parameter("distance_adaptive", true)
 			
 	_outline_materials[category] = mat
 	return mat

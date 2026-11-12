@@ -84,3 +84,4 @@ func _ready() -> void:
 	ap = _ap
 	animation_player_path = get_path_to(_ap)
 	health_anchor_path = NodePath("HealthAnchor")
+	refresh_selection_bounds()

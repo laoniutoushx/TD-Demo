@@ -606,9 +606,13 @@ func _create_mesh_standing():
 
 ## 规范接口：获取本单位用于显示轮廓的实体 3D 网格（自动剪枝所有辅助、指示器与UI节点）
 func get_outline_meshes() -> Array[MeshInstance3D]:
-	if _cached_visual_meshes.is_empty():
+	if _cached_visual_meshes.is_empty() or not is_instance_valid(_cached_visual_meshes[0]):
 		_cached_visual_meshes = CommonUtil.collect_solid_meshes(self)
 	return _cached_visual_meshes
+
+
+func invalidate_outline_cache() -> void:
+	_cached_visual_meshes.clear()
 
 
 func get_visual_meshes() -> Array[MeshInstance3D]:
