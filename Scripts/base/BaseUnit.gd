@@ -1,6 +1,8 @@
 # BaseUnit.gd
 class_name BaseUnit extends Node
 
+const BloodDecalSystem = preload("res://Scripts/manager/BloodDecalSystem.gd")
+
 
 @export_group("Unit Steup")
 # ref resource
@@ -253,6 +255,7 @@ var buff_map: Dictionary = {}
 var _transformed_aabb: AABB		# 当前对象全局空间 AABB 包围盒
 var _height: float				# 当前对象高度
 var _selection_local_aabb: AABB = AABB()	# 当前对象本地空间 3D 选框包围盒
+var _last_fatal_damage_ctx: DamageCtx = null	# 致死伤害上下文 (用于物理血迹定向与动量判定)
 
 
 
@@ -404,22 +407,8 @@ func do_after_logic_dead() -> void:
 	# 播放死亡音效
 	CommonUtil.play_audio(self, audio_death)
 
-	# 在单位位置创建血迹贴图
-	var blood_res_name: String = "blood_sc_01" if randf() > 0.4 else "blood_sc_02"
-	var bs: PackedScene = CommonUtil.get_resource(blood_res_name)
-	if not bs:
-		bs = CommonUtil.get_resource("blood_sc_01")
-	if bs:
-		var blood_stain: Decal = bs.instantiate()
-		SystemUtil.vfx_system.add_child(blood_stain)
-		var spawn_pos: Vector3 = self.global_position if "global_position" in self else Vector3.ZERO
-		if blood_stain.has_method("setup_blood"):
-			var target_extent_x: float = clampf(_transformed_aabb.size.x * 1.1, 0.8, 3.0)
-			var target_extent_z: float = clampf(_transformed_aabb.size.z * 1.1, 0.8, 3.0)
-			blood_stain.setup_blood(Vector3(target_extent_x, 0.5, target_extent_z), spawn_pos)
-		else:
-			blood_stain.global_position = spawn_pos
-			blood_stain.size = Vector3(maxf(_transformed_aabb.size.x, 0.8), 0.5, maxf(_transformed_aabb.size.z, 0.8))
+	# 在单位位置创建物理契合的多样性血迹贴图
+	BloodDecalSystem.spawn_death_blood(self, _last_fatal_damage_ctx)
 
 
 
@@ -566,6 +555,7 @@ func _damage(damage_ctx: DamageCtx) -> bool:
 	)
 	
 	if health + value > 0 and health <= 0:
+		_last_fatal_damage_ctx = damage_ctx
 		do_logical_death()
 	
 	return _is_logic_alive

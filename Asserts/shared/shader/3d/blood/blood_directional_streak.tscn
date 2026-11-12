@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3 uid="uid://dm2k38j4l3303"]
+
+[ext_resource type="Texture2D" uid="uid://bdvxihp117oje" path="res://Asserts/materials/blood_variants/directional_streak/directional_streak_albedo.png" id="1_albedo"]
+[ext_resource type="Texture2D" uid="uid://jw6pthd4o00v" path="res://Asserts/materials/blood_variants/directional_streak/directional_streak_normal.png" id="2_normal"]
+[ext_resource type="Texture2D" uid="uid://qwxq4iy6nc5w" path="res://Asserts/materials/blood_variants/directional_streak/directional_streak_orm.png" id="3_orm"]
+[ext_resource type="Script" uid="uid://d3138glldwmy5" path="res://Asserts/shared/shader/3d/blood/blood_sc.gd" id="4_script"]
+
+[node name="BloodDirectionalStreak" type="Decal"]
+size = Vector3(1.3, 0.5, 1.8)
+texture_albedo = ExtResource("1_albedo")
+texture_normal = ExtResource("2_normal")
+texture_orm = ExtResource("3_orm")
+cull_mask = 786432
+normal_fade = 0.4
+upper_fade = 0.2
+lower_fade = 0.2
+script = ExtResource("4_script")

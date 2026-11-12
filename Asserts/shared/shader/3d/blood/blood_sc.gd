@@ -50,12 +50,12 @@ func _unregister_from_pool() -> void:
 		_is_managed = false
 
 ## 外部初始化尺寸与位置的规范入口
-func setup_blood(target_size: Vector3, world_pos: Vector3, random_yaw: bool = true) -> void:
+func setup_blood(target_size: Vector3, world_pos: Vector3, yaw_or_random = true, custom_tint: Color = Color.WHITE) -> void:
 	# 严禁用 scale 缩放 Decal，使用 size
-	# 限制 Y 轴投影深度为 0.3~0.6m，避免穿透跨多层楼板
-	var clamped_depth: float = clampf(target_size.y, 0.3, 0.6)
-	var extent_x: float = maxf(target_size.x, 0.5)
-	var extent_z: float = maxf(target_size.z, 0.5)
+	# 限制 Y 轴投影深度为 0.25~0.6m，避免穿透跨多层楼板
+	var clamped_depth: float = clampf(target_size.y, 0.25, 0.6)
+	var extent_x: float = maxf(target_size.x, 0.2)
+	var extent_z: float = maxf(target_size.z, 0.2)
 	size = Vector3(extent_x, clamped_depth, extent_z)
 	# 中心置于接触面稍上方，向下充分投射在石板与地面
 	var target_pos: Vector3 = world_pos + Vector3(0, 0.08, 0)
@@ -63,8 +63,15 @@ func setup_blood(target_size: Vector3, world_pos: Vector3, random_yaw: bool = tr
 		global_position = target_pos
 	else:
 		position = target_pos
-	if random_yaw:
-		rotation.y = randf_range(0.0, TAU)
+	if typeof(yaw_or_random) == TYPE_BOOL:
+		if yaw_or_random:
+			rotation.y = randf_range(0.0, TAU)
+	elif typeof(yaw_or_random) == TYPE_FLOAT or typeof(yaw_or_random) == TYPE_INT:
+		rotation.y = float(yaw_or_random)
+	
+	if custom_tint != Color.WHITE:
+		fresh_color = fresh_color * custom_tint
+		dried_color = dried_color * custom_tint
 
 func start_lifecycle() -> void:
 	if _fade_tween and _fade_tween.is_valid():
