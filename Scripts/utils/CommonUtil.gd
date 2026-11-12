@@ -264,10 +264,12 @@ static func add_outline_to_unit(unit: Variant, outline_material: Material) -> vo
 	if not is_instance_valid(unit) or not (unit is Node):
 		return
 	var mesh_nodes: Array[MeshInstance3D] = []
-	if unit.has_method("get_visual_meshes"):
+	if unit.has_method("get_outline_meshes"):
+		mesh_nodes = unit.get_outline_meshes()
+	elif unit.has_method("get_visual_meshes"):
 		mesh_nodes = unit.get_visual_meshes()
 	else:
-		mesh_nodes = CommonUtil.get_all_visual_meshes(unit as Node)
+		mesh_nodes = CommonUtil.collect_solid_meshes(unit as Node)
 	for mesh_instance in mesh_nodes:
 		if is_instance_valid(mesh_instance):
 			mesh_instance.material_overlay = outline_material
@@ -279,10 +281,12 @@ static func remove_outline_from_unit(unit: Variant) -> void:
 	if not is_instance_valid(unit) or not (unit is Node):
 		return
 	var mesh_nodes: Array[MeshInstance3D] = []
-	if unit.has_method("get_visual_meshes"):
+	if unit.has_method("get_outline_meshes"):
+		mesh_nodes = unit.get_outline_meshes()
+	elif unit.has_method("get_visual_meshes"):
 		mesh_nodes = unit.get_visual_meshes()
 	else:
-		mesh_nodes = CommonUtil.get_all_visual_meshes(unit as Node)
+		mesh_nodes = CommonUtil.collect_solid_meshes(unit as Node)
 	for mesh_instance in mesh_nodes:
 		if is_instance_valid(mesh_instance):
 			mesh_instance.material_overlay = null
@@ -943,26 +947,90 @@ static func transform_aabb(t: Transform3D, aabb: AABB) -> AABB:
 		
 	return AABB(new_min, new_max - new_min)
 
-## 收集节点下所有用于渲染的可视 MeshInstance3D（自动排除辅助、指示器与范围网格）
-static func get_all_visual_meshes(node: Node) -> Array[MeshInstance3D]:
+## 检查一个 MeshInstance3D 是否为合法的不透明实体 3D 几何（图形学第一性原理校验）
+static func is_solid_3d_render_mesh(mesh_instance: MeshInstance3D) -> bool:
+	if not is_instance_valid(mesh_instance) or not mesh_instance.visible:
+		return false
+	var m = mesh_instance.mesh
+	if m == null:
+		return false
+	
+	# 1. 严格排除二维无厚度面片、公告牌、文字或粒子拖尾图元
+	if m is PlaneMesh or m is QuadMesh or m is RibbonTrailMesh or m is PointMesh or m is TextMesh:
+		return false
+		
+	# 2. 检查有效材质的透明度与混合属性
+	var effective_mat: Material = mesh_instance.material_override
+	if effective_mat == null and m.get_surface_count() > 0:
+		effective_mat = mesh_instance.get_surface_override_material(0)
+		if effective_mat == null:
+			effective_mat = m.surface_get_material(0)
+			
+	if effective_mat != null:
+		if effective_mat is StandardMaterial3D:
+			var std_mat := effective_mat as StandardMaterial3D
+			# 仅排除纯 Alpha 混合（无深度遮蔽的半透明几何体，如粒子、光柱、玻璃等）
+			# 允许 TRANSPARENCY_DISABLED (0), TRANSPARENCY_ALPHA_SCISSOR (2), TRANSPARENCY_ALPHA_HASH (3), TRANSPARENCY_ALPHA_DEPTH_PRE_PASS (4)
+			if std_mat.transparency == StandardMaterial3D.TRANSPARENCY_ALPHA:
+				return false
+			if std_mat.blend_mode != BaseMaterial3D.BLEND_MODE_MIX:
+				return false
+			if std_mat.depth_draw_mode == BaseMaterial3D.DEPTH_DRAW_DISABLED:
+				return false
+		elif effective_mat is ShaderMaterial:
+			var mat_name := effective_mat.resource_name.to_lower()
+			var mat_path := effective_mat.resource_path.to_lower()
+			if "vfx" in mat_name or "vfx" in mat_path or "transparent" in mat_name:
+				return false
+				
+	return true
+
+## 收集节点下所有适宜进行 Inverted Hull 描边的实体 3D 网格（具备语义子树剪枝与图形学第一性原理校验）
+static func collect_solid_meshes(root_node: Node) -> Array[MeshInstance3D]:
 	var result: Array[MeshInstance3D] = []
-	if not is_instance_valid(node):
+	if not is_instance_valid(root_node):
 		return result
 		
-	var stack: Array[Node] = [node]
+	var stack: Array[Node] = [root_node]
 	while not stack.is_empty():
 		var curr: Node = stack.pop_back()
-		if curr is MeshInstance3D and curr.visible:
-			var m_inst: MeshInstance3D = curr as MeshInstance3D
-			var node_name: String = m_inst.name
-			var n_lower: String = node_name.to_lower()
-			if not ('outline' in n_lower or '_mesh_standing' in n_lower or 'debug' in n_lower or 'scope' in n_lower or 'range' in n_lower or 'decal' in n_lower):
-				if m_inst.mesh != null:
-					result.append(m_inst)
+		if not is_instance_valid(curr) or curr.is_queued_for_deletion():
+			continue
+			
+		# 语义子树剪枝：阻断任何 VFX / Indicator / Decal / UI / FadedCircle 等特效子树向下扩散
+		var n_lower := curr.name.to_lower()
+		var should_prune_subtree := false
+		if curr.is_in_group("vfx") or curr.is_in_group("no_outline") or curr.is_in_group("indicator") or curr.is_in_group("decal"):
+			should_prune_subtree = true
+		elif curr is GPUParticles3D or curr is CPUParticles3D or curr is Decal:
+			should_prune_subtree = true
+		elif curr != root_node and (
+			"vfx" in n_lower or "effect" in n_lower or "particle" in n_lower or
+			"fadedcircle" in n_lower or "circle" in n_lower or "indicator" in n_lower or
+			"range" in n_lower or "scope" in n_lower or "hud" in n_lower or
+			"debug" in n_lower or "decal" in n_lower or "_mesh_standing" in n_lower or
+			"shadow" in n_lower or "levelcomp" in n_lower
+		):
+			should_prune_subtree = true
+			
+		if should_prune_subtree:
+			continue # 剪枝：坚决不向该节点的子节点递归！
+			
+		# 图形学与拓扑第一性原理校验
+		if curr is MeshInstance3D:
+			var m_inst := curr as MeshInstance3D
+			if is_solid_3d_render_mesh(m_inst):
+				result.append(m_inst)
+				
 		for child in curr.get_children():
 			if is_instance_valid(child) and not child.is_queued_for_deletion():
 				stack.push_back(child)
+				
 	return result
+
+## 收集节点下所有用于渲染的可视 MeshInstance3D（兼容方法，重定向至 collect_solid_meshes）
+static func get_all_visual_meshes(node: Node) -> Array[MeshInstance3D]:
+	return collect_solid_meshes(node)
 
 ## 计算一个 Node3D 相对于其祖先节点的复合相对变换
 static func get_relative_transform_to_ancestor(node: Node3D, ancestor: Node) -> Transform3D:

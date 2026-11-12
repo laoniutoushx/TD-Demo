@@ -77,25 +77,25 @@ func get_outline_material_for_target(target: Variant) -> ShaderMaterial:
 	match category:
 		"ally":
 			mat.set_shader_parameter("outline_color", Color(0.25, 0.95, 0.45, 1.0))
-			mat.set_shader_parameter("outline_width", 3.5)
+			mat.set_shader_parameter("outline_thickness", 0.025)
 			mat.set_shader_parameter("pulse_speed", 2.5)
 			mat.set_shader_parameter("pulse_intensity", 0.12)
 			mat.set_shader_parameter("enable_pulse", true)
 		"enemy":
 			mat.set_shader_parameter("outline_color", Color(1.0, 0.25, 0.25, 1.0))
-			mat.set_shader_parameter("outline_width", 3.8)
+			mat.set_shader_parameter("outline_thickness", 0.035)
 			mat.set_shader_parameter("pulse_speed", 3.5)
 			mat.set_shader_parameter("pulse_intensity", 0.18)
 			mat.set_shader_parameter("enable_pulse", true)
 		"chest":
 			mat.set_shader_parameter("outline_color", Color(1.0, 0.82, 0.15, 1.0))
-			mat.set_shader_parameter("outline_width", 4.0)
+			mat.set_shader_parameter("outline_thickness", 0.030)
 			mat.set_shader_parameter("pulse_speed", 2.0)
 			mat.set_shader_parameter("pulse_intensity", 0.15)
 			mat.set_shader_parameter("enable_pulse", true)
 		_:
 			mat.set_shader_parameter("outline_color", Color(0.35, 0.85, 1.0, 1.0))
-			mat.set_shader_parameter("outline_width", 3.5)
+			mat.set_shader_parameter("outline_thickness", 0.025)
 			mat.set_shader_parameter("pulse_speed", 2.5)
 			mat.set_shader_parameter("pulse_intensity", 0.12)
 			mat.set_shader_parameter("enable_pulse", true)
@@ -145,8 +145,8 @@ var is_limit_move: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	# 关闭输入监听
-	set_process_unhandled_input(false)
+	# 开启输入监听（确保原生 InputEventMouseMotion 零延迟触发 Hover）
+	set_process_unhandled_input(true)
 
 	# 加载 图标 资源
 	CommonUtil.load_resources_to_container_from_directory("res://Asserts/Images/icon/")
@@ -240,7 +240,6 @@ func select_area_pos_sync(ray_cast: RayCast3D) -> void:
 	else:
 		select_area.global_position = collision_point
 		player_skill_target_indicator.global_position = collision_point
-	update_hover_state(get_viewport().get_mouse_position())
 
 
 
@@ -309,8 +308,12 @@ func refresh_selection_items(item_map: Dictionary, mouse_pos: Vector3, on_select
 
 
 
-# 单位进入时，监听右键事件（攻击）
+# 单位进入时，监听右键事件（攻击）与鼠标移动（Hover 轮廓高亮）
 func _unhandled_input(event):
+	if event is InputEventMouseMotion:
+		update_hover_state(event.position)
+		return
+
 	if event is InputEventMouseButton and not BattleInput.pointer_available(get_viewport(), event.position): return
 	if player_status != PLAYER_STATUS.DEFAULT: return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
@@ -354,13 +357,14 @@ func _unhandled_input(event):
 var _last_hover_mouse_pos: Vector2 = Vector2(-9999.0, -9999.0)
 
 func update_hover_state(screen_pos: Vector2) -> void:
-	if PlayerSelect.is_selecting():
+	if PlayerSelect.is_selecting() or not BattleInput.pointer_available(get_viewport(), screen_pos):
 		if is_instance_valid(_current_hovered_target):
 			CommonUtil.remove_outline_from_unit(_current_hovered_target)
 			_current_hovered_target = null
+			cur_unit_map.clear()
 		return
 		
-	# 屏幕像素防抖：位移小于 2px 且已有目标时直接短路跳过，大幅降低高频开销
+	# 屏幕像素微防抖：位移小于 2px 时直接短路跳过，降低高频开销
 	if screen_pos.distance_squared_to(_last_hover_mouse_pos) < 4.0:
 		return
 	_last_hover_mouse_pos = screen_pos
@@ -378,8 +382,8 @@ func update_hover_state(screen_pos: Vector2) -> void:
 	_current_hovered_target = picked
 	
 	if is_instance_valid(_current_hovered_target):
+		cur_unit_map.clear()
 		cur_unit_map[_current_hovered_target.get_instance_id()] = _current_hovered_target
-		set_process_unhandled_input(true)
 		var mat = get_outline_material_for_target(_current_hovered_target)
 		CommonUtil.add_outline_to_unit(_current_hovered_target, mat)
 		# 注意：此处为 Hover 阶段，绝不触发 show_selected_circle()！
@@ -390,35 +394,14 @@ func update_hover_state(screen_pos: Vector2) -> void:
 
 
 
-# 单位进入触发（旧物理范围检测备用，严格遵循 Hover 仅描边、不触发色盘原则）
-func _on_select_area_area_entered(area: Area3D) -> void:
-	var unit = area.owner
-	if unit and ( (unit is BaseUnit and unit.is_alive())  or  (unit is TreasureChest) ):
-		# 开启右键输入检测
-		if PlayerSelect.units().size() > 0:
-			set_process_unhandled_input(true)
-
-		# 添加单位到当前选中候选单位
-		cur_unit_map[unit.get_instance_id()] = unit
-
-		# 描边特效（阵营动态配色）
-		var mat = get_outline_material_for_target(unit)
-		CommonUtil.add_outline_to_unit(unit, mat)
+# 单位进入触发（旧物理范围检测已由 RTSPicker 取代，保留空实现兼容旧场景信号绑定）
+func _on_select_area_area_entered(_area: Area3D) -> void:
+	pass
 
 
-# 单位退出触发
-func _on_select_area_area_exited(area: Area3D) -> void:
-	var unit = area.owner
-
-	if unit:
-		cur_unit_map.erase(unit.get_instance_id())
-
-	# 如果当前玩家候选单位为 0
-	if cur_unit_map.size() == 0:
-		set_process_unhandled_input(false)
-
-	# 移除描边
-	CommonUtil.remove_outline_from_unit(unit)
+# 单位退出触发（旧物理范围检测已由 RTSPicker 取代，保留空实现兼容旧场景信号绑定）
+func _on_select_area_area_exited(_area: Area3D) -> void:
+	pass
 
 
 
@@ -431,6 +414,8 @@ func _on_unit_logic_death(id: int, unit: BaseUnit):
 	
 	# 单位逻辑死亡时，清除单位网格效果（outline）等
 	CommonUtil.remove_outline_from_unit(unit)
+	if _current_hovered_target == unit:
+		_current_hovered_target = null
 
 
 	# 移出单位到当前选中单位

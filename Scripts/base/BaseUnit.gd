@@ -604,10 +604,15 @@ func _create_mesh_standing():
 		_mesh_standing.skeleton = _mesh_standing.get_path_to(skeleton)
 
 
-func get_visual_meshes() -> Array[MeshInstance3D]:
+## 规范接口：获取本单位用于显示轮廓的实体 3D 网格（自动剪枝所有辅助、指示器与UI节点）
+func get_outline_meshes() -> Array[MeshInstance3D]:
 	if _cached_visual_meshes.is_empty():
-		_cached_visual_meshes = CommonUtil.get_all_visual_meshes(self)
+		_cached_visual_meshes = CommonUtil.collect_solid_meshes(self)
 	return _cached_visual_meshes
+
+
+func get_visual_meshes() -> Array[MeshInstance3D]:
+	return get_outline_meshes()
 
 
 func _create_selected_circle() -> Node3D:

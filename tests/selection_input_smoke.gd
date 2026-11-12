@@ -219,8 +219,8 @@ func run() -> void:
 	await process_frame
 
 	var active_cam = main_scene.player_controller.get_viewport().get_camera_3d()
-	var cur_ally_pt = active_cam.unproject_position(after_restart.global_position + Vector3.UP * 1.5)
-	var cur_enemy_pt = active_cam.unproject_position(enemy_tower.global_position + Vector3.UP * 1.5)
+	var cur_ally_pt = active_cam.unproject_position(after_restart.get_selection_aabb().get_center())
+	var cur_enemy_pt = active_cam.unproject_position(enemy_tower.get_selection_aabb().get_center())
 
 	# (a) 悬停友军炮塔：仅轮廓高亮，不创建也不显示底部色盘
 	main_scene.player_controller.update_hover_state(cur_ally_pt)

@@ -38,3 +38,13 @@ func show_selected_circle() -> void:
         var tween = create_tween()
         tween.tween_property(select_circle, "radius", select_circle.radius * 1.25, 0.0)
         tween.tween_property(select_circle, "radius", select_circle.radius, 0.1)
+
+
+var _cached_outline_meshes: Array[MeshInstance3D] = []
+
+## 规范接口：精准返回 Chest 实体模型网格，杜绝任何外部特效或光柱被误描边
+func get_outline_meshes() -> Array[MeshInstance3D]:
+    if _cached_outline_meshes.is_empty():
+        var chest_model = get_node_or_null("Chest")
+        _cached_outline_meshes = CommonUtil.collect_solid_meshes(chest_model if chest_model != null else self)
+    return _cached_outline_meshes
