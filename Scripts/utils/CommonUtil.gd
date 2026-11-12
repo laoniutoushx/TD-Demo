@@ -260,25 +260,31 @@ static func get_all_parent_node_by_node_type(node: Node, clazz: String) -> Array
 ## 遍历单位下的所有网格实例并应用描边材质
 ## @param unit 要添加描边的单位节点
 ## @param outline_material 描边材质
-static func add_outline_to_unit(unit: Node3D, outline_material: Material):
-	var mesh_nodes = CommonUtil.get_all_nodes_by_node_type(unit, Constants.MeshInstance3D_CLZ, false)
-	
-	for mesh_node in mesh_nodes:
-		var mesh_instance = mesh_node as MeshInstance3D
-		if mesh_instance != null:
-			# 设置材质覆盖层来实现描边效果
+static func add_outline_to_unit(unit: Variant, outline_material: Material) -> void:
+	if not is_instance_valid(unit) or not (unit is Node):
+		return
+	var mesh_nodes: Array[MeshInstance3D] = []
+	if unit.has_method("get_visual_meshes"):
+		mesh_nodes = unit.get_visual_meshes()
+	else:
+		mesh_nodes = CommonUtil.get_all_visual_meshes(unit as Node)
+	for mesh_instance in mesh_nodes:
+		if is_instance_valid(mesh_instance):
 			mesh_instance.material_overlay = outline_material
 
 ## 移除单位的所有描边效果
-## 清除所有网格实例的材质覆盖层
+## 清除所有可视网格实例的材质覆盖层
 ## @param unit 要移除描边的单位节点
-static func remove_outline_from_unit(unit: Variant):
-	var mesh_nodes = CommonUtil.get_all_nodes_by_node_type(unit, Constants.MeshInstance3D_CLZ, false)
-	
-	for mesh_node in mesh_nodes:
-		var mesh_instance = mesh_node as MeshInstance3D
-		if mesh_instance != null:
-			# 清除材质覆盖层
+static func remove_outline_from_unit(unit: Variant) -> void:
+	if not is_instance_valid(unit) or not (unit is Node):
+		return
+	var mesh_nodes: Array[MeshInstance3D] = []
+	if unit.has_method("get_visual_meshes"):
+		mesh_nodes = unit.get_visual_meshes()
+	else:
+		mesh_nodes = CommonUtil.get_all_visual_meshes(unit as Node)
+	for mesh_instance in mesh_nodes:
+		if is_instance_valid(mesh_instance):
 			mesh_instance.material_overlay = null
 
 ## 创建描边网格

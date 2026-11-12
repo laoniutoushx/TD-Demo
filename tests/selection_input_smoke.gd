@@ -175,6 +175,8 @@ func run() -> void:
 	level.turret_manager.add_child(enemy_tower)
 	enemy_tower.global_position = Vector3(0, 0, -5)
 	enemy_tower.player_group = 1
+	enemy_tower.max_health = 999999.0
+	enemy_tower.health = 999999.0
 	enemy_tower.change_state(1)
 	await physics_frame
 	await process_frame
@@ -205,6 +207,56 @@ func run() -> void:
 	await process_frame
 	var enemy_units: Array = main_scene.player_controller.PlayerSelect.units()
 	check(enemy_units.has(enemy_tower), "enemy-only box selection selects enemy tower")
+
+	# 6. Hover 轮廓高亮 与 Click 底部色盘 解耦深度验证
+	click(Vector2(50, 50))
+	await process_frame
+	check(main_scene.player_controller.PlayerSelect.units().is_empty(), "canvas reset: no units selected")
+
+	# 将敌军塔移到独立无遮挡坐标
+	enemy_tower.global_position = Vector3(-12, 0, 0)
+	enemy_tower.refresh_selection_bounds()
+	await process_frame
+
+	var active_cam = main_scene.player_controller.get_viewport().get_camera_3d()
+	var cur_ally_pt = active_cam.unproject_position(after_restart.global_position + Vector3.UP * 1.5)
+	var cur_enemy_pt = active_cam.unproject_position(enemy_tower.global_position + Vector3.UP * 1.5)
+
+	# (a) 悬停友军炮塔：仅轮廓高亮，不创建也不显示底部色盘
+	main_scene.player_controller.update_hover_state(cur_ally_pt)
+	await process_frame
+	check(main_scene.player_controller._current_hovered_target == after_restart, "hover detects friendly tower")
+	check(main_scene.player_controller.PlayerSelect.units().is_empty(), "hovering does NOT select unit")
+	check(after_restart._selected_circle_node == null or not after_restart._selected_circle_node.visible, "hovering does NOT show selected circle")
+	var ally_mat = main_scene.player_controller.get_outline_material_for_target(after_restart)
+	var ally_col: Color = ally_mat.get_shader_parameter("outline_color")
+	check(ally_col.g > ally_col.r and ally_col.g > ally_col.b, "friendly hover outline is greenish")
+
+	# (b) 悬停敌军炮塔：自适应红色轮廓，不显示色盘
+	main_scene.player_controller.update_hover_state(cur_enemy_pt)
+	await process_frame
+	check(main_scene.player_controller._current_hovered_target == enemy_tower, "hover switches to enemy tower")
+	check(enemy_tower._selected_circle_node == null or not enemy_tower._selected_circle_node.visible, "hover enemy does NOT show selected circle")
+	var enemy_mat = main_scene.player_controller.get_outline_material_for_target(enemy_tower)
+	var enemy_col: Color = enemy_mat.get_shader_parameter("outline_color")
+	check(enemy_col.r > enemy_col.g and enemy_col.r > enemy_col.b, "enemy hover outline is reddish")
+
+	# (c) 真正单选点击后：才触发底部色盘按需创建与显示
+	click(cur_ally_pt)
+	await process_frame
+	check(main_scene.player_controller.PlayerSelect.units().has(after_restart), "click selects friendly tower")
+	check(is_instance_valid(after_restart._selected_circle_node) and after_restart._selected_circle_node.visible, "clicking creates and displays bottom selected circle")
+
+	# (d) 移开鼠标：单位依然保持选中色盘，Outline 恢复
+	main_scene.player_controller.update_hover_state(Vector2(50, 50))
+	await process_frame
+	check(after_restart._selected_circle_node.visible, "moving cursor away retains selected circle for selected unit")
+
+	# (e) 取消选择：色盘隐藏
+	click(Vector2(50, 50))
+	await process_frame
+	check(main_scene.player_controller.PlayerSelect.units().is_empty(), "clicking blank ground clears selection")
+	check(not after_restart._selected_circle_node.visible, "deselection hides bottom circle")
 
 	await controller.return_to_menu("")
 	main_scene.queue_free()

@@ -30,7 +30,7 @@ func steup(_drop_item: DropItem) -> void:
 
 
 func show_selected_circle() -> void:
-    var select_circle = CommonUtil.get_first_node_by_node_name(self, Constants.FadedCircle3D_CLZ)	
+    var select_circle = CommonUtil.get_first_node_by_node_name(self, "FadedCircle3D")	
     if select_circle:
         select_circle.visible = true
 

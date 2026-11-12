@@ -222,6 +222,9 @@ var audio_death: String
 @export_group("Action")
 # selected circle
 var is_selected_circle: bool
+var _selected_circle_node: Node3D = null
+var _base_circle_radius: float = 1.0
+var _cached_visual_meshes: Array[MeshInstance3D] = []
 
 
 @export_group("Item")
@@ -601,18 +604,40 @@ func _create_mesh_standing():
 		_mesh_standing.skeleton = _mesh_standing.get_path_to(skeleton)
 
 
-func _create_selected_circle() -> void:
+func get_visual_meshes() -> Array[MeshInstance3D]:
+	if _cached_visual_meshes.is_empty():
+		_cached_visual_meshes = CommonUtil.get_all_visual_meshes(self)
+	return _cached_visual_meshes
+
+
+func _create_selected_circle() -> Node3D:
+	if is_instance_valid(_selected_circle_node):
+		return _selected_circle_node
+		
+	var existing = CommonUtil.get_first_node_by_node_name(self, Constants.FadedCircle3D_CLZ)
+	if existing != null:
+		_selected_circle_node = existing as Node3D
+		_base_circle_radius = _selected_circle_node.get("radius") if "radius" in _selected_circle_node else 1.0
+		return _selected_circle_node
+
 	var selected_circle_scene: PackedScene = preload("res://generic-scenes-and-nodes/3d/FadedCircle3D.tscn")
 	var selected_circle: Node3D = selected_circle_scene.instantiate()
 	selected_circle.color = Color.WHITE
 	
-	var mesh_node = CommonUtil.get_first_node_by_node_type(self, Constants.MeshInstance3D_CLZ)
-	var aabb = CommonUtil.get_scaled_aabb(mesh_node)
-	var max_len = min(aabb.size.x, aabb.size.z)
-	
-	selected_circle.radius = max_len * 1.2 / 2.0
+	var r := 1.0
+	if _selection_local_aabb.size.length_squared() > 0.01:
+		r = maxf(0.6, minf(_selection_local_aabb.size.x, _selection_local_aabb.size.z) * 0.65)
+	else:
+		var mesh_node = CommonUtil.get_first_node_by_node_type(self, Constants.MeshInstance3D_CLZ)
+		var aabb = CommonUtil.get_scaled_aabb(mesh_node)
+		r = maxf(0.6, minf(aabb.size.x, aabb.size.z) * 0.6)
+		
+	_base_circle_radius = r
+	if "radius" in selected_circle:
+		selected_circle.radius = _base_circle_radius
+	_selected_circle_node = selected_circle
 	add_child(selected_circle)
-	pass
+	return _selected_circle_node
 
 
 func get_mesh_standing() -> MeshInstance3D:
@@ -620,21 +645,23 @@ func get_mesh_standing() -> MeshInstance3D:
 
 
 func show_selected_circle() -> void:
-	var select_circle = CommonUtil.get_first_node_by_node_name(self, Constants.FadedCircle3D_CLZ)	
-	if select_circle:
-		select_circle.visible = true
-
-		# 添加动效
-		var tween = create_tween()
-		tween.tween_property(select_circle, "radius", select_circle.radius * 1.25, 0.0)
-		tween.tween_property(select_circle, "radius", select_circle.radius, 0.1)
-
+	var circle = _create_selected_circle()
+	if is_instance_valid(circle):
+		circle.visible = true
+		if "radius" in circle:
+			circle.radius = _base_circle_radius
+			var tween = create_tween()
+			tween.tween_property(circle, "radius", _base_circle_radius * 1.25, 0.0)
+			tween.tween_property(circle, "radius", _base_circle_radius, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 func hide_selected_circle() -> void:
-	var select_circle = CommonUtil.get_first_node_by_node_name(self, Constants.FadedCircle3D_CLZ)	
-	if select_circle:
-		select_circle.visible = false
+	if is_instance_valid(_selected_circle_node):
+		_selected_circle_node.visible = false
+	else:
+		var select_circle = CommonUtil.get_first_node_by_node_name(self, Constants.FadedCircle3D_CLZ)
+		if select_circle:
+			select_circle.visible = false
 
 
 # 监听技能释放事件
@@ -646,6 +673,7 @@ func _on_skill_released(skill_context: SkillContext) -> void:
 
 ## 刷新单位本地 3D 选框 AABB
 func refresh_selection_bounds() -> void:
+	_cached_visual_meshes.clear()
 	_selection_local_aabb = CommonUtil.get_node_hierarchy_local_aabb(self)
 	var h_scale = aabb_height_scale if aabb_height_scale > 0.0 else 1.0
 	_height = _selection_local_aabb.size.y * h_scale

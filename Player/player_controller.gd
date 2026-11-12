@@ -54,6 +54,54 @@ var player_talent_map: Dictionary = {}
 
 
 var outline_material: ShaderMaterial
+var _outline_materials: Dictionary = {}
+
+func get_outline_material_for_target(target: Variant) -> ShaderMaterial:
+	var category := "neutral"
+	if target is TreasureChest:
+		category = "chest"
+	elif target is BaseUnit:
+		if (target as BaseUnit).player_group == player_group_idx:
+			category = "ally"
+		else:
+			category = "enemy"
+			
+	if _outline_materials.has(category) and _outline_materials[category] != null:
+		return _outline_materials[category]
+		
+	var shader = load("res://Asserts/shared/shader/3d/outline/outline.gdshader")
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	mat.render_priority = 0
+	
+	match category:
+		"ally":
+			mat.set_shader_parameter("outline_color", Color(0.25, 0.95, 0.45, 1.0))
+			mat.set_shader_parameter("outline_width", 3.5)
+			mat.set_shader_parameter("pulse_speed", 2.5)
+			mat.set_shader_parameter("pulse_intensity", 0.12)
+			mat.set_shader_parameter("enable_pulse", true)
+		"enemy":
+			mat.set_shader_parameter("outline_color", Color(1.0, 0.25, 0.25, 1.0))
+			mat.set_shader_parameter("outline_width", 3.8)
+			mat.set_shader_parameter("pulse_speed", 3.5)
+			mat.set_shader_parameter("pulse_intensity", 0.18)
+			mat.set_shader_parameter("enable_pulse", true)
+		"chest":
+			mat.set_shader_parameter("outline_color", Color(1.0, 0.82, 0.15, 1.0))
+			mat.set_shader_parameter("outline_width", 4.0)
+			mat.set_shader_parameter("pulse_speed", 2.0)
+			mat.set_shader_parameter("pulse_intensity", 0.15)
+			mat.set_shader_parameter("enable_pulse", true)
+		_:
+			mat.set_shader_parameter("outline_color", Color(0.35, 0.85, 1.0, 1.0))
+			mat.set_shader_parameter("outline_width", 3.5)
+			mat.set_shader_parameter("pulse_speed", 2.5)
+			mat.set_shader_parameter("pulse_intensity", 0.12)
+			mat.set_shader_parameter("enable_pulse", true)
+			
+	_outline_materials[category] = mat
+	return mat
 
 
 # Player corsor 
@@ -303,8 +351,20 @@ func _unhandled_input(event):
 			SOS.main.message_bar.set_message("没有可攻击的敌人单位")
 
 
+var _last_hover_mouse_pos: Vector2 = Vector2(-9999.0, -9999.0)
+
 func update_hover_state(screen_pos: Vector2) -> void:
-	if PlayerSelect.is_selecting(): return
+	if PlayerSelect.is_selecting():
+		if is_instance_valid(_current_hovered_target):
+			CommonUtil.remove_outline_from_unit(_current_hovered_target)
+			_current_hovered_target = null
+		return
+		
+	# 屏幕像素防抖：位移小于 2px 且已有目标时直接短路跳过，大幅降低高频开销
+	if screen_pos.distance_squared_to(_last_hover_mouse_pos) < 4.0:
+		return
+	_last_hover_mouse_pos = screen_pos
+		
 	var camera := get_viewport().get_camera_3d()
 	if camera == null: return
 	
@@ -313,71 +373,53 @@ func update_hover_state(screen_pos: Vector2) -> void:
 		return
 		
 	if is_instance_valid(_current_hovered_target):
-		var old_node = _current_hovered_target.get_child(0) if _current_hovered_target.get_child_count() > 0 else _current_hovered_target
-		CommonUtil.remove_outline_from_unit(old_node)
-		if _current_hovered_target is BaseUnit and not PlayerSelect.contains_unit(_current_hovered_target) and _current_hovered_target.has_method("hide_selected_circle"):
-			_current_hovered_target.hide_selected_circle()
+		CommonUtil.remove_outline_from_unit(_current_hovered_target)
 			
 	_current_hovered_target = picked
 	
 	if is_instance_valid(_current_hovered_target):
 		cur_unit_map[_current_hovered_target.get_instance_id()] = _current_hovered_target
 		set_process_unhandled_input(true)
-		var new_node = _current_hovered_target.get_child(0) if _current_hovered_target.get_child_count() > 0 else _current_hovered_target
-		CommonUtil.add_outline_to_unit(new_node, outline_material)
-		if _current_hovered_target.has_method("show_selected_circle"):
-			_current_hovered_target.show_selected_circle()
+		var mat = get_outline_material_for_target(_current_hovered_target)
+		CommonUtil.add_outline_to_unit(_current_hovered_target, mat)
+		# 注意：此处为 Hover 阶段，绝不触发 show_selected_circle()！
+		# 底部色盘仅在真正单选/框选选中时（refresh_selection_units）才按需创建并显示
 	else:
 		cur_unit_map.clear()
-						
 
 
 
-# 单位进入触发（单个单位鼠标高亮检测）
-# monitor when unit enter mouse scope
+
+# 单位进入触发（旧物理范围检测备用，严格遵循 Hover 仅描边、不触发色盘原则）
 func _on_select_area_area_entered(area: Area3D) -> void:
 	var unit = area.owner
 	if unit and ( (unit is BaseUnit and unit.is_alive())  or  (unit is TreasureChest) ):
-		
 		# 开启右键输入检测
 		if PlayerSelect.units().size() > 0:
 			set_process_unhandled_input(true)
 
-		# 添加单位到当前选中单位
+		# 添加单位到当前选中候选单位
 		cur_unit_map[unit.get_instance_id()] = unit
 
-		if unit.has_method('show_selected_circle'):
-			unit.show_selected_circle()
-	
-
-		# 描边特效
-		unit = unit.get_child(0)	# 向下一级，获取单位实体
-		CommonUtil.add_outline_to_unit(unit, outline_material)
+		# 描边特效（阵营动态配色）
+		var mat = get_outline_material_for_target(unit)
+		CommonUtil.add_outline_to_unit(unit, mat)
 
 
-# 单位退出触发（单个单位鼠标高亮检测）
-# monitor when unit exit mouse scope(notice when selected, not hide)
+# 单位退出触发
 func _on_select_area_area_exited(area: Area3D) -> void:
 	var unit = area.owner
 
-	# 移出单位到当前选中单位
 	if unit:
 		cur_unit_map.erase(unit.get_instance_id())
 
 	# 如果当前玩家候选单位为 0
 	if cur_unit_map.size() == 0:
-		# 关闭右键输入检测
 		set_process_unhandled_input(false)
 
-
-	# 描边特效
-	# unit = unit.get_child(0)	# 向下一级，获取单位实体
+	# 移除描边
 	CommonUtil.remove_outline_from_unit(unit)
 
-	if PlayerSelect.is_selecting():
-		return
-	if unit and unit is BaseUnit and !PlayerSelect.contains_unit(unit) and unit.has_method('hide_selected_circle'):
-		(unit as BaseUnit).hide_selected_circle()
 
 
 
