@@ -132,6 +132,80 @@ func run() -> void:
 	click(point)
 	await process_frame
 	check(level.action_bar.active_unit == after_restart, "restart during drag does not lock future selection")
+
+	# RTSPicker 深度验证：模型高处点击、单选宝箱、框选过滤宝箱、过滤偏好
+	# 1. 点击模型极高处 (2.8m，远超脚底) 验证
+	click(Vector2(50, 50))
+	await process_frame
+	var very_high: Vector2 = new_camera.unproject_position(after_restart.global_position + Vector3.UP * 2.8)
+	click(very_high)
+	await process_frame
+	check(level.action_bar.active_unit == after_restart, "high model pick at 2.8m selects cannon")
+
+	# 2. 单选宝箱验证
+	click(Vector2(50, 50))
+	await process_frame
+	var chest = main_scene.item_system._chest.instantiate()
+	chest.drop_item = load("res://System/item_system/domain/DropItem.gd").new()
+	chest.drop_item.item_name = "axe"
+	level.add_child(chest)
+	chest.global_position = Vector3(5, 0, -5)
+	await process_frame
+	var chest_screen: Vector2 = new_camera.unproject_position(chest.global_position + Vector3.UP * 0.8)
+	click(chest_screen)
+	await process_frame
+	check(main_scene.player_controller._last_selection_items.size() > 0 or main_scene.player_controller.cur_unit_map.has(chest.get_instance_id()), "single-click interacts with treasure chest")
+
+	# 3. 框选过滤宝箱验证 (覆盖炮塔与宝箱，仅选中炮塔)
+	click(Vector2(50, 50))
+	await process_frame
+	var box_start := Vector2(minf(point.x, chest_screen.x) - 40, minf(point.y, chest_screen.y) - 40)
+	var box_end := Vector2(maxf(point.x, chest_screen.x) + 40, maxf(point.y, chest_screen.y) + 40)
+	motion(box_start)
+	button(box_start, true)
+	motion(box_end, true)
+	button(box_end, false)
+	await process_frame
+	var box_units: Array = main_scene.player_controller.PlayerSelect.units()
+	check(box_units.has(after_restart), "box selection includes cannon")
+	check(not box_units.has(chest), "box selection strictly filters out treasure chest")
+
+	# 4. 框选过滤偏好 (友军优先)
+	var enemy_tower = main_scene.unit_system.create_unit(load("res://Unit/turret/resources/Queen.tres"), 1)
+	level.turret_manager.add_child(enemy_tower)
+	enemy_tower.global_position = Vector3(0, 0, -5)
+	enemy_tower.player_group = 1
+	enemy_tower.change_state(1)
+	await physics_frame
+	await process_frame
+	var enemy_screen: Vector2 = new_camera.unproject_position(enemy_tower.global_position + Vector3.UP * 1.5)
+	
+	click(Vector2(50, 50))
+	await process_frame
+	var mixed_start := Vector2(minf(point.x, enemy_screen.x) - 30, minf(point.y, enemy_screen.y) - 30)
+	var mixed_end := Vector2(maxf(point.x, enemy_screen.x) + 30, maxf(point.y, enemy_screen.y) + 30)
+	motion(mixed_start)
+	button(mixed_start, true)
+	motion(mixed_end, true)
+	button(mixed_end, false)
+	await process_frame
+	var mixed_units: Array = main_scene.player_controller.PlayerSelect.units()
+	check(mixed_units.has(after_restart), "friendly preference: selects friendly tower")
+	check(not mixed_units.has(enemy_tower), "friendly preference: filters out enemy tower")
+
+	# 5. 框选仅敌军时成功选中敌军
+	click(Vector2(50, 50))
+	await process_frame
+	var enemy_start := enemy_screen - Vector2(25, 25)
+	var enemy_end := enemy_screen + Vector2(25, 25)
+	motion(enemy_start)
+	button(enemy_start, true)
+	motion(enemy_end, true)
+	button(enemy_end, false)
+	await process_frame
+	var enemy_units: Array = main_scene.player_controller.PlayerSelect.units()
+	check(enemy_units.has(enemy_tower), "enemy-only box selection selects enemy tower")
+
 	await controller.return_to_menu("")
 	main_scene.queue_free()
 	await process_frame

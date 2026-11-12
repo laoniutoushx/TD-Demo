@@ -1,5 +1,6 @@
 class_name SelectionBox extends Node3D
 const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
+const RTSPicker = preload("res://Scripts/utils/RTSPicker.gd")
 
 signal selecting_started
 signal selecting_finished(unit_map: Dictionary, end_project_pos: Vector3, player_status: PlayerController.PLAYER_STATUS)
@@ -120,13 +121,10 @@ func cancel_selection(reason := "cancelled") -> void:
 func _finish() -> void:
 	if not is_selecting(): return
 	var units := _query_selection()
-	# Derive the endpoint from this release rather than an older RayPicker frame.
 	var camera := get_viewport().get_camera_3d()
 	var endpoint := Vector3.ZERO
 	if camera != null:
-		var origin := camera.project_ray_origin(end_screen_pos)
-		var direction := camera.project_ray_normal(end_screen_pos)
-		var ground = Plane(Vector3.UP, 0.0).intersects_ray(origin, direction)
+		var ground = RTSPicker.pick_ground(camera, end_screen_pos)
 		if ground != null: endpoint = ground
 		if not units.is_empty(): endpoint = units.values()[0].global_position
 	var status := player_status
@@ -137,35 +135,24 @@ func _query_selection() -> Dictionary:
 	var camera := get_viewport().get_camera_3d()
 	var result := {}
 	if camera == null: return result
-	var rectangle := Rect2(start_screen_pos, end_screen_pos - start_screen_pos).abs()
 	var single_click := gesture_state == GestureState.PRESSED
 	if single_click:
-		var origin := camera.project_ray_origin(end_screen_pos)
-		var query := PhysicsRayQueryParameters3D.create(origin, origin + camera.project_ray_normal(end_screen_pos) * 1000.0, 7)
-		query.collide_with_areas = true
-		query.collide_with_bodies = false
-		var hit := get_world_3d().direct_space_state.intersect_ray(query)
-		if not hit.is_empty():
-			var unit = hit.collider.owner
-			if _can_select(unit):
-				result[unit.get_instance_id()] = unit
-				return result
-	var closest_distance := 26.0 * 26.0
-	for unit in get_tree().get_nodes_in_group("selectable_units"):
-		if not _can_select(unit): continue
-		var center: Vector3 = unit.global_position + Vector3.UP * unit._height * 0.5
-		if camera.is_position_behind(center): continue
-		var screen := camera.unproject_position(center)
-		if single_click:
-			var distance := screen.distance_squared_to(end_screen_pos)
-			if distance < closest_distance:
-				closest_distance = distance
-				result = {unit.get_instance_id(): unit}
-		elif rectangle.has_point(screen): result[unit.get_instance_id()] = unit
+		var picked = RTSPicker.pick_unit(camera, end_screen_pos, _can_select)
+		if picked != null:
+			result[picked.get_instance_id()] = picked
+		return result
+	
+	var rectangle := Rect2(start_screen_pos, end_screen_pos - start_screen_pos).abs()
+	var player_group := 0
+	if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+		player_group = SOS.main.player_controller.player_group_idx
+	var picked_units: Array[BaseUnit] = RTSPicker.pick_units_in_rect(camera, rectangle, _can_select, true, player_group)
+	for u in picked_units:
+		result[u.get_instance_id()] = u
 	return result
 
 func _can_select(unit: Variant) -> bool:
-	return is_instance_valid(unit) and unit is Node3D and unit.is_visible_in_tree() and not unit.is_queued_for_deletion() and ((unit is BaseUnit and unit.is_alive()) or unit is TreasureChest)
+	return is_instance_valid(unit) and unit is Node and unit.is_visible_in_tree() and not unit.is_queued_for_deletion() and ((unit is BaseUnit and unit.is_alive()) or unit is TreasureChest)
 
 # Compatibility nodes remain disabled; screen queries are authoritative.
 func _on_selected_area_area_entered(_area: Area3D) -> void:

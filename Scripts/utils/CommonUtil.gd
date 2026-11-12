@@ -904,3 +904,92 @@ static func release_detached_nodes(nodes: Dictionary) -> void:
 		if is_instance_valid(node) and node is Node and node.get_parent() == null:
 			node.free()
 	nodes.clear()
+
+
+## 将本地 AABB 根据 Transform3D 变换为新的外接 AABB
+static func transform_aabb(t: Transform3D, aabb: AABB) -> AABB:
+	if aabb.size == Vector3.ZERO:
+		return AABB(t.origin, Vector3.ZERO)
+	var x := t.basis.x * aabb.size.x
+	var y := t.basis.y * aabb.size.y
+	var z := t.basis.z * aabb.size.z
+	var pos := t * aabb.position
+	
+	var new_min := pos
+	var new_max := pos
+	
+	var corners := [
+		pos + x,
+		pos + y,
+		pos + z,
+		pos + x + y,
+		pos + x + z,
+		pos + y + z,
+		pos + x + y + z
+	]
+	for c in corners:
+		new_min.x = minf(new_min.x, c.x)
+		new_min.y = minf(new_min.y, c.y)
+		new_min.z = minf(new_min.z, c.z)
+		new_max.x = maxf(new_max.x, c.x)
+		new_max.y = maxf(new_max.y, c.y)
+		new_max.z = maxf(new_max.z, c.z)
+		
+	return AABB(new_min, new_max - new_min)
+
+## 收集节点下所有用于渲染的可视 MeshInstance3D（自动排除辅助、指示器与范围网格）
+static func get_all_visual_meshes(node: Node) -> Array[MeshInstance3D]:
+	var result: Array[MeshInstance3D] = []
+	if not is_instance_valid(node):
+		return result
+		
+	var stack: Array[Node] = [node]
+	while not stack.is_empty():
+		var curr: Node = stack.pop_back()
+		if curr is MeshInstance3D and curr.visible:
+			var m_inst: MeshInstance3D = curr as MeshInstance3D
+			var node_name: String = m_inst.name
+			var n_lower: String = node_name.to_lower()
+			if not ('outline' in n_lower or '_mesh_standing' in n_lower or 'debug' in n_lower or 'scope' in n_lower or 'range' in n_lower or 'decal' in n_lower):
+				if m_inst.mesh != null:
+					result.append(m_inst)
+		for child in curr.get_children():
+			if is_instance_valid(child) and not child.is_queued_for_deletion():
+				stack.push_back(child)
+	return result
+
+## 计算一个 Node3D 相对于其祖先节点的复合相对变换
+static func get_relative_transform_to_ancestor(node: Node3D, ancestor: Node) -> Transform3D:
+	if not is_instance_valid(node) or not is_instance_valid(ancestor):
+		return Transform3D.IDENTITY
+	var curr: Node = node
+	var xform: Transform3D = Transform3D.IDENTITY
+	while curr != null and curr != ancestor:
+		if curr is Node3D:
+			xform = (curr as Node3D).transform * xform
+		curr = curr.get_parent()
+	return xform
+
+## 计算整个节点层级相对于 root 的合并本地 AABB
+static func get_node_hierarchy_local_aabb(root: Node) -> AABB:
+	if not is_instance_valid(root):
+		return AABB()
+	var meshes: Array[MeshInstance3D] = get_all_visual_meshes(root)
+	var combined_aabb := AABB()
+	var has_first := false
+	
+	for m in meshes:
+		var mesh_aabb: AABB = m.get_aabb()
+		if mesh_aabb.size.length_squared() < 0.0001:
+			continue
+		var relative_xform: Transform3D = get_relative_transform_to_ancestor(m, root)
+		var world_like_aabb: AABB = transform_aabb(relative_xform, mesh_aabb)
+		if not has_first:
+			combined_aabb = world_like_aabb
+			has_first = true
+		else:
+			combined_aabb = combined_aabb.merge(world_like_aabb)
+			
+	if not has_first:
+		return AABB(Vector3(-0.75, 0.0, -0.75), Vector3(1.5, 2.0, 1.5))
+	return combined_aabb

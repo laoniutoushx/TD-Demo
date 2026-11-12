@@ -1,5 +1,7 @@
 class_name PlayerController extends Node3D
 const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
+const RTSPicker = preload("res://Scripts/utils/RTSPicker.gd")
+var _current_hovered_target: Node = null
 
 # Scope Node Define
 @onready var select_area: Area3D = %SelectArea		# （单个单位鼠标高亮检测）
@@ -190,6 +192,7 @@ func select_area_pos_sync(ray_cast: RayCast3D) -> void:
 	else:
 		select_area.global_position = collision_point
 		player_skill_target_indicator.global_position = collision_point
+	update_hover_state(get_viewport().get_mouse_position())
 
 
 
@@ -263,43 +266,69 @@ func _unhandled_input(event):
 	if event is InputEventMouseButton and not BattleInput.pointer_available(get_viewport(), event.position): return
 	if player_status != PLAYER_STATUS.DEFAULT: return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		# print("监听到右键点击")
-		# 获取到玩家选择的所有单位，过滤出 所有玩家单位，判断
+		var target_unit = null
 		if cur_unit_map.size() > 0:
-			var target_unit
 			for cur_unit in cur_unit_map.values():
-				CommonUtil.debug_log(["cur unit %s" % cur_unit])
-				
-				# First check if the instance is valid before doing any type checking
 				if not is_instance_valid(cur_unit):
 					continue
-				
-				# Now safely check the type and other conditions
 				if ((cur_unit is BaseUnit and cur_unit.is_alive() and cur_unit.player_group != player_group_idx) or 
 					(cur_unit is TreasureChest and player_status == PLAYER_STATUS.DEFAULT)):
 					target_unit = cur_unit
 					break
 
-			if target_unit:
-				if target_unit is TreasureChest:
-					for turret in PlayerSelect.units():
-						if is_instance_valid(turret) and turret is Turret:
-							SOS.main.item_system.pick_up(turret, target_unit)
-						
-						break;
-				else:
-					for turret in PlayerSelect.units():
-						if is_instance_valid(turret) and turret is Turret:
-							# 如果单位再防御塔候选攻击单位中 enemies 
-							if turret.enemies.has(target_unit.get_instance_id()):
-								# 直接设置当前敌人
-								turret.current_enemy = target_unit
-							else:
-								# 提示敌人不在防御塔攻击范围内
-								CommonUtil.debug_log(["敌人 %s 不在防御塔攻击范围内" % target_unit.clz_name])
-								SOS.main.message_bar.set_message("敌人不在防御塔攻击范围内")
+		if target_unit == null:
+			var camera = get_viewport().get_camera_3d()
+			if camera != null:
+				var context = RTSPicker.pick_context(camera, event.position, player_group_idx)
+				if context.target_type == RTSPicker.PickResult.TargetType.ENEMY:
+					target_unit = context.unit
+				elif context.target_type == RTSPicker.PickResult.TargetType.ITEM:
+					target_unit = context.item
+
+		if target_unit:
+			if target_unit is TreasureChest:
+				for turret in PlayerSelect.units():
+					if is_instance_valid(turret) and turret is Turret:
+						SOS.main.item_system.pick_up(turret, target_unit)
+						break
 			else:
-				SOS.main.message_bar.set_message("没有可攻击的敌人单位")
+				for turret in PlayerSelect.units():
+					if is_instance_valid(turret) and turret is Turret:
+						if turret.enemies.has(target_unit.get_instance_id()):
+							turret.current_enemy = target_unit
+						else:
+							CommonUtil.debug_log(["敌人 %s 不在防御塔攻击范围内" % target_unit.clz_name])
+							SOS.main.message_bar.set_message("敌人不在防御塔攻击范围内")
+		else:
+			SOS.main.message_bar.set_message("没有可攻击的敌人单位")
+
+
+func update_hover_state(screen_pos: Vector2) -> void:
+	if PlayerSelect.is_selecting(): return
+	var camera := get_viewport().get_camera_3d()
+	if camera == null: return
+	
+	var picked = RTSPicker.pick_unit(camera, screen_pos)
+	if picked == _current_hovered_target:
+		return
+		
+	if is_instance_valid(_current_hovered_target):
+		var old_node = _current_hovered_target.get_child(0) if _current_hovered_target.get_child_count() > 0 else _current_hovered_target
+		CommonUtil.remove_outline_from_unit(old_node)
+		if _current_hovered_target is BaseUnit and not PlayerSelect.contains_unit(_current_hovered_target) and _current_hovered_target.has_method("hide_selected_circle"):
+			_current_hovered_target.hide_selected_circle()
+			
+	_current_hovered_target = picked
+	
+	if is_instance_valid(_current_hovered_target):
+		cur_unit_map[_current_hovered_target.get_instance_id()] = _current_hovered_target
+		set_process_unhandled_input(true)
+		var new_node = _current_hovered_target.get_child(0) if _current_hovered_target.get_child_count() > 0 else _current_hovered_target
+		CommonUtil.add_outline_to_unit(new_node, outline_material)
+		if _current_hovered_target.has_method("show_selected_circle"):
+			_current_hovered_target.show_selected_circle()
+	else:
+		cur_unit_map.clear()
 						
 
 

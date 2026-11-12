@@ -1,5 +1,6 @@
 class_name Skill extends Node3D
 const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
+const RTSPicker = preload("res://Scripts/utils/RTSPicker.gd")
 
 # Reference
 var skill_meta_res: SkillMetaResource
@@ -640,55 +641,49 @@ func _process(delta: float) -> void:
 
             # 目标类型检查-某个单位
             if CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.UNIT, target_type):
-                var cur_unit_map = SOS.main.player_controller.cur_unit_map
-                if not cur_unit_map.is_empty():
-
-                    # 停止监听
+                var camera = get_viewport().get_camera_3d()
+                var picked_target = null
+                if camera != null:
+                    picked_target = RTSPicker.pick_unit(camera, get_viewport().get_mouse_position(), _skill_target_unit_cond_matched)
+                
+                if picked_target != null:
                     mouse_click_check = false
                     set_process(false)
-
-                    # 获取选中单位
-                    var min_unit = null
-                    var min_distance = INF  # 使用 INF 作为初始最小距离
-                    
-                    # 遍历所有单位
-                    for u_key in cur_unit_map.keys():
-                        var _unit = cur_unit_map.get(u_key)
-                        
-                        if not _unit:
-                            continue
-
-                        # 根据 skill target type 动态判断是否满足条件
-                        if not _skill_target_unit_cond_matched(_unit):
-                            continue
-
-                        # 计算单位到原点的距离
-                        var distance = _unit.global_position.distance_squared_to(SOS.main.player_controller.player_skill_target_indicator.global_position)
-                        
-                        # 如果找到更近的单位，更新最小距离和对应的单位
-                        if distance < min_distance:
-                            min_distance = distance
-                            min_unit = _unit
-                    
-                    # 此时 min_unit 就是距离原点最近的单位
-                    if min_unit:
-                        # 在这里处理最近的单位，比如选中它
-                        CommonUtil.debug_log(["最近的单位距离: ", min_distance])
-                        CommonUtil.debug_log(["最近的单位: ", min_unit])
-
-
-                        skill_context.target_position = SOS.main.player_controller.player_skill_target_indicator.global_position
-                        skill_context.target = min_unit
-
-                        change_state(SKILL_STATE.Release)
-
-                    else:
-                        CommonUtil.debug_log(["没有找到最近的单位"])
-                        SOS.main.message_bar.set_message("没有选中任何单位")
-
+                    skill_context.target_position = picked_target.global_position
+                    skill_context.target = picked_target
+                    change_state(SKILL_STATE.Release)
                 else:
-                    CommonUtil.debug_log(["没有选中任何单位"])
-                    SOS.main.message_bar.set_message("没有选中任何单位")
+                    var cur_unit_map = SOS.main.player_controller.cur_unit_map
+                    if not cur_unit_map.is_empty():
+                        mouse_click_check = false
+                        set_process(false)
+
+                        var min_unit = null
+                        var min_distance = INF
+                        
+                        for u_key in cur_unit_map.keys():
+                            var _unit = cur_unit_map.get(u_key)
+                            if not _unit:
+                                continue
+                            if not _skill_target_unit_cond_matched(_unit):
+                                continue
+                            var distance = _unit.global_position.distance_squared_to(SOS.main.player_controller.player_skill_target_indicator.global_position)
+                            if distance < min_distance:
+                                min_distance = distance
+                                min_unit = _unit
+                        
+                        if min_unit:
+                            CommonUtil.debug_log(["最近的单位距离: ", min_distance])
+                            CommonUtil.debug_log(["最近的单位: ", min_unit])
+                            skill_context.target_position = SOS.main.player_controller.player_skill_target_indicator.global_position
+                            skill_context.target = min_unit
+                            change_state(SKILL_STATE.Release)
+                        else:
+                            CommonUtil.debug_log(["没有找到最近的单位"])
+                            SOS.main.message_bar.set_message("没有选中任何单位")
+                    else:
+                        CommonUtil.debug_log(["没有选中任何单位"])
+                        SOS.main.message_bar.set_message("没有选中任何单位")
 func _exit_tree() -> void:
     load("res://Scripts/utils/BattleInput.gd").request_cursor_hidden(self, false)
     CommonUtil.release_detached_nodes(buff_map)

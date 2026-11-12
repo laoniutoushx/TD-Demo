@@ -249,6 +249,7 @@ var buff_map: Dictionary = {}
 # 内部变量
 var _transformed_aabb: AABB		# 当前对象全局空间 AABB 包围盒
 var _height: float				# 当前对象高度
+var _selection_local_aabb: AABB = AABB()	# 当前对象本地空间 3D 选框包围盒
 
 
 
@@ -343,10 +344,7 @@ func _ready() -> void:
 
 
 	# AABB
-	var aabb: AABB = CommonUtil.get_scaled_aabb(CommonUtil.get_first_node_by_node_type(self.get_child(0), Constants.MeshInstance3D_CLZ, false))
-	# _transformed_aabb = AABB(aabb.position * aabb_scale, aabb.size * aabb_scale)
-	_transformed_aabb = aabb.grow(aabb_scale)
-	_height = aabb.size.y * aabb_height_scale
+	refresh_selection_bounds()
 
 
 	# take damage
@@ -644,3 +642,22 @@ func _on_skill_released(skill_context: SkillContext) -> void:
 	var skill = skill_context.skill
 	if not skill_context.cost_paid:
 		self.mana -= maxf(0.0, skill.mana_cost)
+
+
+## 刷新单位本地 3D 选框 AABB
+func refresh_selection_bounds() -> void:
+	_selection_local_aabb = CommonUtil.get_node_hierarchy_local_aabb(self)
+	var h_scale = aabb_height_scale if aabb_height_scale > 0.0 else 1.0
+	_height = _selection_local_aabb.size.y * h_scale
+	if _height <= 0.0:
+		_height = 2.0
+	_transformed_aabb = _selection_local_aabb.grow(aabb_scale)
+
+## 获取用于精确选框拾取的世界空间 AABB
+func get_selection_aabb() -> AABB:
+	if _selection_local_aabb.size.length_squared() < 0.001:
+		refresh_selection_bounds()
+	var xform: Transform3D = Transform3D.IDENTITY
+	if 'global_transform' in self:
+		xform = (self as Variant).global_transform
+	return CommonUtil.transform_aabb(xform, _selection_local_aabb)
