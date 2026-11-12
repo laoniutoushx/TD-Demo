@@ -1,12 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://lwbcrrjy7f4u"]
+[gd_scene load_steps=4 format=3 uid="uid://lwbcrrjy7f4u"]
 
 [ext_resource type="Script" uid="uid://bu0mcymjad72f" path="res://Player/player_controller.gd" id="1_q3nwc"]
+[ext_resource type="PackedScene" path="res://Player/SkillScopeIndicator.tscn" id="2_scope"]
 [ext_resource type="PackedScene" uid="uid://dwky2e2vyhklu" path="res://Components/selection_box/SelectionBox.tscn" id="3_7tl51"]
 
 [node name="PlayerController" type="Node3D"]
 script = ExtResource("1_q3nwc")
 
 [node name="SelectionBox" parent="." instance=ExtResource("3_7tl51")]
+unique_name_in_owner = true
+
+[node name="SkillScopeIndicator" parent="." instance=ExtResource("2_scope")]
 unique_name_in_owner = true
 
 [connection signal="selecting_finished" from="SelectionBox" to="." method="_on_selection_box_selecting_finished"]

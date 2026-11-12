@@ -5,6 +5,15 @@ var _current_hovered_target: Node = null
 
 @onready var item_hud: PackedScene = preload("res://Components/item_indicator/item_hud.tscn")
 @onready var selection_box: SelectionBox = %SelectionBox
+@onready var skill_scope_indicator: Node3D = %SkillScopeIndicator
+
+func show_skill_scope(radius: float, caster: BaseUnit = null, max_distance: float = 0.0) -> void:
+	if is_instance_valid(skill_scope_indicator):
+		skill_scope_indicator.show_scope(radius, caster, max_distance)
+
+func hide_skill_scope() -> void:
+	if is_instance_valid(skill_scope_indicator):
+		skill_scope_indicator.hide_scope()
 
 
 # 玩家幸运值（随机因子）

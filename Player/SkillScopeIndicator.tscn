@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Player/skill_scope_indicator.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://mfbpevuvekus" path="res://Asserts/Images/indicator/skill_release_indicator.png" id="2_texture"]
+
+[node name="SkillScopeIndicator" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="ScopeDecal" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+size = Vector3(10, 8, 10)
+texture_albedo = ExtResource("2_texture")
+emission_energy = 8.0
+modulate = Color(0.2, 0.6, 1, 0.9)

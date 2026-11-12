@@ -253,6 +253,11 @@ func change_state(new_state: TALENT_STATE) -> void:
         # 恢复 cursor 移动
         SOS.main.player_controller.not_limit_move()
 
+        # 隐藏范围技能指示框
+        if current_state == TALENT_STATE.Circle_Range_Indicate or current_state == TALENT_STATE.Direction_Indicate:
+            if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+                SOS.main.player_controller.hide_skill_scope()
+
         if current_state == TALENT_STATE.Building_Indicate:
             # 关闭 BuildingKeyIndicator
             SOS.main.building_key_indicator.show_toggle()
@@ -279,6 +284,12 @@ func change_state(new_state: TALENT_STATE) -> void:
             if range_comp:
                 range_comp.set_radius(release_distance)
 
+            # 若目标类型包含地面，则开启范围指示框
+            if CommonUtil.is_flag_set(TalentResource.TALENT_TARGET_TYPE.FLOOR, target_type):
+                var aoe_radius = damage_range if damage_range > 0.0 else range
+                if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+                    SOS.main.player_controller.show_skill_scope(aoe_radius, unit, release_distance)
+
             # 单位全局技能状态处理
             unit.current_global_TALENT_STATE = 1
             # PlayerStatus 切换
@@ -298,6 +309,12 @@ func change_state(new_state: TALENT_STATE) -> void:
             var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
             if range_comp:
                 range_comp.set_radius(release_distance)
+
+            # 若目标类型包含地面，则开启范围指示框
+            if CommonUtil.is_flag_set(TalentResource.TALENT_TARGET_TYPE.FLOOR, target_type):
+                var aoe_radius = damage_range if damage_range > 0.0 else range
+                if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+                    SOS.main.player_controller.show_skill_scope(aoe_radius, unit, release_distance)
 
             # 单位全局技能状态处理
             unit.current_global_skill_state = 1
@@ -428,4 +445,5 @@ func _talent_target_unit_cond_matched(target_node: Variant) -> bool:
 func _exit_tree() -> void:
     if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
         SOS.main.player_controller.switch_cursor(Constants.CURSOR_STATUS.DEFAULT)
+        SOS.main.player_controller.hide_skill_scope()
     CommonUtil.release_detached_nodes(buff_map)

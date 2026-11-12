@@ -65,10 +65,12 @@ func run() -> void:
 	var hero = level.gdbot
 	check(hero != null, "Hero gdbot must exist in level1")
 	
-	# 1. 验证旧指示器节点已完全从 PlayerController 树中移除
+	# 1. 验证旧指示器节点已完全从 PlayerController 树中移除，新 SkillScopeIndicator 已挂载
 	check(player.get_node_or_null("PlayerSkillScopeIndicator") == null, "PlayerSkillScopeIndicator must be completely deleted")
 	check(player.get_node_or_null("PlayerSkillTargetIndicator") == null, "PlayerSkillTargetIndicator must be completely deleted")
 	check(player.get_node_or_null("SelectArea") == null, "SelectArea must be completely deleted")
+	check(player.skill_scope_indicator != null, "New SkillScopeIndicator exists on PlayerController")
+	check(player.skill_scope_indicator.visible == false, "SkillScopeIndicator starts hidden")
 	
 	# 2. 动态加载并为英雄赋予技能 (火焰雨 - AOE 范围技能, 风暴之锤 - 单体指向技能)
 	var fire_res = load("res://System/skill_system/resources/damage/fire_rain.tres")
@@ -89,21 +91,27 @@ func run() -> void:
 	fire_skill.change_state(fire_skill.SKILL_STATE.Circle_Range_Indicate)
 	check(fire_skill.current_state == fire_skill.SKILL_STATE.Circle_Range_Indicate, "Skill is in Circle_Range_Indicate state")
 	check(fire_skill.mouse_click_check == true, "mouse_click_check is active")
+	check(player.skill_scope_indicator.visible == true, "SkillScopeIndicator is visible during Circle_Range_Indicate")
+	check(abs(player.skill_scope_indicator.decal.size.x - fire_skill.damage_range * 2.0) < 0.1, "Decal size matches damage_range * 2")
 	
 	# 4. 测试 ESC 取消施法
 	key(KEY_ESCAPE)
 	await process_frame
 	check(fire_skill.current_state == fire_skill.SKILL_STATE.Idle, "ESC cancels targeting and returns to Idle")
 	check(fire_skill.mouse_click_check == false, "mouse_click_check reset on cancel")
+	check(player.skill_scope_indicator.visible == false, "SkillScopeIndicator hidden on ESC cancel")
 	
 	# 5. 测试鼠标右键取消施法
 	fire_skill.change_state(fire_skill.SKILL_STATE.Circle_Range_Indicate)
+	check(player.skill_scope_indicator.visible == true, "SkillScopeIndicator shown again")
 	click(Vector2(540, 384), MOUSE_BUTTON_RIGHT)
 	await process_frame
 	check(fire_skill.current_state == fire_skill.SKILL_STATE.Idle, "Right-click cancels targeting and returns to Idle")
+	check(player.skill_scope_indicator.visible == false, "SkillScopeIndicator hidden on Right-click cancel")
 	
 	# 6. 测试鼠标左键直接点击释放地面技能 (直接从点击位置拾取 3D 坐标)
 	fire_skill.change_state(fire_skill.SKILL_STATE.Circle_Range_Indicate)
+	check(player.skill_scope_indicator.visible == true, "SkillScopeIndicator visible before click cast")
 	var click_screen_point := Vector2(600, 400)
 	var camera = level.get_node("RTSController").cam
 	var RTSPicker = load("res://Scripts/utils/RTSPicker.gd")
@@ -114,6 +122,7 @@ func run() -> void:
 	await process_frame
 	
 	check(fire_skill.current_state in [fire_skill.SKILL_STATE.Release, fire_skill.SKILL_STATE.Cool_Down, fire_skill.SKILL_STATE.Casting], "Skill successfully cast on direct mouse click")
+	check(player.skill_scope_indicator.visible == false, "SkillScopeIndicator hidden after casting")
 	var cast_dist: float = fire_skill.skill_context.target_position.distance_to(expected_ground)
 	print("  - Target position offset from clicked ground ray: %.4f m" % cast_dist)
 	check(cast_dist < 0.1, "Skill target position matches exact mouse click ground position")
