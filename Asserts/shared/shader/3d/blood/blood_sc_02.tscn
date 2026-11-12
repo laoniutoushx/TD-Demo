@@ -1,16 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://ddjl3pwr2b7oo"]
+[gd_scene load_steps=5 format=3 uid="uid://ddjl3pwr2b7oo"]
 
-[ext_resource type="Texture2D" uid="uid://t7ra48yi3xkd" path="res://Asserts/textures/vfx/—Pngtree—red blood splatter overlay design_18731106 (2).png" id="1_n12eo"]
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_ap2l2"]
-size = Vector2(10, 10)
+[ext_resource type="Texture2D" uid="uid://cbeuuimic5xqa" path="res://Asserts/materials/high_velocity_blood_spatter_sgeoahup_1k/high_velocity_blood_spatter_albedo.png" id="1_albedo"]
+[ext_resource type="Texture2D" uid="uid://bi4ws4qgp6tng" path="res://Asserts/materials/high_velocity_blood_spatter_sgeoahup_1k/high_velocity_blood_spatter_orm.png" id="2_orm"]
+[ext_resource type="Texture2D" uid="uid://dmai4aib83ovy" path="res://Asserts/materials/high_velocity_blood_spatter_sgeoahup_1k/high_velocity_blood_spatter_normal.png" id="3_normal"]
+[ext_resource type="Script" uid="uid://d3138glldwmy5" path="res://Asserts/shared/shader/3d/blood/blood_sc.gd" id="4_script"]
 
 [node name="BloodSc02" type="Decal"]
-texture_albedo = ExtResource("1_n12eo")
-texture_orm = ExtResource("1_n12eo")
-modulate = Color(1, 0, 0, 1)
+size = Vector3(1.2, 0.5, 1.2)
+texture_albedo = ExtResource("1_albedo")
+texture_normal = ExtResource("3_normal")
+texture_orm = ExtResource("2_orm")
 cull_mask = 786432
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-layers = 786432
-mesh = SubResource("PlaneMesh_ap2l2")
+normal_fade = 0.4
+upper_fade = 0.2
+lower_fade = 0.2
+script = ExtResource("4_script")

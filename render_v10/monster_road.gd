@@ -78,6 +78,7 @@ func build_road(curve: Curve3D) -> void:
 		# Main Slab
 		var slab := MeshInstance3D.new()
 		slab.name = "RoadSlab_%03d" % index
+		slab.layers = 262144 | 1 # Layer 19 (Road/Slabs for Decal projection) | Layer 1 (Default camera)
 		var s_h: float = slab_height + rng.randf_range(-0.004, 0.004)
 		slab.mesh = _segment(route, distances, start + 0.02, finish - 0.02, -half_w, half_w, s_h, index, true)
 		if not mats.is_empty():
@@ -88,6 +89,7 @@ func build_road(curve: Curve3D) -> void:
 		for side in [-1.0, 1.0]:
 			var curb := MeshInstance3D.new()
 			curb.name = "Curb_%03d_%d" % [index, int(side)]
+			curb.layers = 262144 | 1 # Layer 19 (Road/Slabs for Decal projection) | Layer 1 (Default camera)
 			var curb_in: float = side * half_w
 			var curb_out: float = side * (half_w + curb_width)
 			var left_c := minf(curb_in, curb_out)

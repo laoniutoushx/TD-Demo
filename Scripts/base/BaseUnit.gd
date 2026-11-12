@@ -405,12 +405,21 @@ func do_after_logic_dead() -> void:
 	CommonUtil.play_audio(self, audio_death)
 
 	# 在单位位置创建血迹贴图
-	var bs: PackedScene = CommonUtil.get_resource("blood_sc_01")
+	var blood_res_name: String = "blood_sc_01" if randf() > 0.4 else "blood_sc_02"
+	var bs: PackedScene = CommonUtil.get_resource(blood_res_name)
+	if not bs:
+		bs = CommonUtil.get_resource("blood_sc_01")
 	if bs:
 		var blood_stain: Decal = bs.instantiate()
 		SystemUtil.vfx_system.add_child(blood_stain)
-		blood_stain.global_position = self.global_position
-		blood_stain.scale = Vector3(_transformed_aabb.size.x, 1, _transformed_aabb.size.z)
+		var spawn_pos: Vector3 = self.global_position if "global_position" in self else Vector3.ZERO
+		if blood_stain.has_method("setup_blood"):
+			var target_extent_x: float = clampf(_transformed_aabb.size.x * 1.1, 0.8, 3.0)
+			var target_extent_z: float = clampf(_transformed_aabb.size.z * 1.1, 0.8, 3.0)
+			blood_stain.setup_blood(Vector3(target_extent_x, 0.5, target_extent_z), spawn_pos)
+		else:
+			blood_stain.global_position = spawn_pos
+			blood_stain.size = Vector3(maxf(_transformed_aabb.size.x, 0.8), 0.5, maxf(_transformed_aabb.size.z, 0.8))
 
 
 
