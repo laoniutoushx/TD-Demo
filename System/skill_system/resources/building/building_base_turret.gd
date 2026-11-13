@@ -29,7 +29,19 @@ func action(skill_context: SkillContext) -> void:
     # 3. 播放施工阶段音效
     CommonUtil.play_audio(source_unit, "271137__strange_dragoon__building-constructing", 0.5)
 
-    # 4. 建筑拔地升起（平滑缓动向上构建生长）
+    # 4. 地基掘地平整展开 + 建筑拔地升起（平滑缓动向上构建生长）
+    var foundation = building.get_node_or_null("FoundationBase")
+    if not is_instance_valid(foundation):
+        foundation = building.get_node_or_null("DecalMeshGround")
+    if not is_instance_valid(foundation):
+        var fb_scene = load("res://Components/foundation_base/foundation_base.tscn")
+        if fb_scene:
+            foundation = fb_scene.instantiate()
+            foundation.name = "FoundationBase"
+            building.add_child(foundation)
+    if is_instance_valid(foundation) and foundation.has_method("start_construction"):
+        foundation.start_construction(1.2)
+
     building.global_position = gp
     building.scale = Vector3(0.2, 0.05, 0.2)
     var tween: Tween = create_tween()
@@ -43,11 +55,14 @@ func action(skill_context: SkillContext) -> void:
         if is_instance_valid(dust): dust.queue_free()
         return
 
-    # 5. 落成震撼反馈（播放落成音效 + 释放地面冲击波）
+    # 5. 落成震撼反馈（播放落成音效 + 释放地面冲击波 + 地基物理压实锁定）
     CommonUtil.play_audio(source_unit, "271134__strange_dragoon__building-placement", 1.0)
     var impact: Node3D = BUILDING_IMPACT_SCENE.instantiate()
     building.get_parent().add_child(impact)
     impact.global_position = gp
+
+    if is_instance_valid(foundation) and foundation.has_method("settle_and_lock"):
+        foundation.settle_and_lock()
 
     if is_instance_valid(dust) and dust.has_method("stop_emitting"):
         dust.stop_emitting()

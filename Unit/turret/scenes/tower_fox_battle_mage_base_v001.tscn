@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://Components/fire_pos/fire_pos_cmp.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://VFX/projectiles/black_bird/vfx_black_bird_running.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://Components/range_indicator/range_indicator.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://Components/foundation_base/foundation_base.tscn" id="8_foundation"]
 
 [sub_resource type="CylinderShape3D" id="HitShape"]
 height = 4.91031503677368
@@ -57,3 +58,5 @@ collision_mask = 0
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AttackedScope"]
 position = Vector3(0, 2.45515751838684, 0)
 shape = SubResource("HitShape")
+
+[node name="FoundationBase" parent="." instance=ExtResource("8_foundation")]

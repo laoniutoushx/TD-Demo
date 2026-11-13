@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dms6agqcsirpd" path="res://Components/debug/DebugDraw.tscn" id="5_48m03"]
 [ext_resource type="PackedScene" uid="uid://rv8l5sjnuaty" path="res://Components/range_indicator/range_indicator.tscn" id="6_2vby5"]
 [ext_resource type="PackedScene" uid="uid://d00chkod5txim" path="res://Components/hud/hud.tscn" id="6_s15r0"]
-[ext_resource type="Shader" uid="uid://eay4ew13wkwc" path="res://Components/decal_mesh_ground_4_turret/decal_mesh_shader.gdshader" id="7_w4x0o"]
+[ext_resource type="PackedScene" path="res://Components/foundation_base/foundation_base.tscn" id="7_w4x0o"]
 [ext_resource type="Texture2D" uid="uid://mmt11f870nph" path="res://Asserts/materials/Stylized_Grass_003/Stylized_Grass_003_basecolor.jpg" id="8_rbcyp"]
 [ext_resource type="Texture2D" uid="uid://b0oo8ohwx0cds" path="res://Asserts/materials/Stylized_Grass_003/Stylized_Grass_003_ambientOcclusion.jpg" id="9_jnnbh"]
 [ext_resource type="Texture2D" uid="uid://biw2uwucg38ux" path="res://Asserts/materials/Stylized_Grass_003/Stylized_Grass_003_height.png" id="10_lbt2h"]
@@ -190,8 +190,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.22337, 0)
 [node name="Hud" parent="." instance=ExtResource("6_s15r0")]
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 2.471, 0)
 
-[node name="DecalMeshGround" type="MeshInstance3D" parent="."]
-mesh = SubResource("QuadMesh_cs4ib")
+[node name="FoundationBase" parent="." instance=ExtResource("7_w4x0o")]
 
 [connection signal="area_entered" from="AttackingScope" to="." method="_on_attacking_scope_area_entered"]
 [connection signal="area_exited" from="AttackingScope" to="." method="_on_attacking_scope_area_exited"]
