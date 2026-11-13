@@ -1,7 +1,7 @@
 param(
     [string]$GodotExecutable = 'H:\Godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe',
     [ValidateSet('forward', 'headless')][string]$Renderer = 'forward',
-    [ValidateSet('full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click', 'building-vfx', 'foundation-blend', 'tactical-grid')][string]$Scenario = 'full',
+    [ValidateSet('full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click', 'building-vfx', 'foundation-blend', 'tactical-grid', 'tactical-subgrid')][string]$Scenario = 'full',
     [int]$TimeoutSeconds = 180
 )
 
@@ -40,6 +40,10 @@ if ($Scenario -eq 'tactical-grid') {
     if ($Renderer -eq 'headless') { throw 'tactical-grid requires native rendering for 3D Decal and building raycasting' }
     $arguments = @('--path', $projectRoot, '--script', 'res://tests/tactical_grid_smoke.gd', '--log-file', $logPath)
 }
+if ($Scenario -eq 'tactical-subgrid') {
+    if ($Renderer -eq 'headless') { throw 'tactical-subgrid requires native rendering for 3D Decal and building raycasting' }
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/tactical_subgrid_smoke.gd', '--log-file', $logPath)
+}
 if ($Renderer -eq 'headless') { $arguments += '--headless' }
 if ($Scenario -eq 'cursor-policy') {
     $arguments = @('--path', $projectRoot, '--script', 'res://tests/cursor_policy_smoke.gd', '--log-file', $logPath)
@@ -74,6 +78,7 @@ if ($Scenario -eq 'skill-click') { $marker = 'SKILL_DIRECT_CLICK_OK' }
 if ($Scenario -eq 'building-vfx') { $marker = 'BUILDING_VFX_OK' }
 if ($Scenario -eq 'foundation-blend') { $marker = 'FOUNDATION_BLEND_OK' }
 if ($Scenario -eq 'tactical-grid') { $marker = 'TACTICAL_GRID_OK' }
+if ($Scenario -eq 'tactical-subgrid') { $marker = 'TACTICAL_SUBGRID_OK' }
 if ($Scenario -eq 'menu-exit') {
     $arguments += @('--', '--exit-from-menu')
     $marker = 'MENU_EXIT_OK'

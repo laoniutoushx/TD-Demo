@@ -1,33 +1,32 @@
-[gd_resource type="ShaderMaterial" load_steps=10 format=3]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://db8e5ju6ma4uq"]
 
-[ext_resource type="Shader" path="res://render_v10/shaders/ground.gdshader" id="1_shader"]
-[ext_resource type="Texture2D" path="res://textures/Ground003_2K-JPG_Color.jpg" id="2_soil"]
-[ext_resource type="Texture2D" path="res://textures/Ground003_2K-JPG_NormalGL.jpg" id="3_normal"]
-[ext_resource type="Texture2D" path="res://render_v10/textures/forest_diff.png" id="4_diff"]
-[ext_resource type="Texture2D" path="res://render_v10/textures/forest_nor_gl.png" id="5_forest_norm"]
-[ext_resource type="Texture2D" path="res://render_v10/textures/forest_rough.png" id="6_rough"]
-[ext_resource type="Texture2D" path="res://render_v10/textures/road_distance_level1.png" id="7_road"]
+[ext_resource type="Shader" uid="uid://jnvac5oxec5y" path="res://render_v10/shaders/ground.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" uid="uid://blywpn3i8v2gr" path="res://textures/Ground003_2K-JPG_Color.jpg" id="2_soil"]
+[ext_resource type="Texture2D" uid="uid://cqypyyegnkhr1" path="res://textures/Ground003_2K-JPG_NormalGL.jpg" id="3_normal"]
+[ext_resource type="Texture2D" uid="uid://bsyprkuedwhmc" path="res://render_v10/textures/forest_diff.png" id="4_diff"]
+[ext_resource type="Texture2D" uid="uid://dojb11407td6x" path="res://render_v10/textures/forest_nor_gl.png" id="5_forest_norm"]
+[ext_resource type="Texture2D" uid="uid://5jnuf6s43v7q" path="res://render_v10/textures/forest_rough.png" id="6_rough"]
+[ext_resource type="Texture2D" uid="uid://m3ef4n5nwio5" path="res://render_v10/textures/road_distance_level1.png" id="7_road"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_1"]
 seed = 22026
 frequency = 0.04
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1"]
-width = 512
-height = 512
-seamless = true
 noise = SubResource("FastNoiseLite_1")
+seamless = true
 
 [resource]
 render_priority = 0
 shader = ExtResource("1_shader")
-shader_parameter/normal_strength = 0.22
-shader_parameter/layered = 1.0
-shader_parameter/style_mode = 0
 shader_parameter/soil_map = ExtResource("2_soil")
 shader_parameter/soil_normal = ExtResource("3_normal")
 shader_parameter/noise_map = SubResource("NoiseTexture2D_1")
+shader_parameter/normal_strength = 0.22
 shader_parameter/forest_map = ExtResource("4_diff")
 shader_parameter/forest_normal = ExtResource("5_forest_norm")
 shader_parameter/forest_rough = ExtResource("6_rough")
+shader_parameter/layered = 1.0
 shader_parameter/road_distance_map = ExtResource("7_road")
+shader_parameter/map_bounds = Vector4(-136, -88, 272, 176)
+shader_parameter/style_mode = 0

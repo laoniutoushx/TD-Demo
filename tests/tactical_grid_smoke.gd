@@ -39,13 +39,13 @@ func run() -> void:
 	grid_ctrl.show_grid(Vector3(10, 0, 10), Vector2(100, 100))
 	check(grid_ctrl.visible, "TacticalGridController visible on show_grid")
 	
-	grid_ctrl.update_cursor(Vector3(12, 0, 12), true, Vector2i(1, 1))
+	grid_ctrl.update_cursor(Vector3(12, 0, 12), true, Vector2i(2, 2))
 	check(grid_ctrl._reticle_decal.modulate.g > 1.0, "Reticle glows green on valid placement")
-	check(grid_ctrl._reticle_decal.size.x == 4.0, "Reticle footprint matches 4m cell size")
+	check(grid_ctrl._reticle_decal.size.x == 4.0, "Reticle footprint matches 4m tower size (2x2 subcells)")
 	
-	grid_ctrl.update_cursor(Vector3(16, 0, 16), false, Vector2i(2, 2))
+	grid_ctrl.update_cursor(Vector3(16, 0, 16), false, Vector2i(4, 4))
 	check(grid_ctrl._reticle_decal.modulate.r > 1.5, "Reticle switches to red warning on invalid placement")
-	check(grid_ctrl._reticle_decal.size.x == 8.0, "Reticle expands to 8m for 2x2 footprint")
+	check(grid_ctrl._reticle_decal.size.x == 8.0, "Reticle expands to 8m for 4x4 subcells")
 	
 	grid_ctrl.hide_grid()
 	await create_timer(0.25).timeout

@@ -5,16 +5,20 @@ const HOLOGRAM_VALID_MAT: Material = preload("res://Asserts/shared/shader/3d/bui
 const HOLOGRAM_INVALID_MAT: Material = preload("res://Asserts/shared/shader/3d/building/hologram_invalid_mat.tres")
 const TACTICAL_GRID_SCENE: PackedScene = preload("res://Components/tactical_grid/tactical_grid_controller.tscn")
 
+## 2m 细分网格与标准 4m x 4m 防御塔体系
+const SUBCELL_SIZE: float = 2.0
+const DEFAULT_TOWER_FOOTPRINT: Vector2i = Vector2i(2, 2) # 2x2 子格 = 4m x 4m 物理塔
+
 @export var cell_mesh_indicator_scene: PackedScene
 var turret: BaseUnit
 var cell_mesh_indicator: MeshInstance3D
 var tactical_grid: Node3D
 var skill_context: SkillContext
 var cell_mesh_container: Dictionary = {}
-## Runtime occupation is separate from the authored GridMap terrain.
+## 记录被占用的 2m 细分子格字典: occupied[subcell_vector3i] = building_instance_id
 var occupied: Dictionary = {}
 var grid: GridMap
-var preview_cell := Vector3i.ZERO
+var preview_cell := Vector3i.ZERO # 当前鼠标锁定的基准 2m 子格坐标
 var preview_valid := false
 var last_reason := ""
 var _turret_original_materials: Dictionary = {}
@@ -37,32 +41,71 @@ func _ensure_tactical_grid() -> void:
 			tactical_grid.name = "TacticalGridController"
 			add_child(tactical_grid)
 			tactical_grid.owner = self
-		if grid and "cell_size" in tactical_grid:
-			tactical_grid.cell_size = grid.cell_size.x
+		if "cell_size" in tactical_grid:
+			tactical_grid.cell_size = SUBCELL_SIZE
+
+## 世界坐标转 2m 细分子格坐标
+func world_to_subcell(point: Vector3) -> Vector3i:
+	var local = grid.to_local(point) if is_instance_valid(grid) else point
+	return Vector3i(int(floor(local.x / SUBCELL_SIZE)), 0, int(floor(local.z / SUBCELL_SIZE)))
+
+## 2m 细分子格坐标转世界中心坐标
+func subcell_to_world(subcell: Vector3i) -> Vector3:
+	var local = Vector3((float(subcell.x) + 0.5) * SUBCELL_SIZE, 0.0, (float(subcell.z) + 0.5) * SUBCELL_SIZE)
+	return grid.to_global(local) if is_instance_valid(grid) else local
 
 func world_to_cell(point: Vector3) -> Vector3i:
-	return grid.local_to_map(grid.to_local(point))
+	return world_to_subcell(point)
 
 func cell_to_world(cell: Vector3i) -> Vector3:
-	return grid.to_global(grid.map_to_local(cell))
+	return subcell_to_world(cell)
 
-func footprint_cells(cell: Vector3i, definition: BaseUnitResource = null) -> Array[Vector3i]:
-	if definition == null and skill_context != null and is_instance_valid(skill_context.skill): definition = skill_context.skill.skill_meta_res.building_res
-	var footprint: Vector2i = definition.building_footprint if definition else Vector2i.ONE
+## 获取塔在 2m 系统下的实际子格占地（例如 4m 塔映射为 2x2 子格）
+func get_effective_footprint(definition: BaseUnitResource = null) -> Vector2i:
+	if definition == null and skill_context != null and is_instance_valid(skill_context.skill):
+		definition = skill_context.skill.skill_meta_res.building_res
+	if definition and definition.building_footprint != Vector2i.ZERO:
+		var fp = definition.building_footprint
+		# 若原配置为 1x1（代表原 4m 单格塔），在 2m 系统下自动升维为 2x2 子格（4m x 4m）
+		if fp == Vector2i(1, 1):
+			return DEFAULT_TOWER_FOOTPRINT
+		return Vector2i(max(1, fp.x * 2), max(1, fp.y * 2))
+	return DEFAULT_TOWER_FOOTPRINT
+
+## 获取防御塔所占用的所有 2m 细分子格列表
+func footprint_cells(base_subcell: Vector3i, definition: BaseUnitResource = null) -> Array[Vector3i]:
+	var fp: Vector2i = get_effective_footprint(definition)
 	var cells: Array[Vector3i] = []
-	for x in clampi(footprint.x, 1, 8):
-		for z in clampi(footprint.y, 1, 8): cells.append(cell + Vector3i(x, 0, z))
+	for x in range(fp.x):
+		for z in range(fp.y):
+			cells.append(base_subcell + Vector3i(x, 0, z))
 	return cells
 
-func placement_reason(cell: Vector3i, definition: BaseUnitResource = null) -> String:
-	for occupied_cell in footprint_cells(cell, definition):
-		if grid.get_cell_item(occupied_cell) != 0: return "占地范围包含不可建造地块"
-		if occupied.has(occupied_cell): return "地块已被建筑占用"
+## 查询单格 2m 子格状态：0=不可建/道路, 1=可建, 2=占用
+func get_subcell_state(subcell: Vector3i) -> int:
+	if occupied.has(subcell):
+		return 2 # 已被建筑占用
+	var pt = subcell_to_world(subcell)
+	if is_instance_valid(grid):
+		var macro_cell = grid.local_to_map(grid.to_local(pt))
+		if grid.get_cell_item(macro_cell) == 0:
+			return 1 # 可建造
+	return 0 # 不可建 / 道路
+
+func placement_reason(base_subcell: Vector3i, definition: BaseUnitResource = null) -> String:
+	for sub in footprint_cells(base_subcell, definition):
+		var st = get_subcell_state(sub)
+		if st == 2:
+			return "地块已被建筑占用"
+		if st == 0:
+			return "占地范围包含不可建造地块"
 	return ""
 
-func placement_position(cell: Vector3i) -> Vector3:
-	var cells := footprint_cells(cell)
-	return (cell_to_world(cells[0]) + cell_to_world(cells[-1])) * 0.5
+## 计算防御塔落位的物理世界中心坐标（4 个子格几何中心）
+func placement_position(base_subcell: Vector3i, definition: BaseUnitResource = null) -> Vector3:
+	var fp: Vector2i = get_effective_footprint(definition)
+	var local = Vector3((float(base_subcell.x) + float(fp.x) * 0.5) * SUBCELL_SIZE, 0.0, (float(base_subcell.z) + float(fp.y) * 0.5) * SUBCELL_SIZE)
+	return grid.to_global(local) if is_instance_valid(grid) else local
 
 func _apply_hologram(is_valid: bool) -> void:
 	if not is_instance_valid(turret): return
@@ -103,7 +146,9 @@ func _update_range_indicator(show: bool) -> void:
 func callable_build_turret(ray: RayCast3D, _grid: GridMap) -> void:
 	preview_valid = false
 	if not is_instance_valid(turret) or not ray.is_colliding() or ray.get_collider() != grid: return
-	preview_cell = world_to_cell(ray.get_collision_point())
+	
+	# 以碰撞点计算 2m 细分子格基准
+	preview_cell = world_to_subcell(ray.get_collision_point())
 	last_reason = placement_reason(preview_cell)
 	var cost_reason := ""
 	if skill_context and is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
@@ -111,17 +156,17 @@ func callable_build_turret(ray: RayCast3D, _grid: GridMap) -> void:
 	if cost_reason != "":
 		last_reason = cost_reason
 	preview_valid = (last_reason == "")
+	
 	var point := placement_position(preview_cell)
 	turret.global_position = point + Vector3.UP * 0.001
 	_apply_hologram(preview_valid)
 
-	# 联动战术网格与焦点框
+	# 联动战术网格、焦点吸附框与周围可建地块全息热力图
 	if is_instance_valid(tactical_grid):
-		var fp = Vector2i.ONE
-		if skill_context and is_instance_valid(skill_context.skill):
-			var def = skill_context.skill.skill_meta_res.building_res
-			if def: fp = def.building_footprint
+		var fp = get_effective_footprint()
 		tactical_grid.update_cursor(point, preview_valid, fp)
+		if tactical_grid.has_method("update_stencil_matrix"):
+			tactical_grid.update_stencil_matrix(point, get_subcell_state)
 
 	# 兼容旧指示器
 	if is_instance_valid(cell_mesh_indicator):
@@ -165,7 +210,6 @@ func _unhandled_input(event: InputEvent) -> void:
 				_continue_shift_build()
 
 func _continue_shift_build() -> void:
-	# 检查玩家是否有足够资源继续建造
 	var cost_reason = ""
 	if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
 		cost_reason = SOS.main.player_controller.validate_skill_cost(skill_context)
@@ -249,6 +293,8 @@ func _on_building_floor_indicator_show(context: SkillContext) -> void:
 		if is_instance_valid(context.source):
 			init_pos = context.source.global_position
 		tactical_grid.show_grid(init_pos, Vector2(140.0, 140.0))
+		if tactical_grid.has_method("update_stencil_matrix"):
+			tactical_grid.update_stencil_matrix(init_pos, get_subcell_state)
 
 	if cell_mesh_indicator_scene:
 		cell_mesh_indicator = cell_mesh_indicator_scene.instantiate()
