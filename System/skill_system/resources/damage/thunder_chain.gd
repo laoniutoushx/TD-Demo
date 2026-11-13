@@ -72,6 +72,18 @@ class InnerHandler extends Node3D:
 		
 		vfx.set_line_by_unit(source_unit, target_unit)
 
+		# 击中点生成电弧火花与轻微震屏
+		if is_instance_valid(SystemUtil.vfx_system):
+			var sparks = SystemUtil.vfx_system.create_vfx("hit_sparks", null)
+			if sparks:
+				target_unit.add_child(sparks)
+				sparks.position.y = target_unit._height * 0.5
+				if sparks.has_method("play"):
+					sparks.play()
+		var rts = preload("res://Scripts/controller/RTSController.gd")
+		if rts:
+			rts.add_trauma(0.12, target_unit.global_position)
+
 		SystemUtil.damage_system.skill_damage(skill, source_unit, target_unit)
 
 		await CommonUtil.await_timer(0.2)
@@ -83,5 +95,5 @@ class InnerHandler extends Node3D:
 		tween.tween_property(vfx, "transparency", 1, 0.8)
 		await tween.finished
 		if is_instance_valid(vfx):
-			vfx.queue_free()
+			SystemUtil.vfx_system.recycle_vfx(vfx)
 		queue_free()

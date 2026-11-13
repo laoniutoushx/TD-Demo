@@ -18,7 +18,7 @@ func _process(delta: float) -> void:
     
     _refresh_line()
 
-    if mesh.material:
+    if mesh and mesh.material and "uv1_offset" in mesh.material:
         mesh.material.uv1_offset.x += delta / 4.0
 
 func set_line(start: Vector3, end: Vector3): 

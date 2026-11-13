@@ -9,16 +9,14 @@ func _ready() -> void:
     if unit and unit.is_alive():
         unit.unit_take_damage_regist.emit(_on_take_damge_logic)
         
-# 暴击逻辑（回调注入）
+# 闪避逻辑（回调注入）
 func _on_take_damge_logic(damage_ctx: DamageCtx) -> DamageCtx:
+    if damage_ctx.damage_source_type == DamageCtx.DamageSourceType.SKILL and not damage_ctx.can_miss:
+        return damage_ctx
 
     if _prob_controller.next():
-        # 触发暴击
         damage_ctx.damage_type = DamageCtx.DamageType.MISS
         return damage_ctx
-    else:
-        pass
-
     return damage_ctx
 
 

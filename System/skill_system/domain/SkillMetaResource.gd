@@ -90,6 +90,10 @@ class_name SkillMetaResource extends Resource
 # 技能触发几率（概率控制器）
 @export var probability: float = 0.25
 
+# 技能伤害修饰器规则
+@export var can_crit: bool = false
+@export var can_miss: bool = false
+
 # 技能禁用检查（魔法、健康值、金钱、木材）
 enum SKILL_DISABLE_CHECK{
 	MANA,	

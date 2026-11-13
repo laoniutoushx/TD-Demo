@@ -1,10 +1,11 @@
-extends Node3D
+class_name VfxStunRunning extends Node3D
 
+@export var orbit_speed: float = 4.5
+@onready var orbit_pivot: Node3D = $OrbitPivot
 
-@onready var ani_sprite_3d: AnimatedSprite3D = $AnimatedSprite3D
-
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	ani_sprite_3d.play()
+	set_process(true)
 
-
+func _process(delta: float) -> void:
+	if is_instance_valid(orbit_pivot):
+		orbit_pivot.rotate_y(orbit_speed * delta)

@@ -320,7 +320,8 @@ func _ready() -> void:
 	
 	# hide select circle
 	var select_circle = CommonUtil.get_first_node_by_node_name(self, Constants.FadedCircle3D_CLZ)
-	select_circle.hide()
+	if select_circle:
+		select_circle.hide()
 	
 	# attack area fixed
 	var attacking_scope = CommonUtil.get_first_node_by_node_name(self, "AttackingScope")
@@ -496,8 +497,8 @@ func action_damage(damage_ctx: DamageCtx) -> DamageCtx:
 
 # 技能伤害
 func take_skill_damage(damage_ctx: DamageCtx) -> bool:
-	# Preserve the existing skill bypass policy through the common entry point.
-	return receive_damage(damage_ctx, false, false)
+	# Skill damage passes through the damage modifier pipeline (defense absorption, etc.)
+	return receive_damage(damage_ctx, true, true)
 
 
 # damage unit
@@ -547,12 +548,15 @@ func _damage(damage_ctx: DamageCtx) -> bool:
 	SignalBus.unit_take_damage.emit(get_instance_id(), self, value)
 
 	# 显示漂浮文字
-	SystemUtil.floating_text_system.spawn(
-		Vector3(self.global_position.x, self._height, self.global_position.z),
-		str(int(value)),
-		Color.WHITE if damage_ctx.damage_source_type == DamageCtx.DamageSourceType.UNIT else Color.DEEP_PINK ,
-		damage_ctx.damage_type
-	)
+	if SystemUtil.floating_text_system:
+		var pos_x: float = self.global_position.x if "global_position" in self else 0.0
+		var pos_z: float = self.global_position.z if "global_position" in self else 0.0
+		SystemUtil.floating_text_system.spawn(
+			Vector3(pos_x, self._height, pos_z),
+			str(int(value)),
+			Color.WHITE if damage_ctx.damage_source_type == DamageCtx.DamageSourceType.UNIT else Color.DEEP_PINK ,
+			damage_ctx.damage_type
+		)
 	
 	if health + value > 0 and health <= 0:
 		_last_fatal_damage_ctx = damage_ctx

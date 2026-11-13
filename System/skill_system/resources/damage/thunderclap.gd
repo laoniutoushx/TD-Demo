@@ -19,13 +19,17 @@ func action(skill_context: SkillContext) -> void:
 
     # -- vfx/source_unit/target_unit handler
     var vfx = SystemUtil.vfx_system.create_vfx("thunderclap", SystemUtil.vfx_system.VFX_TYPE.RUNNING)
-    target_unit.add_child(vfx)
+    if vfx:
+        target_unit.add_child(vfx)
+        if vfx.has_method("play"):
+            vfx.play(target_unit.global_position)
 
+    CommonUtil.play_audio(target_unit, "爆炸电类击中－mcx20070509_爱给网_aigei_com", 0.8)
     SystemUtil.damage_system.skill_damage(skill, source_unit, target_unit)
     
     CommonUtil.delay_execution(2, self, (func(_vfx):
         if _vfx and is_instance_valid(_vfx):
-            _vfx.queue_free()
+            SystemUtil.vfx_system.recycle_vfx(_vfx)
     ).bind(vfx))
 
 

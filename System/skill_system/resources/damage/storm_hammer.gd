@@ -17,7 +17,13 @@ func _on_hit(target, skill, source) -> void:
 	if impact:
 		target.add_child(impact)
 		impact.position.y = target._height * 0.5
-		CommonUtil.delay_execution(2.0, impact, impact.queue_free)
+		CommonUtil.delay_execution(2.0, impact, func():
+			if is_instance_valid(impact):
+				SystemUtil.vfx_system.recycle_vfx(impact)
+		)
+	var rts = preload("res://Scripts/controller/RTSController.gd")
+	if rts:
+		rts.add_trauma(0.26, target.global_position)
 	SystemUtil.damage_system.skill_damage(skill, source, target)
 	if target.is_alive():
 		for buff in skill.buff_map.values():

@@ -99,3 +99,12 @@ python render_v10/tools/build_layout.py
 ```
 
 Python烘焙依赖NumPy、Pillow。离线PNG读盘提示与headless编辑器现有插件/退出诊断单独记录，不作为原生游戏回归通过结果。正式运行使用已保存的heightfield.res与terrain.res，不在运行时生成地形或Blender模型。
+
+
+## GPU Ribbon 拖尾迁移收尾（2026-11-13）
+
+17个带拖尾投射物运行场景统一使用 vfx_uber_ribbon 与 vfx_ribbon_follow GPU Shader；补齐 missile_03、missile_7 和备用水弹。绘制 Shader 启用 particle_trails，单粒子持续跟随世界位置，由原生历史变换生成 Ribbon；采样60Hz，粒子生命周期30秒。保留弹药配色、声音、模型和现有命中清理。
+
+新增 `projectile-trails` 回归入口，加载并移动全部17个场景，检查配置及资源生命周期。Headless / Forward+ 专项通过；Forward+ skill-vfx-buff、Headless full 与 cursor-policy 通过。日志位于 `.godot/check-*-*.log`。Forward+ 首轮因沙箱缓存写入失败，沙箱外重跑通过。
+
+当前专项仅证明场景加载、配置、运动过程与退出无诊断；尚未完成带相机的画面截图、连续性/遮挡视觉验收、跨地点对象池轨迹及性能对比，不声明这些检查通过。

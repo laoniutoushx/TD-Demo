@@ -86,50 +86,57 @@ func init_buff_for_unit_by_res(source: BaseUnit, ref: Variant, ele: Variant) -> 
 func apply(_buff: Buff, _reference: Variant = null, target: Variant = null) -> void:	
 	assert(_reference != null, "_reference must not be null")
 	assert(target != null, "target must not be null")
+	if not is_instance_valid(target) or not target.is_alive():
+		return
 
-
-	# buff 计数
 	var _id = str(_buff.code) + "&" + str(target.get_instance_id())
+	var code = _buff.code
+
+	# 1. 检查目标身上是否已存在同 code 的 Buff（叠加与刷新）
+	var existing_buff: Buff = null
+	if target.buff_map.has(code):
+		existing_buff = target.buff_map[code]
+	elif target.buff_map.has(_id):
+		existing_buff = target.buff_map[_id]
+
+	if is_instance_valid(existing_buff):
+		# 计数更新
+		if __buff_inst_counter.has(_id):
+			__buff_inst_counter[_id] += 1
+		else:
+			__buff_inst_counter[_id] = 1
+
+		# 叠加层数检查
+		var can_stack = (existing_buff.max_overlay_num > 1 or existing_buff.max_overlay_num == -1) and (existing_buff.max_overlay_num == -1 or existing_buff.__buff_stack_num < existing_buff.max_overlay_num)
+		if can_stack:
+			existing_buff.apply_additional_stack()
+
+		# 刷新持续时间
+		existing_buff.refresh_duration()
+		SignalBus.buff_cooldown_extend.emit(existing_buff, target)
+		return
+
+	# 2. 排除级别检查
+	if not _buff.is_fit_exclude_level(_buff, target):
+		return
+
+	# buff 计数初始化
 	if __buff_inst_counter.has(_id):
 		__buff_inst_counter[_id] += 1
 	else:
 		__buff_inst_counter[_id] = 1
-
-
-	# 进入后，处理 buff 计数
-	# print("buff enter %s" % __buff_inst_counter)	
-
-	# 根据可叠加层数处理 buff 延迟时间
-	if _buff.cooldown > 0:
-		if __buff_inst_counter[_id] <= _buff.max_overlay_num:
-			SignalBus.buff_cooldown_extend.emit(_buff, target)
-		else:
-			pass	# 超过最大叠加层数，不处理延迟时间
-
-	# 叠加层数检查
-	if _buff.max_overlay_num > -1:
-		var buff_count = 0
-		for bm: Buff in target.buff_map.values():
-			if _buff.code == bm.code:
-				buff_count += 1
-
-		if buff_count >= _buff.max_overlay_num:
-			# print("buff code %s already has %s buff" % [_buff.code, buff_count])
-			return
-
 
 	# buff 添加
 	var buff: Buff = _buff.duplicate()
 	buff = CommonUtil.bean_properties_copy(_buff, buff)
 	buff.prob_callback = _buff.prob_callback
 	buff.vfx = _buff.vfx
+	buff.__buff_stack_num = 1
 
-	target.buff_map[_id] = buff
+	target.buff_map[code] = buff
 
 	buff.reference_instance = _reference
 	buff.unit = target
-
-
 
 	# buff apply
 	if buff.apply(buff.reference_instance, buff.unit):
@@ -140,57 +147,43 @@ func apply(_buff: Buff, _reference: Variant = null, target: Variant = null) -> v
 		if buff.cooldown > 0:
 			buff.cool_down_timer.timeout.connect(remove.bind(buff, buff.unit))
 			buff.change_state(Buff.BUFF_STATE.Cool_Down)
-			# buff.cool_down_timer.start()
 
 		# 添加到 buff action_bar ui 界面
 		SignalBus.buff_enter.emit(buff, buff.unit)
-
 	else:
+		target.buff_map.erase(code)
 		target.buff_map.erase(_id)
 		buff.free()
 		return
 
-	if is_instance_valid(buff):
-		# 添加 buff 关联 vfx 特效
-		if buff.vfx:
-			# 遍历 values
-			for bv in buff.vfx.values():
-				if bv and bv is VFX:
-					var vfx_instance = bv.scene.instantiate()
-					# 添加到 buff 实例上
-					buff.add_child(vfx_instance)
-					vfx_instance.position.y = buff.unit._height / 2
-
-
-
-	
-
+	if is_instance_valid(buff) and buff.vfx:
+		for bv in buff.vfx.values():
+			if bv and bv is VFX and bv.scene:
+				var vfx_instance = bv.scene.instantiate()
+				buff.add_child(vfx_instance)
+				vfx_instance.position.y = buff.unit._height / 2
 
 # buff remove
 func remove(_buff: Buff, target: Variant):
 	if not is_instance_valid(_buff) or not is_instance_valid(target) or _buff.is_queued_for_deletion(): return
 	var _id = str(_buff.code) + "&" + str(target.get_instance_id())
-	# 当 buff 为永久 buff （cooldown == -1）时，检查 buff 计数
-	if _buff.cooldown == -1:
-		# buff 计数（未达到最小数量时，不删除）（只适合 范围类光辉类 buff）（单体延迟冷却时间类，这里到期后应该立即删除，后期没有机会再触发删除）
+	var code = _buff.code
+
+	# 当 buff 为永久 buff（cooldown == -1）且有多层叠加时，递减 1 层而不是彻底删除
+	if _buff.cooldown == -1 and _buff.__buff_stack_num > 1:
+		_buff.remove_single_stack(target)
 		if __buff_inst_counter.has(_id) and __buff_inst_counter[_id] > 1:
 			__buff_inst_counter[_id] -= 1
-			# 退出时，处理 buff 计数
-			# print("buff exit %s" % __buff_inst_counter)
-			return
-	else:
-		# buff 可以倒计时，当前删除函数触发，执行后续删除逻辑
-		pass
+		return
 
 	# 删除 reference 实体上关联的 buff 信息
+	target.buff_map.erase(code)
 	target.buff_map.erase(_id)
 
-	# if _buff.remove(_reference):
 	# 移出 buff action_bar ui 界面
 	SignalBus.buff_exit.emit(_buff, target)
 
 	# 删除 buff
-	# Unregister modifiers and callbacks before another operation can re-equip.
 	if _buff.tree_exiting.is_connected(_on_buff_exiting_tree):
 		_buff.tree_exiting.disconnect(_on_buff_exiting_tree)
 	_buff.remove(target)
@@ -198,20 +191,14 @@ func remove(_buff: Buff, target: Variant):
 	_buff.queue_free()
 	__buff_inst_counter.erase(_id)
 
-
-
 # buff 退出节点树
 func _on_buff_exiting_tree(_buff: Buff, target: Variant):
 	if not is_instance_valid(target):
 		return
-	# 销毁时，处理 属性问题
-	_buff.remove(target)
-	# _buff.call_deferred("remove", _reference)
-
-
-
-	# 销毁时，处理 buff 计数
 	var _id = str(_buff.code) + "&" + str(target.get_instance_id())
+	target.buff_map.erase(_buff.code)
+	target.buff_map.erase(_id)
+	_buff.remove(target)
 	__buff_inst_counter.erase(_id)
 	# print("buff exit %s" % __buff_inst_counter)
 	

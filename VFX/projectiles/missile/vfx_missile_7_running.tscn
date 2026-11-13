@@ -1,9 +1,11 @@
-[gd_scene load_steps=31 format=4 uid="uid://btp1vjm2dv6de"]
+[gd_scene load_steps=35 format=4 uid="uid://btp1vjm2dv6de"]
 
 [ext_resource type="Texture2D" uid="uid://n8k4to0h1lb" path="res://Asserts/Models/Weapons/weapons_pack_bullets_gltf/weapons_pack_bullets_gltf_Bullets_M_baseColor.png" id="1_5xe76"]
 [ext_resource type="Texture2D" uid="uid://brtx1k4o282bb" path="res://addons/kenney_particle_pack/spark_07.png" id="2_oktld"]
-[ext_resource type="Script" uid="uid://b3w53u07ukurw" path="res://Scripts/Trail3D.gd" id="3_5s8gt"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_ribbon.gdshader" id="3_ribbon"]
 [ext_resource type="AudioStream" uid="uid://buq0byk7dwh4p" path="res://Asserts/waves/fire-ball.wav" id="4_0mbpg"]
+
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_ribbon_follow.gdshader" id="99_follow"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u5x2j"]
 resource_name = "Bullets_M"
@@ -56,8 +58,6 @@ vertex_color_use_as_albedo = true
 vertex_color_is_srgb = true
 albedo_texture = ExtResource("2_oktld")
 billboard_keep_scale = true
-
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_5xe76"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_je0x6"]
 resource_name = "Bullets_M"
@@ -405,6 +405,32 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_kdl4i")
 
+[sub_resource type="Curve" id="Curve_trail"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon"]
+shader = ExtResource("3_ribbon")
+shader_parameter/trail_color = Color(2.5, 1.8, 0.8, 0.9)
+shader_parameter/emission_energy = 3.0
+shader_parameter/trail_texture = ExtResource("2_oktld")
+shader_parameter/uv_scroll = Vector2(0, -2.5)
+shader_parameter/length_along_y = true
+shader_parameter/head_fade = 0.05
+shader_parameter/tail_fade = 0.85
+shader_parameter/depth_fade_distance = 0.3
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_missile"]
+material = SubResource("ShaderMaterial_ribbon")
+shape = 1
+size = 0.3
+sections = 6
+section_length = 0.1
+curve = SubResource("Curve_trail")
+
+[sub_resource type="ShaderMaterial" id="ParticleProcessMaterial_trail"]
+shader = ExtResource("99_follow")
+
 [node name="VfxMissleRunning" type="Node3D"]
 
 [node name="SM_Bullet_07_Bullets_M_0" type="MeshInstance3D" parent="."]
@@ -413,14 +439,16 @@ visible = false
 mesh = SubResource("ArrayMesh_djaa5")
 skeleton = NodePath("")
 
-[node name="Trail3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.999999, 0, 0, 0, 1, 0, 0, 0, 0.999999, 0, 0, 0)
-material_override = SubResource("StandardMaterial3D_rp5xk")
-mesh = SubResource("ImmediateMesh_5xe76")
-script = ExtResource("3_5s8gt")
-fromWidth = 1.0
-toWidth = 1.0
+[node name="RibbonTrail" type="GPUParticles3D" parent="."]
+amount = 1
+lifetime = 30.0
+local_coords = false
+trail_enabled = true
+trail_lifetime = 0.2
+process_material = SubResource("ParticleProcessMaterial_trail")
+draw_pass_1 = SubResource("RibbonTrailMesh_missile")
 
+fixed_fps = 60
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("4_0mbpg")
 autoplay = true

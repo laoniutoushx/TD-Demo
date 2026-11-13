@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=4 uid="uid://cntgsbe8u4xcb"]
+[gd_scene load_steps=35 format=4 uid="uid://cntgsbe8u4xcb"]
 
 [ext_resource type="Shader" uid="uid://c1660p2rs4lfs" path="res://VFX/projectiles/fireball/s_ProjectileSoft_B_Disp.tres" id="1_fwhwd"]
 [ext_resource type="Texture2D" uid="uid://8fk5k1sbqvwh" path="res://Asserts/textures/vfx/projectiles/T_VFX_Noise_019.png" id="2_xsmg8"]
@@ -10,7 +10,9 @@
 [ext_resource type="Texture2D" uid="uid://dgkbv4jad4qii" path="res://Asserts/textures/vfx/projectiles/T_VFX_smoke_1.PNG" id="8_1bfn0"]
 [ext_resource type="Shader" uid="uid://bxslcncv0mhh1" path="res://VFX/projectiles/fireball/s_Trail_dynamic.tres" id="9_02nb3"]
 [ext_resource type="AudioStream" uid="uid://b4auofxfgqffc" path="res://Asserts/waves/musket_fire_4.wav" id="11_87vbh"]
-[ext_resource type="Script" uid="uid://b3w53u07ukurw" path="res://Scripts/Trail3D.gd" id="11_d7jlv"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_ribbon.gdshader" id="11_ribbon"]
+
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_ribbon_follow.gdshader" id="99_follow"]
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_oeum1"]
 gradient = ExtResource("3_xfncn")
@@ -81,14 +83,31 @@ shader_parameter/Overlapping_Gradient = SubResource("GradientTexture1D_yo6lx")
 
 [sub_resource type="QuadMesh" id="QuadMesh_p7v2y"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_57yat"]
-render_priority = -1
-shader = ExtResource("9_02nb3")
-shader_parameter/Scale = Vector2(0.3, 1)
-shader_parameter/Trail_Speed = Vector2(6, 0)
-shader_parameter/Texture2DParameter = ExtResource("6_frwqm")
+[sub_resource type="Curve" id="Curve_trail"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_87vbh"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon"]
+shader = ExtResource("11_ribbon")
+shader_parameter/trail_color = Color(3, 1.2, 0.4, 1)
+shader_parameter/emission_energy = 3.5
+shader_parameter/trail_texture = ExtResource("6_frwqm")
+shader_parameter/uv_scroll = Vector2(0, -3.5)
+shader_parameter/length_along_y = true
+shader_parameter/head_fade = 0.05
+shader_parameter/tail_fade = 0.85
+shader_parameter/depth_fade_distance = 0.35
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_fire"]
+material = SubResource("ShaderMaterial_ribbon")
+shape = 1
+size = 0.6
+sections = 6
+section_length = 0.12
+curve = SubResource("Curve_trail")
+
+[sub_resource type="ShaderMaterial" id="ParticleProcessMaterial_trail"]
+shader = ExtResource("99_follow")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wknj3"]
 render_priority = 0
@@ -149,34 +168,17 @@ cast_shadow = 0
 mesh = SubResource("ArrayMesh_qene6")
 skeleton = NodePath("../../..")
 
-[node name="Trail1_static" type="MeshInstance3D" parent="."]
-transform = Transform3D(-2.37553e-07, 0, 1, 0, 1, 0, -5.43457, 0, -4.37114e-08, 0, 0, 2.51864)
-material_override = SubResource("ShaderMaterial_lyhns")
+[node name="RibbonTrail" type="GPUParticles3D" parent="."]
 cast_shadow = 0
-mesh = SubResource("QuadMesh_p7v2y")
-skeleton = NodePath("../..")
+amount = 1
+lifetime = 30.0
+local_coords = false
+trail_enabled = true
+trail_lifetime = 0.22
+process_material = SubResource("ParticleProcessMaterial_trail")
+draw_pass_1 = SubResource("RibbonTrailMesh_fire")
 
-[node name="Trail1_static2" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.483858, 0.996029, -4.35378e-08, 1.15081e-21, -4.37114e-08, -1, -5.41299, -0.0890334, 3.89177e-09, 0, 0, 3.13533)
-material_override = SubResource("ShaderMaterial_lyhns")
-cast_shadow = 0
-mesh = SubResource("QuadMesh_p7v2y")
-skeleton = NodePath("../..")
-
-[node name="Trail2_dynamic" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.943055, 0, -0.332635, 0, 1, 0, 0.332635, 0, 0.943055, 0, 0.00146139, 0)
-visible = false
-material_override = SubResource("ShaderMaterial_57yat")
-cast_shadow = 0
-mesh = SubResource("ImmediateMesh_87vbh")
-skeleton = NodePath("../..")
-script = ExtResource("11_d7jlv")
-fromWidth = 1.0
-lifespan = 0.3
-startColor = Color(3, 0.243, 0, 1)
-endColor = Color(0.823529, 0.0705882, 0.0784314, 1)
-colorInterpolationMode = 1
-
+fixed_fps = 60
 [node name="flyingFlames" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.441875)
 material_override = SubResource("ShaderMaterial_wknj3")

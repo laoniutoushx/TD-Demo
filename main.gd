@@ -42,7 +42,8 @@ var cursor_policy: Node
 	"bg_volume": 0.5,
 	"sound_volume": 0.5,
 	"language": "en",
-	"graphics_quality": "high"
+	"graphics_quality": "high",
+	"screen_shake": true
 }
 
 

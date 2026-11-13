@@ -1,5 +1,7 @@
 class_name CommonUtil extends RefCounted
 
+static var _sfx_throttle: Dictionary = {}
+
 # ===============================
 # 场景树相关方法
 # ===============================
@@ -711,7 +713,10 @@ class Cimer extends Node:
 		self.callback = callback
 
 	## 启动计时器
-	func start() -> void:
+	func start(_new_time: float = -1.0) -> void:
+		if _new_time > 0:
+			wait_time = _new_time
+			time_left = _new_time
 		set_process(true)
 
 	## 停止计时器
@@ -765,6 +770,11 @@ static func debug_log(values: Array) -> void:
 
 static func play_audio(place: Variant, audio_name: String, volume_db: float = 0.0):
 	if not is_instance_valid(place) or SOS.main.config.sound_volume <= 0.0: return
+	var now := Time.get_ticks_msec()
+	var last_time: int = _sfx_throttle.get(audio_name, 0)
+	if now - last_time < 35:
+		return
+	_sfx_throttle[audio_name] = now
 	var sound_effect = get_resource(audio_name)
 	if not sound_effect is AudioStream: return
 	var group := "sfx_" + str(audio_name.hash())

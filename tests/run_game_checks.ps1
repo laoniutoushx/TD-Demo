@@ -1,7 +1,7 @@
 param(
     [string]$GodotExecutable = 'H:\Godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe',
     [ValidateSet('forward', 'headless')][string]$Renderer = 'forward',
-    [ValidateSet('full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click', 'building-vfx', 'foundation-blend', 'tactical-grid', 'tactical-subgrid')][string]$Scenario = 'full',
+    [ValidateSet('projectile-trails', 'full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'skill-vfx-buff', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click', 'building-vfx', 'foundation-blend', 'tactical-grid', 'tactical-subgrid')][string]$Scenario = 'full',
     [int]$TimeoutSeconds = 180
 )
 
@@ -49,7 +49,16 @@ if ($Scenario -eq 'cursor-policy') {
     $arguments = @('--path', $projectRoot, '--script', 'res://tests/cursor_policy_smoke.gd', '--log-file', $logPath)
     if ($Renderer -eq 'headless') { $arguments += '--headless' }
 }
+if ($Scenario -eq 'skill-vfx-buff') {
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/skill_vfx_buff_smoke.gd', '--log-file', $logPath)
+    if ($Renderer -eq 'headless') { $arguments += '--headless' }
+}
 $marker = 'FLOW_TEST_OK'
+if ($Scenario -eq 'projectile-trails') {
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/projectile_trails_smoke.gd', '--log-file', $logPath)
+    if ($Renderer -eq 'headless') { $arguments += '--headless' }
+    $marker = 'PROJECTILE_TRAILS_OK'
+}
 if ($Scenario -in @('scene-review', 'battle-review', 'bank-review', 'visual-benchmark')) {
     if ($Renderer -eq 'headless') { throw "$Scenario requires native rendering" }
     $script = if ($Scenario -eq 'visual-benchmark') { 'res://tests/visual_benchmark.gd' } else { 'res://tests/scene_layout_review.gd' }
@@ -72,6 +81,7 @@ if ($Scenario -eq 'edge-scroll') {
     $marker = 'EDGE_SCROLL_OK'
 }
 if ($Scenario -eq 'cursor-policy') { $marker = 'CURSOR_POLICY_OK' }
+if ($Scenario -eq 'skill-vfx-buff') { $marker = 'SKILL_VFX_BUFF_OK' }
 if ($Scenario -eq 'rts-quality') { $marker = 'RTS_QUALITY_OK' }
 if ($Scenario -eq 'selection-input') { $marker = 'SELECTION_INPUT_OK' }
 if ($Scenario -eq 'skill-click') { $marker = 'SKILL_DIRECT_CLICK_OK' }

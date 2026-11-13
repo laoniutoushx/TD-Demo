@@ -24,6 +24,9 @@ var source: BaseUnit
 var target: BaseUnit
 var attack_uid := ""
 var hit_role: StringName = &"primary"
+var can_crit: bool = false
+var can_miss: bool = false
+var skill: Variant = null
 
 func _init(_source: BaseUnit, _target: BaseUnit, _damage: float, _damage_type: DamageType = DamageCtx.DamageType.NORMAL, _damage_source: DamageSourceType = DamageSourceType.UNIT) -> void:
     self.source = _source

@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_lightning.gdshader" id="1_sh"]
+
+[resource]
+render_priority = 1
+shader = ExtResource("1_sh")
+shader_parameter/core_color = Color(2.8, 3.5, 4.5, 1)
+shader_parameter/glow_color = Color(0.3, 1.2, 3.8, 1)
+shader_parameter/emission_energy = 3.5
+shader_parameter/noise_speed = 32.0
+shader_parameter/frequency = 8.0
+shader_parameter/amplitude = 0.15

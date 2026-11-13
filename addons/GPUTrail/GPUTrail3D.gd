@@ -82,12 +82,11 @@ func _ready():
 		lifetime = length
 		explosiveness = 1 # emits all particles at once
 		
-		# the main fps is default
-		fixed_fps = int( DisplayServer.screen_get_refresh_rate(DisplayServer.MAIN_WINDOW_ID) )
-		
-		if DisplayServer.screen_get_refresh_rate(DisplayServer.MAIN_WINDOW_ID) < 0.0:
-			push_warning("Could not find screen refresh rate. Using fixed_fps = 60")
+		var refresh_rate := DisplayServer.screen_get_refresh_rate(DisplayServer.MAIN_WINDOW_ID)
+		if refresh_rate <= 0.0:
 			fixed_fps = 60
+		else:
+			fixed_fps = int(refresh_rate)
 		
 		process_material = ShaderMaterial.new()
 		process_material.shader = preload("shaders/trail.gdshader")

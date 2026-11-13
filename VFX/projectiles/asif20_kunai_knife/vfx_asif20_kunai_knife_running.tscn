@@ -1,9 +1,10 @@
-[gd_scene load_steps=17 format=4 uid="uid://bhvfsij7cmlgu"]
+[gd_scene load_steps=19 format=4 uid="uid://bhvfsij7cmlgu"]
 
 [ext_resource type="Texture2D" uid="uid://da1iqi53byvde" path="res://Asserts/textures/vfx/T_VFX_Trail_Square.png" id="2_0tq6n"]
-[ext_resource type="Script" uid="uid://b3w53u07ukurw" path="res://Scripts/Trail3D.gd" id="3_ablpa"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_ribbon.gdshader" id="3_ribbon"]
 [ext_resource type="AudioStream" uid="uid://bwuxqyhbpkadv" path="res://Asserts/waves/projectile/投飞镖声2_爱给网_aigei_com.mp3" id="4_0bms1"]
-[ext_resource type="PackedScene" uid="uid://cll88jekgo8hn" path="res://Test/vfx_moving_test/vfx_moving_test.tscn" id="4_i8jyn"]
+
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_ribbon_follow.gdshader" id="99_follow"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fv8em"]
 resource_name = "Material.002"
@@ -110,15 +111,31 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_oqrx4")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ep5o"]
-transparency = 1
-blend_mode = 1
-cull_mode = 2
-shading_mode = 0
-vertex_color_use_as_albedo = true
-albedo_texture = ExtResource("2_0tq6n")
+[sub_resource type="Curve" id="Curve_trail"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_0bms1"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon"]
+shader = ExtResource("3_ribbon")
+shader_parameter/trail_color = Color(1.4, 1.8, 2.2, 0.75)
+shader_parameter/emission_energy = 2.5
+shader_parameter/trail_texture = ExtResource("2_0tq6n")
+shader_parameter/uv_scroll = Vector2(0, -2.5)
+shader_parameter/length_along_y = true
+shader_parameter/head_fade = 0.05
+shader_parameter/tail_fade = 0.85
+shader_parameter/depth_fade_distance = 0.3
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_kunai"]
+material = SubResource("ShaderMaterial_ribbon")
+shape = 1
+size = 0.25
+sections = 6
+section_length = 0.1
+curve = SubResource("Curve_trail")
+
+[sub_resource type="ShaderMaterial" id="ParticleProcessMaterial_trail"]
+shader = ExtResource("99_follow")
 
 [sub_resource type="Animation" id="Animation_yx0kk"]
 length = 0.001
@@ -175,23 +192,16 @@ transform = Transform3D(-0.00229979, 0.999997, 0, -0.999997, -0.00229979, 0, 0, 
 mesh = SubResource("ArrayMesh_uoo8x")
 skeleton = NodePath("")
 
-[node name="ScreamTail" type="MeshInstance3D" parent="."]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
-material_override = SubResource("StandardMaterial3D_5ep5o")
-mesh = SubResource("ImmediateMesh_0bms1")
-skeleton = NodePath("../Pivot/asif20_kunai_knife")
-script = ExtResource("3_ablpa")
-fromWidth = 0.1
-toWidth = 0.05
-lifespan = 0.3
-startColor = Color(1, 0.367788, 0.300217, 0.219608)
-endColor = Color(1, 0, 0, 0.309804)
-metadata/_custom_type_script = "uid://b3w53u07ukurw"
+[node name="RibbonTrail" type="GPUParticles3D" parent="."]
+amount = 1
+lifetime = 30.0
+local_coords = false
+trail_enabled = true
+trail_lifetime = 0.2
+process_material = SubResource("ParticleProcessMaterial_trail")
+draw_pass_1 = SubResource("RibbonTrailMesh_kunai")
 
-[node name="VfxMovingTest" parent="." node_paths=PackedStringArray("target_node") instance=ExtResource("4_i8jyn")]
-target_node = NodePath("..")
-start_position = Vector3(0, 0, 10)
-
+fixed_fps = 60
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 &"": SubResource("AnimationLibrary_8wevm")

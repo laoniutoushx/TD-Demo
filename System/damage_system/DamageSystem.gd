@@ -153,22 +153,20 @@ func _under_attack_anim(target: BaseUnit):
 	)
 
 
-# 弹丸销毁特效
+# 弹丸销毁与击中火花特效
 func _vfx_projectile_destory(target: BaseUnit):
 	if not is_instance_valid(target) or not target is BaseUnit:
 		return
-
-	var mesh_standing = (target as BaseUnit).get_mesh_standing()
-	if mesh_standing == null:
-		return
-
-	mesh_standing.visible = true
-	# 延迟隐藏
-	CommonUtil.delay_execution(0.1, target,
-		func():
-			if mesh_standing and is_instance_valid(mesh_standing):
-				mesh_standing.visible = false
-	)
+	if is_instance_valid(SystemUtil.vfx_system):
+		var sparks = SystemUtil.vfx_system.create_vfx("hit_sparks", null)
+		if sparks:
+			var parent = target.get_parent() if target.get_parent() else target
+			parent.add_child(sparks)
+			var target_pos = target.global_position if "global_position" in target else Vector3.ZERO
+			var height = target._height if "_height" in target else 1.0
+			sparks.global_position = target_pos + Vector3.UP * (height * 0.5)
+			if sparks.has_method("play"):
+				sparks.play()
 
 
 # 范围内单位查找
@@ -196,7 +194,15 @@ func _process(delta: float) -> void:
 # 技能伤害
 func skill_damage(skill: Variant, source: BaseUnit, target: BaseUnit) -> bool:
 	if is_instance_valid(source) and is_instance_valid(target) and target.is_alive():
-		return target.take_skill_damage(DamageCtxPool.get_ctx(source, target, skill.value, DamageCtx.DamageType.NORMAL, DamageCtx.DamageSourceType.SKILL))
+		var ctx := DamageCtxPool.get_ctx(source, target, skill.value, DamageCtx.DamageType.NORMAL, DamageCtx.DamageSourceType.SKILL)
+		ctx.skill = skill
+		if skill is Skill and skill.skill_meta_res:
+			ctx.can_crit = skill.skill_meta_res.can_crit
+			ctx.can_miss = skill.skill_meta_res.can_miss
+		elif skill is SkillMetaResource:
+			ctx.can_crit = skill.can_crit
+			ctx.can_miss = skill.can_miss
+		return target.take_skill_damage(ctx)
 	return true
 
 
@@ -218,11 +224,21 @@ func skill_range_damage(skill: Skill, source: BaseUnit, target_position: Vector3
 		visited[id] = true
 		if unit.player_group == source.player_group or not CommonUtil.is_flag_set(SkillMetaResource.SKILL_TARGET_TYPE.ENEMY, skill.target_type):
 			continue
+		var dx: float = absf(unit.global_position.x - target_position.x)
+		var dz: float = absf(unit.global_position.z - target_position.z)
+		var coarse_bound: float = affect_range + 3.0
+		if dx > coarse_bound or dz > coarse_bound:
+			continue
 		var half_size = unit._transformed_aabb.size * 0.5
 		var offset = (unit.global_position - target_position).abs()
 		var edge_distance = Vector2(maxf(offset.x - half_size.x, 0.0), maxf(offset.z - half_size.z, 0.0))
 		if edge_distance.length_squared() <= affect_range * affect_range:
-			unit.take_skill_damage(DamageCtxPool.get_ctx(source, unit, skill.value, DamageCtx.DamageType.NORMAL, DamageCtx.DamageSourceType.SKILL))
+			var ctx := DamageCtxPool.get_ctx(source, unit, skill.value, DamageCtx.DamageType.NORMAL, DamageCtx.DamageSourceType.SKILL)
+			ctx.skill = skill
+			if skill.skill_meta_res:
+				ctx.can_crit = skill.skill_meta_res.can_crit
+				ctx.can_miss = skill.skill_meta_res.can_miss
+			unit.take_skill_damage(ctx)
 			affected.append(unit)
 	return affected
 
@@ -242,6 +258,9 @@ class DamageCtxPool extends RefCounted:
 		context.damage_source_type = _damage_source
 		context.attack_uid = ""
 		context.hit_role = &"primary"
+		context.can_crit = false
+		context.can_miss = false
+		context.skill = null
 		return context
 
 	static func return_ctx(ctx: DamageCtx) -> void:

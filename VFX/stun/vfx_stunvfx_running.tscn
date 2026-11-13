@@ -1,69 +1,85 @@
-[gd_scene load_steps=15 format=3 uid="uid://cppruxnoup3dr"]
+[gd_scene load_steps=11 format=3 uid="uid://cppruxnoup3dr"]
 
-[ext_resource type="Script" uid="uid://bf4awvcco3c6r" path="res://VFX/stun/vfx_stunvfx_running.gd" id="1_ahml0"]
-[ext_resource type="Texture2D" uid="uid://6t4t48fopqo2" path="res://VFX/stun/stun_imgs/eff_xuanyun_00000.png" id="1_h01bn"]
-[ext_resource type="Texture2D" uid="uid://ds8a1svijvj5t" path="res://VFX/stun/stun_imgs/eff_xuanyun_00001.png" id="2_psrp3"]
-[ext_resource type="Texture2D" uid="uid://naqsvesshij3" path="res://VFX/stun/stun_imgs/eff_xuanyun_00002.png" id="3_b6deh"]
-[ext_resource type="Texture2D" uid="uid://nv8d6ark6kqo" path="res://VFX/stun/stun_imgs/eff_xuanyun_00003.png" id="4_mhi1f"]
-[ext_resource type="Texture2D" uid="uid://qvxj7noshtj7" path="res://VFX/stun/stun_imgs/eff_xuanyun_00004.png" id="5_biyib"]
-[ext_resource type="Texture2D" uid="uid://cr3wjqmlqds5d" path="res://VFX/stun/stun_imgs/eff_xuanyun_00005.png" id="6_h1hjr"]
-[ext_resource type="Texture2D" uid="uid://ot86apqltn0q" path="res://VFX/stun/stun_imgs/eff_xuanyun_00006.png" id="7_8batp"]
-[ext_resource type="Texture2D" uid="uid://bebu0aam062e1" path="res://VFX/stun/stun_imgs/eff_xuanyun_00007.png" id="8_y7il2"]
-[ext_resource type="Texture2D" uid="uid://d4npnjej27o4u" path="res://VFX/stun/stun_imgs/eff_xuanyun_00008.png" id="9_5v2yg"]
-[ext_resource type="Texture2D" uid="uid://d16wo344d52ak" path="res://VFX/stun/stun_imgs/eff_xuanyun_00009.png" id="10_1bmud"]
-[ext_resource type="Texture2D" uid="uid://clvufdltajr18" path="res://VFX/stun/stun_imgs/eff_xuanyun_00010.png" id="11_amb27"]
-[ext_resource type="Texture2D" uid="uid://b2t4xf8oo1jgl" path="res://VFX/stun/stun_imgs/eff_xuanyun_00011.png" id="12_c8xrc"]
+[ext_resource type="Script" path="res://VFX/stun/vfx_stunvfx_running.gd" id="1_sc"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/star_09.png" id="2_star"]
+[ext_resource type="Texture2D" path="res://Asserts/textures/vfx/T_VFX_CircleA0.PNG" id="3_circle"]
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_n6j63"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("1_h01bn")
-}, {
-"duration": 1.0,
-"texture": ExtResource("2_psrp3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_b6deh")
-}, {
-"duration": 1.0,
-"texture": ExtResource("4_mhi1f")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5_biyib")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_h1hjr")
-}, {
-"duration": 1.0,
-"texture": ExtResource("7_8batp")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_y7il2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("9_5v2yg")
-}, {
-"duration": 1.0,
-"texture": ExtResource("10_1bmud")
-}, {
-"duration": 1.0,
-"texture": ExtResource("11_amb27")
-}, {
-"duration": 1.0,
-"texture": ExtResource("12_c8xrc")
-}],
-"loop": true,
-"name": &"default",
-"speed": 15.0
-}]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_star"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(2.4, 1.9, 0.4, 1)
+albedo_texture = ExtResource("2_star")
+billboard_mode = 1
 
-[node name="VfxStunRunning" type="Node3D"]
-script = ExtResource("1_ahml0")
+[sub_resource type="QuadMesh" id="QuadMesh_star"]
+material = SubResource("StandardMaterial3D_star")
+size = Vector2(0.28, 0.28)
 
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1.8, 0, 0, 0)
-modulate = Color(1, 1, 1, 0.9)
-axis = 1
-sprite_frames = SubResource("SpriteFrames_n6j63")
-frame_progress = 0.707023
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_halo"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(1.8, 1.4, 0.3, 0.5)
+albedo_texture = ExtResource("3_circle")
+
+[sub_resource type="QuadMesh" id="QuadMesh_halo"]
+material = SubResource("StandardMaterial3D_halo")
+size = Vector2(0.9, 0.9)
+orientation = 1
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_trail"]
+emission_shape = 1
+emission_sphere_radius = 0.05
+direction = Vector3(0, 0, 0)
+gravity = Vector3(0, -0.4, 0)
+scale_min = 0.05
+scale_max = 0.12
+color = Color(2.5, 2.0, 0.5, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trail"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("2_star")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_trail"]
+material = SubResource("StandardMaterial3D_trail")
+size = Vector2(0.12, 0.12)
+
+[node name="VfxStunvfxRunning" type="Node3D"]
+script = ExtResource("1_sc")
+
+[node name="OrbitPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.951057, -0.309017, 0, 0.309017, 0.951057, 0, 0, 0)
+
+[node name="HaloRing" type="MeshInstance3D" parent="OrbitPivot"]
+mesh = SubResource("QuadMesh_halo")
+
+[node name="Star1" type="MeshInstance3D" parent="OrbitPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0, 0)
+mesh = SubResource("QuadMesh_star")
+
+[node name="Star2" type="MeshInstance3D" parent="OrbitPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.225, 0, 0.39)
+mesh = SubResource("QuadMesh_star")
+
+[node name="Star3" type="MeshInstance3D" parent="OrbitPivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.225, 0, -0.39)
+mesh = SubResource("QuadMesh_star")
+
+[node name="GlitterParticles" type="GPUParticles3D" parent="OrbitPivot"]
+amount = 16
+lifetime = 0.5
+process_material = SubResource("ParticleProcessMaterial_trail")
+draw_pass_1 = SubResource("QuadMesh_trail")

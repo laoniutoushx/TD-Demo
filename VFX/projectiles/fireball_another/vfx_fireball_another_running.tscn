@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=3 uid="uid://dapylj3adnm51"]
+[gd_scene load_steps=51 format=3 uid="uid://dapylj3adnm51"]
 
 [ext_resource type="Shader" uid="uid://cdcc1yv46xbv1" path="res://VFX/projectiles/fireball_another/fireball_another_pan_shader.tres" id="1_6cgu0"]
 [ext_resource type="Texture2D" uid="uid://5riuudcudygl" path="res://Asserts/textures/vfx/Voronoi.png" id="2_baebv"]
@@ -6,7 +6,9 @@
 [ext_resource type="ArrayMesh" uid="uid://81atb3yklasc" path="res://Asserts/Models/vfx/fireball_trail.obj" id="5_esxqr"]
 [ext_resource type="Texture2D" uid="uid://cts3hu0ch3yv" path="res://Asserts/textures/vfx/fireball_trail.png" id="5_h48fu"]
 [ext_resource type="Texture2D" uid="uid://b0sxtqtnp28gp" path="res://addons/kenney_particle_pack/T_PerlinNoise_Tiled.png" id="6_6gko7"]
-[ext_resource type="Script" uid="uid://b3w53u07ukurw" path="res://Scripts/Trail3D.gd" id="7_jvd1b"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_ribbon.gdshader" id="7_ribbon"]
+
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_ribbon_follow.gdshader" id="99_follow"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_l0e4u"]
 gravity = Vector3(0, 0, 0)
@@ -357,20 +359,31 @@ scale_min = 0.6
 scale_max = 0.6
 color = Color(0, 0, 0, 1)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ts5t8"]
-transparency = 1
-blend_mode = 1
-cull_mode = 2
-depth_draw_mode = 2
-shading_mode = 0
-disable_ambient_light = true
-disable_fog = true
-vertex_color_use_as_albedo = true
-vertex_color_is_srgb = true
-albedo_texture = ExtResource("6_6gko7")
-billboard_keep_scale = true
+[sub_resource type="Curve" id="Curve_trail"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_du66r"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon"]
+shader = ExtResource("7_ribbon")
+shader_parameter/trail_color = Color(3, 1.2, 0.4, 0.9)
+shader_parameter/emission_energy = 3.5
+shader_parameter/trail_texture = ExtResource("6_6gko7")
+shader_parameter/uv_scroll = Vector2(0, -3)
+shader_parameter/length_along_y = true
+shader_parameter/head_fade = 0.05
+shader_parameter/tail_fade = 0.85
+shader_parameter/depth_fade_distance = 0.35
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_fire"]
+material = SubResource("ShaderMaterial_ribbon")
+shape = 1
+size = 0.45
+sections = 6
+section_length = 0.12
+curve = SubResource("Curve_trail")
+
+[sub_resource type="ShaderMaterial" id="ParticleProcessMaterial_trail"]
+shader = ExtResource("99_follow")
 
 [node name="Fireball-another" type="Node3D"]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
@@ -412,11 +425,12 @@ local_coords = true
 process_material = SubResource("ParticleProcessMaterial_r2p3c")
 draw_pass_1 = ExtResource("5_esxqr")
 
-[node name="Trail3D" type="MeshInstance3D" parent="."]
-material_override = SubResource("StandardMaterial3D_ts5t8")
-mesh = SubResource("ImmediateMesh_du66r")
-script = ExtResource("7_jvd1b")
-fromWidth = 0.3
-lifespan = 2.0
-startColor = Color(0.688465, 0.224514, 0.125138, 0.92549)
-endColor = Color(0.698252, 0.193424, 0.158746, 0.059)
+[node name="RibbonTrail" type="GPUParticles3D" parent="."]
+amount = 1
+lifetime = 30.0
+local_coords = false
+trail_enabled = true
+trail_lifetime = 0.25
+process_material = SubResource("ParticleProcessMaterial_trail")
+draw_pass_1 = SubResource("RibbonTrailMesh_fire")
+fixed_fps = 60

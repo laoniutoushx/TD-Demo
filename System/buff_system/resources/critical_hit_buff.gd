@@ -11,15 +11,14 @@ func _ready() -> void:
         
 # 暴击逻辑（回调注入）
 func _on_action_damge_logic(damage_ctx: DamageCtx) -> DamageCtx:
+    if damage_ctx.damage_source_type == DamageCtx.DamageSourceType.SKILL and not damage_ctx.can_crit:
+        return damage_ctx
 
     if _prob_controller.next():
         # 触发暴击
         damage_ctx.damage_type = DamageCtx.DamageType.CRITICAL
         damage_ctx.damage = damage_ctx.damage * value
         return damage_ctx
-    else:
-        pass
-
     return damage_ctx
 
 

@@ -1,25 +1,95 @@
-[gd_scene load_steps=6 format=3 uid="uid://cu530yo3ckh2b"]
+[gd_scene load_steps=14 format=3 uid="uid://cu530yo3ckh2b"]
 
-[ext_resource type="ArrayMesh" uid="uid://cmqarno8i2rgc" path="res://Asserts/thunder_editable.tres" id="1_llg42"]
-[ext_resource type="Script" uid="uid://n6m2drks34fc" path="res://VFX/thunderclap/vfx_thunderclap_running.gd" id="1_tl6gl"]
+[ext_resource type="Script" path="res://System/vfx_system/domain/VFXInstance.gd" id="1_sc"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_lightning.gdshader" id="2_sh"]
+[ext_resource type="Texture2D" path="res://Asserts/textures/vfx/T_VFX_CircleA0.PNG" id="3_ring"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/spark_04.png" id="4_spark"]
 
-[sub_resource type="Gradient" id="Gradient_1hr1u"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pillar"]
+render_priority = 1
+shader = ExtResource("2_sh")
+shader_parameter/core_color = Color(3, 4, 5, 1)
+shader_parameter/glow_color = Color(0.4, 1.5, 4, 1)
+shader_parameter/emission_energy = 4.0
+shader_parameter/noise_speed = 40.0
+shader_parameter/frequency = 10.0
+shader_parameter/amplitude = 0.2
 
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_fp5x7"]
-gradient = SubResource("Gradient_1hr1u")
+[sub_resource type="QuadMesh" id="QuadMesh_pillar"]
+material = SubResource("ShaderMaterial_pillar")
+size = Vector2(1.5, 12)
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_3rux6"]
-gravity = Vector3(0, 0, 0)
-color_ramp = SubResource("GradientTexture1D_fp5x7")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ring"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(1.5, 2.5, 4.5, 0.8)
+albedo_texture = ExtResource("3_ring")
+
+[sub_resource type="QuadMesh" id="QuadMesh_ring"]
+material = SubResource("StandardMaterial3D_ring")
+size = Vector2(5, 5)
+orientation = 1
+
+[sub_resource type="Curve" id="Curve_sparks"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.2, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_sparks"]
+curve = SubResource("Curve_sparks")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparks"]
+emission_shape = 1
+emission_sphere_radius = 0.5
+direction = Vector3(0, 0.2, 0)
+spread = 180.0
+initial_velocity_min = 6.0
+initial_velocity_max = 12.0
+gravity = Vector3(0, -5.0, 0)
+scale_min = 0.3
+scale_max = 0.6
+scale_curve = SubResource("CurveTexture_sparks")
+color = Color(2.0, 2.8, 4.5, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sparks"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("4_spark")
+billboard_mode = 3
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_sparks"]
+material = SubResource("StandardMaterial3D_sparks")
+size = Vector2(0.5, 0.5)
 
 [node name="ThunderclapVfx" type="Node3D"]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
-script = ExtResource("1_tl6gl")
+script = ExtResource("1_sc")
+duration = 0.8
+camera_trauma = 0.35
+impact_light_energy = 3.5
+impact_light_color = Color(0.6, 1.2, 3.5, 1)
 
-[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+[node name="LightningPillar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
+mesh = SubResource("QuadMesh_pillar")
+
+[node name="LightningPillarCross" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 6, 0)
+mesh = SubResource("QuadMesh_pillar")
+
+[node name="ShockwaveRing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("QuadMesh_ring")
+
+[node name="Sparks" type="GPUParticles3D" parent="."]
 emitting = false
-amount = 1
-lifetime = 0.25
+amount = 20
+lifetime = 0.5
 one_shot = true
-process_material = SubResource("ParticleProcessMaterial_3rux6")
-draw_pass_1 = ExtResource("1_llg42")
+explosiveness = 0.95
+process_material = SubResource("ParticleProcessMaterial_sparks")
+draw_pass_1 = SubResource("QuadMesh_sparks")

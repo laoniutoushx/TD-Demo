@@ -162,9 +162,45 @@ func apply(_reference: Variant, _target: Variant) -> bool:
 
             # print("REF_VAL %s" % ref_val)
 
+        __buff_stack_num = 1
         return true
     
     return false
+
+func apply_additional_stack() -> void:
+    __buff_stack_num += 1
+    if unit and prop:
+        var ref_val = unit.get(prop)
+        var stack_delta: float = 0.0
+        if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+            stack_delta = _value * value / 100.0 * _value_dir
+        elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+            stack_delta = value * _value_dir
+        prop_value_delta += stack_delta
+        ref_val += stack_delta
+        unit.set(prop, ref_val)
+    if slot and is_instance_valid(slot):
+        slot.reset_level(__buff_stack_num)
+
+func remove_single_stack(_target: Variant) -> void:
+    if __buff_stack_num > 1:
+        __buff_stack_num -= 1
+        if _target and prop:
+            var ref_val = _target.get(prop)
+            var stack_delta: float = 0.0
+            if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+                stack_delta = _value * value / 100.0 * _value_dir
+            elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+                stack_delta = value * _value_dir
+            prop_value_delta -= stack_delta
+            ref_val -= stack_delta
+            _target.set(prop, ref_val)
+        if slot and is_instance_valid(slot):
+            slot.reset_level(__buff_stack_num)
+
+func refresh_duration() -> void:
+    if cooldown > 0 and cool_down_timer:
+        cool_down_timer.start(cooldown)
 
         
 
@@ -239,25 +275,20 @@ func is_fit_exclude_level(_buff: Buff, _target: Variant) -> bool:
 # 空接口， buff 自己实现内部逻辑
 func refresh() -> void:
     # reference_instance 属性值修改
-    if unit:
-        if prop:
-            # reference_instance 属性值修改
-            var ref_val = unit.get(prop)
-            ref_val = (ref_val - prop_value_delta) # 撤回 buff 数值
-            _value = ref_val
+    if unit and prop:
+        var ref_val = unit.get(prop)
+        ref_val = (ref_val - prop_value_delta) # 撤回 buff 数值
+        _value = ref_val
+        prop_value_delta = 0.0
 
-
+        var stacks = maxi(1, __buff_stack_num)
+        for i in range(stacks):
+            var stack_delta: float = 0.0
             if value_unit == BuffResource.VALUE_UNIT.PERCENT:
-                prop_value_delta = ref_val * value / 100 * _value_dir
-                ref_val += prop_value_delta
-
-
+                stack_delta = _value * value / 100.0 * _value_dir
             elif value_unit == BuffResource.VALUE_UNIT.VALUE:
-                prop_value_delta = value * _value_dir
-                ref_val += prop_value_delta
+                stack_delta = value * _value_dir
+            prop_value_delta += stack_delta
+            ref_val += stack_delta
 
-
-            # Keep the modifier magnitude; ref_val is the final attribute, not its effect.
-            
-            # 更新单位属性值
-            unit.set(prop, ref_val)
+        unit.set(prop, ref_val)

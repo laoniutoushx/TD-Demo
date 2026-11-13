@@ -61,8 +61,12 @@ class InnerHandler extends Node3D:
 
         
         var tween: Tween = create_tween()
-        tween.tween_property(vfx, "global_position", point, 1)
+        tween.tween_property(vfx, "global_position", point, 0.75).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
         await tween.finished
+
+        var rts = preload("res://Scripts/controller/RTSController.gd")
+        if rts:
+            rts.add_trauma(0.18, point)
 
         SystemUtil.damage_system.skill_range_damage(skill_context.skill, skill_context.source, point, skill_context.skill.damage_range)
         CommonUtil.play_audio(skill_context.source, "火焰 爆炸 魔法 01_爱给网_aigei_com", 0.6)
@@ -75,7 +79,7 @@ class InnerHandler extends Node3D:
             burn_decal.global_position = point
 
         if is_instance_valid(vfx):
-            vfx.queue_free()
+            SystemUtil.vfx_system.recycle_vfx(vfx)
 
         var vfx_destory = SystemUtil.vfx_system.create_vfx("fireball_another", SystemUtil.vfx_system.VFX_TYPE.DESTORY)
         self.add_child(vfx_destory)
@@ -87,5 +91,5 @@ class InnerHandler extends Node3D:
         await CommonUtil.await_timer(1.0)
 
         if is_instance_valid(vfx_destory):
-            vfx_destory.queue_free()
+            SystemUtil.vfx_system.recycle_vfx(vfx_destory)
         queue_free()

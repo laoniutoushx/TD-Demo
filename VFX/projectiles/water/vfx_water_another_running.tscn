@@ -1,13 +1,49 @@
-[gd_scene load_steps=12 format=3 uid="uid://ngfv8noop2ft"]
+[gd_scene load_steps=18 format=3 uid="uid://ngfv8noop2ft"]
 
-[ext_resource type="Shader" uid="uid://cylxj2kp4pu3g" path="res://addons/GPUTrail/shaders/trail.gdshader" id="1_ewqjc"]
-[ext_resource type="Shader" uid="uid://ba0getmd8j8qq" path="res://addons/GPUTrail/shaders/trail_draw_pass.gdshader" id="2_7swvs"]
-[ext_resource type="Texture2D" uid="uid://crk6pkb7e5rwc" path="res://addons/GPUTrail/defaults/texture.tres" id="3_h0nms"]
-[ext_resource type="Texture2D" uid="uid://ct31fhxvcragr" path="res://addons/GPUTrail/defaults/curve.tres" id="4_guqrm"]
-[ext_resource type="Script" uid="uid://slnsuby633to" path="res://addons/GPUTrail/GPUTrail3D.gd" id="5_coe72"]
-[ext_resource type="AudioStream" uid="uid://buq0byk7dwh4p" path="res://Asserts/waves/fire-ball.wav" id="6_et5y0"]
+[ext_resource type="Texture2D" uid="uid://it3lumq1trxf" path="res://addons/kenney_particle_pack/smoke_09.png" id="1_pe6gd"]
+[ext_resource type="Texture2D" uid="uid://c6fs5xcepi5hm" path="res://addons/kenney_particle_pack/magic_05.png" id="2_fuxo7"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_ribbon.gdshader" id="3_ribbon"]
+[ext_resource type="Texture2D" uid="uid://b0sxtqtnp28gp" path="res://addons/kenney_particle_pack/T_PerlinNoise_Tiled.png" id="4_y3j7m"]
+[ext_resource type="AudioStream" uid="uid://bkutx7v2hechb" path="res://Asserts/waves/projectile/波纹攻击_爱给网_aigei_com.mp3" id="5_xk0yr"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ohim7"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_ribbon_follow.gdshader" id="99_follow"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_h0r0k"]
+gravity = Vector3(0, 0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eqn6m"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+disable_ambient_light = true
+disable_fog = true
+albedo_color = Color(0, 1, 5, 1)
+albedo_texture = ExtResource("1_pe6gd")
+uv1_scale = Vector3(1, 5, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_3hb1f"]
+material = SubResource("StandardMaterial3D_eqn6m")
+height = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3ssk2"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+disable_ambient_light = true
+disable_fog = true
+albedo_color = Color(0.6, 1, 1.5, 1)
+albedo_texture = ExtResource("2_fuxo7")
+uv1_scale = Vector3(0.5, 1, 0.5)
+uv1_offset = Vector3(0.25, 0, 0)
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_h6y5p"]
+material = SubResource("StandardMaterial3D_3ssk2")
+orientation = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ehl4a"]
 transparency = 1
 blend_mode = 1
 cull_mode = 2
@@ -18,47 +54,64 @@ disable_ambient_light = true
 disable_fog = true
 albedo_color = Color(0, 0.541, 1.622, 1)
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_hu6m5"]
-material = SubResource("StandardMaterial3D_ohim7")
+[sub_resource type="PlaneMesh" id="PlaneMesh_aku21"]
+material = SubResource("StandardMaterial3D_ehl4a")
 size = Vector2(0.5, 0.01)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_shpre"]
-shader = ExtResource("1_ewqjc")
+[sub_resource type="Curve" id="Curve_trail"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_y7gdo"]
-resource_local_to_scene = true
-render_priority = 0
-shader = ExtResource("2_7swvs")
-shader_parameter/uv_offset = Vector2(0, 0)
-shader_parameter/color_ramp = ExtResource("3_h0nms")
-shader_parameter/curve = ExtResource("4_guqrm")
-shader_parameter/emmission_transform = Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
-shader_parameter/flags = 40
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon"]
+shader = ExtResource("3_ribbon")
+shader_parameter/trail_color = Color(0.3, 1.5, 3.0, 0.85)
+shader_parameter/emission_energy = 2.5
+shader_parameter/trail_texture = ExtResource("4_y3j7m")
+shader_parameter/uv_scroll = Vector2(0, -3.0)
+shader_parameter/length_along_y = true
+shader_parameter/head_fade = 0.05
+shader_parameter/tail_fade = 0.85
+shader_parameter/depth_fade_distance = 0.35
 
-[sub_resource type="QuadMesh" id="QuadMesh_svesv"]
-material = SubResource("ShaderMaterial_y7gdo")
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_water"]
+material = SubResource("ShaderMaterial_ribbon")
+shape = 1
+size = 0.4
+sections = 6
+section_length = 0.12
+curve = SubResource("Curve_trail")
+
+[sub_resource type="ShaderMaterial" id="ParticleProcessMaterial_trail"]
+shader = ExtResource("99_follow")
 
 [node name="VfxWaterRunning" type="Node3D"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 
+[node name="WaterCore" type="GPUParticles3D" parent="."]
+amount = 1
+lifetime = 5.0
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_h0r0k")
+draw_passes = 2
+draw_pass_1 = SubResource("SphereMesh_3hb1f")
+draw_pass_2 = SubResource("QuadMesh_h6y5p")
+
 [node name="WaterLine" type="MeshInstance3D" parent="."]
-mesh = SubResource("PlaneMesh_hu6m5")
+mesh = SubResource("PlaneMesh_aku21")
 
-[node name="GPUTrail3D" type="GPUParticles3D" parent="."]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
-amount = 99
-lifetime = 99.0
-explosiveness = 1.0
-fixed_fps = 120
-process_material = SubResource("ShaderMaterial_shpre")
-draw_pass_1 = SubResource("QuadMesh_svesv")
-script = ExtResource("5_coe72")
-length = 99
-length_seconds = 0.825
-color_ramp = ExtResource("3_h0nms")
-curve = ExtResource("4_guqrm")
-_defaults_have_been_set = true
+[node name="RibbonTrail" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+amount = 1
+lifetime = 30.0
+local_coords = false
+trail_enabled = true
+trail_lifetime = 0.25
+process_material = SubResource("ParticleProcessMaterial_trail")
+draw_pass_1 = SubResource("RibbonTrailMesh_water")
 
+fixed_fps = 60
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-stream = ExtResource("6_et5y0")
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+stream = ExtResource("5_xk0yr")
+volume_db = 20.0
 autoplay = true

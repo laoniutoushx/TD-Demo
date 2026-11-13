@@ -62,8 +62,12 @@ class InnerHandler extends Node3D:
 
         
         var tween: Tween = create_tween()
-        tween.tween_property(vfx, "global_position", point, 1)
+        tween.tween_property(vfx, "global_position", point, 0.75).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
         await tween.finished
+
+        var rts = preload("res://Scripts/controller/RTSController.gd")
+        if rts:
+            rts.add_trauma(0.15, point)
 
         if idx == 0:    # 只为第一个点播放特效声音
             CommonUtil.play_audio(self, "魔法 魔术 冰 冲击_ 大的 炮弹_ 危险冰块_ 碎片_ 长_爱给网_aigei_com", 1)
@@ -75,7 +79,7 @@ class InnerHandler extends Node3D:
         # await CommonUtil.await_timer(2.0)
         
         if is_instance_valid(vfx):
-            vfx.queue_free()
+            SystemUtil.vfx_system.recycle_vfx(vfx)
 
         var vfx_destory = SystemUtil.vfx_system.create_vfx("ice_prise", SystemUtil.vfx_system.VFX_TYPE.DESTORY)
         if vfx_destory:
@@ -88,5 +92,5 @@ class InnerHandler extends Node3D:
             await CommonUtil.await_timer(1.0)
 
             if is_instance_valid(vfx_destory):
-                vfx_destory.queue_free()
+                SystemUtil.vfx_system.recycle_vfx(vfx_destory)
         queue_free()

@@ -1,4 +1,4 @@
-extends Node3D
+class_name RTSController extends Node3D
 
 const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
 @export var cam: Camera3D
@@ -11,11 +11,59 @@ const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
 var velocity := Vector3.ZERO
 var diagnostics: Dictionary = {}
 
+# --- Camera Trauma / Screen Shake System ---
+static var instance: Node = null
+var trauma: float = 0.0
+@export var trauma_reduction_rate: float = 2.2
+@export var max_h_offset: float = 0.75
+@export var max_v_offset: float = 0.75
+@export var max_roll: float = 0.025
+@export var trauma_shake_frequency: float = 28.0
+var _shake_time: float = 0.0
+
+func _enter_tree() -> void:
+	instance = self
+
+func _exit_tree() -> void:
+	if instance == self:
+		instance = null
+
+static func add_trauma(amount: float, source_pos: Vector3 = Vector3.INF, max_dist: float = 40.0) -> void:
+	if not is_instance_valid(instance) or not is_instance_valid(instance.cam):
+		return
+	if is_instance_valid(SOS.main) and SOS.main.config.get("screen_shake", true) == false:
+		return
+	var factor := 1.0
+	if source_pos != Vector3.INF:
+		var dist: float = instance.cam.global_position.distance_to(source_pos)
+		factor = clampf(1.0 - (dist / max_dist), 0.0, 1.0)
+		factor = factor * factor # Quadratic distance attenuation
+	instance.trauma = clampf(instance.trauma + amount * factor, 0.0, 1.0)
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_PAUSED: velocity = Vector3.ZERO
 
 func _process(delta: float) -> void:
 	mouse_camera_move(delta)
+	_process_trauma(delta)
+
+func _process_trauma(delta: float) -> void:
+	if not is_instance_valid(cam):
+		return
+	if trauma > 0.0:
+		trauma = maxf(0.0, trauma - trauma_reduction_rate * delta)
+		_shake_time += delta * trauma_shake_frequency
+		var shake := trauma * trauma
+		var noise_x := sin(_shake_time * 1.3) + cos(_shake_time * 2.7) * 0.5
+		var noise_y := cos(_shake_time * 1.7) + sin(_shake_time * 2.3) * 0.5
+		var noise_r := sin(_shake_time * 2.1)
+		cam.h_offset = max_h_offset * shake * noise_x
+		cam.v_offset = max_v_offset * shake * noise_y
+		cam.rotation.z = max_roll * shake * noise_r
+	elif cam.h_offset != 0.0 or cam.v_offset != 0.0 or cam.rotation.z != 0.0:
+		cam.h_offset = 0.0
+		cam.v_offset = 0.0
+		cam.rotation.z = 0.0
 
 func scroll_direction(mouse: Vector2, viewport_size: Vector2) -> Vector3:
 	if not mouse.is_finite() or viewport_size.x <= 0 or viewport_size.y <= 0: return Vector3.ZERO

@@ -1,9 +1,10 @@
-[gd_scene load_steps=15 format=3 uid="uid://bk8vfftb04h05"]
+[gd_scene load_steps=17 format=3 uid="uid://bk8vfftb04h05"]
 
 [ext_resource type="Texture2D" uid="uid://dh38hnj0w10k4" path="res://Asserts/textures/vfx/T_VFX_Ellipse.png" id="1_vvrlf"]
 [ext_resource type="Texture2D" uid="uid://da1iqi53byvde" path="res://Asserts/textures/vfx/T_VFX_Trail_Square.png" id="2_1cxc0"]
-[ext_resource type="Script" uid="uid://b3w53u07ukurw" path="res://Scripts/Trail3D.gd" id="2_wmse1"]
-[ext_resource type="PackedScene" uid="uid://cll88jekgo8hn" path="res://Test/vfx_moving_test/vfx_moving_test.tscn" id="3_tapmb"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_ribbon.gdshader" id="3_ribbon"]
+
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_ribbon_follow.gdshader" id="99_follow"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wmse1"]
 transparency = 1
@@ -53,15 +54,31 @@ scale_max = 2.0
 
 [sub_resource type="QuadMesh" id="QuadMesh_k7drv"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1cxc0"]
-transparency = 1
-blend_mode = 1
-cull_mode = 2
-shading_mode = 0
-vertex_color_use_as_albedo = true
-albedo_texture = ExtResource("2_1cxc0")
+[sub_resource type="Curve" id="Curve_trail"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_smk5n"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon"]
+shader = ExtResource("3_ribbon")
+shader_parameter/trail_color = Color(2.5, 0.5, 0.5, 0.8)
+shader_parameter/emission_energy = 2.5
+shader_parameter/trail_texture = ExtResource("2_1cxc0")
+shader_parameter/uv_scroll = Vector2(0, -2.5)
+shader_parameter/length_along_y = true
+shader_parameter/head_fade = 0.05
+shader_parameter/tail_fade = 0.85
+shader_parameter/depth_fade_distance = 0.3
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_scream"]
+material = SubResource("ShaderMaterial_ribbon")
+shape = 1
+size = 0.35
+sections = 6
+section_length = 0.1
+curve = SubResource("Curve_trail")
+
+[sub_resource type="ShaderMaterial" id="ParticleProcessMaterial_trail"]
+shader = ExtResource("99_follow")
 
 [node name="ScreamBall" type="Node3D"]
 
@@ -81,16 +98,12 @@ local_coords = true
 process_material = SubResource("ParticleProcessMaterial_vmjb1")
 draw_pass_1 = SubResource("QuadMesh_k7drv")
 
-[node name="ScreamTail" type="MeshInstance3D" parent="."]
-material_override = SubResource("StandardMaterial3D_1cxc0")
-mesh = SubResource("ImmediateMesh_smk5n")
-script = ExtResource("2_wmse1")
-fromWidth = 0.4
-toWidth = 0.1
-lifespan = 0.3
-startColor = Color(1, 0.367788, 0.300217, 0.219608)
-endColor = Color(1, 0, 0, 0.309804)
-metadata/_custom_type_script = "uid://b3w53u07ukurw"
-
-[node name="VfxMovingTest" parent="." node_paths=PackedStringArray("target_node") instance=ExtResource("3_tapmb")]
-target_node = NodePath("..")
+[node name="RibbonTrail" type="GPUParticles3D" parent="."]
+amount = 1
+lifetime = 30.0
+local_coords = false
+trail_enabled = true
+trail_lifetime = 0.2
+process_material = SubResource("ParticleProcessMaterial_trail")
+draw_pass_1 = SubResource("RibbonTrailMesh_scream")
+fixed_fps = 60

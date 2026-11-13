@@ -1,0 +1,55 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://System/vfx_system/domain/VFXInstance.gd" id="1_sc"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/spark_04.png" id="2_tex"]
+
+[sub_resource type="Curve" id="Curve_scale"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.2, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_scale"]
+curve = SubResource("Curve_scale")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparks"]
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 3.5
+initial_velocity_max = 7.0
+gravity = Vector3(0, -6.0, 0)
+scale_min = 0.25
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_scale")
+color = Color(2.5, 2.0, 1.0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sparks"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("2_tex")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_sparks"]
+material = SubResource("StandardMaterial3D_sparks")
+size = Vector2(0.4, 0.4)
+
+[node name="VfxHitSparks" type="Node3D"]
+script = ExtResource("1_sc")
+duration = 0.35
+impact_light_energy = 1.8
+impact_light_color = Color(1.0, 0.85, 0.5, 1.0)
+
+[node name="Sparks" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 10
+lifetime = 0.35
+one_shot = true
+explosiveness = 0.95
+process_material = SubResource("ParticleProcessMaterial_sparks")
+draw_pass_1 = SubResource("QuadMesh_sparks")
