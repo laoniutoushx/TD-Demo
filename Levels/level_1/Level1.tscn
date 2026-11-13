@@ -24,7 +24,6 @@
 [ext_resource type="PackedScene" uid="uid://cddhheg1d4j32" path="res://Components/action_bar/action_bar.tscn" id="13_sr2b3"]
 [ext_resource type="Texture2D" uid="uid://ur3vahvc4yau" path="res://Levels/level_1/Level1_slot2_normal_roughness.png" id="14_0bopa"]
 [ext_resource type="PackedScene" uid="uid://btv2y2tfng4ob" path="res://Unit/turret/TurretManager.tscn" id="14_d0au5"]
-[ext_resource type="PackedScene" uid="uid://m4qd1674r2ft" path="res://Test/3d grid shader/cube_mesh_shader/cell_mesh_tri_ind.tscn" id="14_g50c0"]
 [ext_resource type="Texture2D" uid="uid://ji2s1x270ubw" path="res://Levels/level_1/Level1_slot3_normal_roughness.png" id="15_80t7b"]
 [ext_resource type="PackedScene" uid="uid://brsoxpbmx54b2" path="res://System/item_system/resources/treasure_chest.tscn" id="29_hjlrc"]
 [ext_resource type="Script" uid="uid://ceet2kpd86p7c" path="res://System/item_system/domain/DropItem.gd" id="30_7xjsd"]
@@ -282,7 +281,6 @@ map_bounds = Rect2(-42, -12.7925, 80, 56)
 script = ExtResource("8_iynip")
 
 [node name="TurretManager" parent="." instance=ExtResource("14_d0au5")]
-cell_mesh_indicator_scene = ExtResource("14_g50c0")
 
 [node name="Environment" type="Node3D" parent="."]
 

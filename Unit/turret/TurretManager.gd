@@ -3,10 +3,12 @@ class_name TurretManager extends Node3D
 const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
 const HOLOGRAM_VALID_MAT: Material = preload("res://Asserts/shared/shader/3d/building/hologram_valid_mat.tres")
 const HOLOGRAM_INVALID_MAT: Material = preload("res://Asserts/shared/shader/3d/building/hologram_invalid_mat.tres")
+const TACTICAL_GRID_SCENE: PackedScene = preload("res://Components/tactical_grid/tactical_grid_controller.tscn")
 
 @export var cell_mesh_indicator_scene: PackedScene
 var turret: BaseUnit
 var cell_mesh_indicator: MeshInstance3D
+var tactical_grid: Node3D
 var skill_context: SkillContext
 var cell_mesh_container: Dictionary = {}
 ## Runtime occupation is separate from the authored GridMap terrain.
@@ -16,12 +18,27 @@ var preview_cell := Vector3i.ZERO
 var preview_valid := false
 var last_reason := ""
 var _turret_original_materials: Dictionary = {}
+var _active_range_indicator: Node = null
 
 func _ready() -> void:
 	grid = get_parent().get_node("GridMap")
 	SignalBus.building_floor_indicator_show.connect(_on_building_floor_indicator_show)
 	SignalBus.building_floor_indicator_hide.connect(_on_building_floor_indicator_hide)
 	SOS.main.turret_manager = self
+	_ensure_tactical_grid()
+
+func _ensure_tactical_grid() -> void:
+	if not is_instance_valid(tactical_grid):
+		var existing = get_node_or_null("TacticalGridController")
+		if is_instance_valid(existing):
+			tactical_grid = existing
+		else:
+			tactical_grid = TACTICAL_GRID_SCENE.instantiate()
+			tactical_grid.name = "TacticalGridController"
+			add_child(tactical_grid)
+			tactical_grid.owner = self
+		if grid and "cell_size" in tactical_grid:
+			tactical_grid.cell_size = grid.cell_size.x
 
 func world_to_cell(point: Vector3) -> Vector3i:
 	return grid.local_to_map(grid.to_local(point))
@@ -64,6 +81,25 @@ func _restore_turret_materials() -> void:
 			mesh.material_override = _turret_original_materials[mesh]
 	_turret_original_materials.clear()
 
+func _update_range_indicator(show: bool) -> void:
+	if not is_instance_valid(turret):
+		_active_range_indicator = null
+		return
+	if show:
+		var indicator = turret.get_node_or_null("RangeIndicator")
+		if is_instance_valid(indicator):
+			_active_range_indicator = indicator
+			if indicator.has_method("show"):
+				indicator.show()
+			elif "visible" in indicator:
+				indicator.visible = true
+	elif is_instance_valid(_active_range_indicator):
+		if _active_range_indicator.has_method("hide"):
+			_active_range_indicator.hide()
+		elif "visible" in _active_range_indicator:
+			_active_range_indicator.visible = false
+		_active_range_indicator = null
+
 func callable_build_turret(ray: RayCast3D, _grid: GridMap) -> void:
 	preview_valid = false
 	if not is_instance_valid(turret) or not ray.is_colliding() or ray.get_collider() != grid: return
@@ -78,6 +114,16 @@ func callable_build_turret(ray: RayCast3D, _grid: GridMap) -> void:
 	var point := placement_position(preview_cell)
 	turret.global_position = point + Vector3.UP * 0.001
 	_apply_hologram(preview_valid)
+
+	# 联动战术网格与焦点框
+	if is_instance_valid(tactical_grid):
+		var fp = Vector2i.ONE
+		if skill_context and is_instance_valid(skill_context.skill):
+			var def = skill_context.skill.skill_meta_res.building_res
+			if def: fp = def.building_footprint
+		tactical_grid.update_cursor(point, preview_valid, fp)
+
+	# 兼容旧指示器
 	if is_instance_valid(cell_mesh_indicator):
 		cell_mesh_indicator.global_position = point + Vector3.UP * 0.02
 		if cell_mesh_indicator.material_override:
@@ -86,9 +132,21 @@ func callable_build_turret(ray: RayCast3D, _grid: GridMap) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_instance_valid(turret): return
+
+	# 1. 鼠标右键或 ESC 键一键安全取消建造
+	if (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed) or \
+	   (event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed):
+		cancel_preview()
+		if skill_context and is_instance_valid(skill_context.skill):
+			skill_context.skill.change_state(Skill.SKILL_STATE.Idle)
+		if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+			SOS.main.player_controller.switch_cursor(Constants.CURSOR_STATUS.DEFAULT)
+		get_viewport().set_input_as_handled()
+		return
+
+	# 2. 鼠标左键点击确认建造
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if not BattleInput.pointer_available(get_viewport(), event.position): return
-		# A ray miss must never confirm the last frame's valid placement.
 		var camera = get_viewport().get_camera_3d()
 		if camera is RayPicker:
 			camera.ray_cast_3d.force_raycast_update()
@@ -96,8 +154,32 @@ func _unhandled_input(event: InputEvent) -> void:
 		if not preview_valid:
 			SOS.main.message_bar.set_message(last_reason if last_reason != "" else "请选择可建造地块")
 			return
-		confirm_build(preview_cell)
-		get_viewport().set_input_as_handled()
+
+		var is_shift = event.shift_pressed
+		var confirmed_cell = preview_cell
+		var ok = confirm_build(confirmed_cell)
+		if ok:
+			get_viewport().set_input_as_handled()
+			# 3. Shift 连续建造队列支持
+			if is_shift and skill_context and is_instance_valid(skill_context.skill):
+				_continue_shift_build()
+
+func _continue_shift_build() -> void:
+	# 检查玩家是否有足够资源继续建造
+	var cost_reason = ""
+	if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+		cost_reason = SOS.main.player_controller.validate_skill_cost(skill_context)
+	if cost_reason != "":
+		SOS.main.message_bar.set_message(cost_reason)
+		return
+
+	var definition: BaseUnitResource = skill_context.skill.skill_meta_res.building_res
+	if definition != null:
+		turret = SystemUtil.unit_system.create_unit(definition, SOS.main.player_controller.player_group_idx)
+		add_child(turret)
+		turret.global_position = placement_position(preview_cell) + Vector3.UP * 0.001
+		_apply_hologram(preview_valid)
+		_update_range_indicator(true)
 
 func confirm_build(cell: Vector3i) -> bool:
 	if not is_instance_valid(turret) or skill_context == null or placement_reason(cell) != "": return false
@@ -114,6 +196,7 @@ func confirm_build(cell: Vector3i) -> bool:
 	building.tree_exiting.connect(_release_cells.bind(cells, building.get_instance_id()), CONNECT_ONE_SHOT)
 	building.logical_death.connect(_on_building_left.bind(cells, building.get_instance_id()), CONNECT_ONE_SHOT)
 	_restore_turret_materials()
+	_update_range_indicator(false)
 	skill_context.building = building
 	skill_context.callback = _finish_building.bind(building, point)
 	building.global_position = point
@@ -151,11 +234,22 @@ func _on_building_floor_indicator_show(context: SkillContext) -> void:
 	skill_context = context
 	skill_context.cost_paid = false
 	_clear_cell_mesh_indicator_in_position()
+	_ensure_tactical_grid()
+
 	var definition: BaseUnitResource = context.skill.skill_meta_res.building_res
 	if definition != null:
 		turret = SystemUtil.unit_system.create_unit(definition, SOS.main.player_controller.player_group_idx)
 		add_child(turret)
 		_apply_hologram(false)
+		_update_range_indicator(true)
+
+	# 开启战术全息网格
+	if is_instance_valid(tactical_grid) and is_instance_valid(grid):
+		var init_pos = grid.global_position
+		if is_instance_valid(context.source):
+			init_pos = context.source.global_position
+		tactical_grid.show_grid(init_pos, Vector2(140.0, 140.0))
+
 	if cell_mesh_indicator_scene:
 		cell_mesh_indicator = cell_mesh_indicator_scene.instantiate()
 		add_child(cell_mesh_indicator)
@@ -166,6 +260,9 @@ func _on_building_floor_indicator_hide(context: SkillContext) -> void:
 	SignalBus.ray_picker_unregist.emit(callable_build_turret)
 	_clear_cell_mesh_indicator_in_position()
 	_restore_turret_materials()
+	_update_range_indicator(false)
+	if is_instance_valid(tactical_grid):
+		tactical_grid.hide_grid()
 	if is_instance_valid(cell_mesh_indicator): cell_mesh_indicator.queue_free()
 	cell_mesh_indicator = null
 	if context.cost_paid:
@@ -176,6 +273,9 @@ func cancel_preview() -> void:
 	SignalBus.ray_picker_unregist.emit(callable_build_turret)
 	_clear_cell_mesh_indicator_in_position()
 	_restore_turret_materials()
+	_update_range_indicator(false)
+	if is_instance_valid(tactical_grid):
+		tactical_grid.hide_grid()
 	if is_instance_valid(turret): turret.queue_free()
 	if is_instance_valid(cell_mesh_indicator): cell_mesh_indicator.queue_free()
 	turret = null

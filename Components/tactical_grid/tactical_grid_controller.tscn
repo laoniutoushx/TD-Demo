@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Components/tactical_grid/tactical_grid_controller.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Asserts/textures/tactical_grid/tactical_reticle.png" id="2_reticle"]
+
+[node name="TacticalGridController" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="MacroGridMesh" type="MeshInstance3D" parent="."]
+
+[node name="CursorReticleDecal" type="Decal" parent="."]
+size = Vector3(4, 8, 4)
+texture_albedo = ExtResource("2_reticle")
+normal_fade = 0.15
+upper_fade = 0.1
+lower_fade = 0.1
