@@ -288,13 +288,26 @@ func _on_building_floor_indicator_show(context: SkillContext) -> void:
 		_update_range_indicator(true)
 
 	# 开启战术全息网格
-	if is_instance_valid(tactical_grid) and is_instance_valid(grid):
-		var init_pos = grid.global_position
+	if is_instance_valid(tactical_grid):
+		var init_pos = global_position
+		if is_instance_valid(grid):
+			init_pos = grid.global_position
 		if is_instance_valid(context.source):
 			init_pos = context.source.global_position
 		tactical_grid.show_grid(init_pos, Vector2(140.0, 140.0))
 		if tactical_grid.has_method("update_stencil_matrix"):
 			tactical_grid.update_stencil_matrix(init_pos, get_subcell_state)
+		# 若相机射线已有碰撞点，立即预吸附焦点框与态势热力图
+		var cam = get_viewport().get_camera_3d() if is_inside_tree() else null
+		if cam is RayPicker and is_instance_valid(cam.ray_cast_3d) and cam.ray_cast_3d.is_colliding():
+			var hit_pt = cam.ray_cast_3d.get_collision_point()
+			var hit_cell = world_to_subcell(hit_pt)
+			var snap_pt = placement_position(hit_cell)
+			var valid = (placement_reason(hit_cell) == "")
+			var fp = get_effective_footprint()
+			tactical_grid.update_cursor(snap_pt, valid, fp)
+			if tactical_grid.has_method("update_stencil_matrix"):
+				tactical_grid.update_stencil_matrix(snap_pt, get_subcell_state)
 
 	if cell_mesh_indicator_scene:
 		cell_mesh_indicator = cell_mesh_indicator_scene.instantiate()

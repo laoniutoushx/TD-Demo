@@ -48,11 +48,17 @@ func show_grid(initial_pos: Vector3, coverage_size: Vector2 = Vector2(140.0, 140
 	_current_target_pos = initial_pos
 	_last_stencil_center_subcell = Vector3i(999999, 0, 999999)
 
+	var half_extents = Vector3(coverage_size.x * 0.5, projection_box_height * 0.5, coverage_size.y * 0.5)
+
 	if is_instance_valid(_macro_mesh):
 		_macro_mesh.global_position = Vector3(initial_pos.x, initial_pos.y, initial_pos.z)
 		var box_mesh = _macro_mesh.mesh as BoxMesh
 		if box_mesh:
 			box_mesh.size = Vector3(coverage_size.x, projection_box_height, coverage_size.y)
+
+	if is_instance_valid(_grid_material):
+		_grid_material.set_shader_parameter("box_extents", half_extents)
+		_grid_material.set_shader_parameter("focus_pos", initial_pos)
 
 	if is_instance_valid(_reticle_decal):
 		_reticle_decal.global_position = initial_pos
@@ -93,6 +99,8 @@ func hide_grid() -> void:
 ## 更新光标悬停目标网格
 func update_cursor(target_pos: Vector3, is_valid: bool, footprint: Vector2i = Vector2i(2, 2)) -> void:
 	_current_target_pos = target_pos
+	if is_instance_valid(_grid_material):
+		_grid_material.set_shader_parameter("focus_pos", target_pos)
 
 	if is_instance_valid(_reticle_decal):
 		var target_color = COLOR_VALID if is_valid else COLOR_INVALID
@@ -124,8 +132,6 @@ func update_stencil_matrix(center_world: Vector3, get_state_func: Callable) -> v
 
 	if _stencil_image == null:
 		_stencil_image = Image.create(stencil_grid_dim, stencil_grid_dim, false, Image.FORMAT_R8)
-		_stencil_texture = ImageTexture.create_from_image(_stencil_image)
-		_grid_material.set_shader_parameter("stencil_texture", _stencil_texture)
 
 	# 填充 32x32 像素 (1KB 数据)
 	for gz in range(stencil_grid_dim):
@@ -137,7 +143,12 @@ func update_stencil_matrix(center_world: Vector3, get_state_func: Callable) -> v
 			var raw_byte = float(state) / 255.0
 			_stencil_image.set_pixel(gx, gz, Color(raw_byte, 0, 0, 1.0))
 
-	_stencil_texture.update(_stencil_image)
+	if _stencil_texture == null:
+		_stencil_texture = ImageTexture.create_from_image(_stencil_image)
+		_grid_material.set_shader_parameter("stencil_texture", _stencil_texture)
+	else:
+		_stencil_texture.update(_stencil_image)
+
 	_grid_material.set_shader_parameter("stencil_origin", world_origin)
 	_grid_material.set_shader_parameter("stencil_world_size", world_total_size)
 	_grid_material.set_shader_parameter("stencil_enabled", true)
@@ -159,6 +170,7 @@ func _setup_nodes() -> void:
 
 		_grid_material = ShaderMaterial.new()
 		_grid_material.shader = GRID_SHADER
+		_grid_material.set_shader_parameter("box_extents", box.size * 0.5)
 		_grid_material.set_shader_parameter("cell_size", cell_size)
 		_grid_material.set_shader_parameter("visible_radius", visible_radius)
 		_grid_material.set_shader_parameter("fade_margin", fade_margin)

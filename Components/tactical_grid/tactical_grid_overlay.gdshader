@@ -5,23 +5,26 @@ uniform sampler2D depth_texture : hint_depth_texture, filter_linear_mipmap;
 uniform sampler2D stencil_texture : filter_nearest;
 
 uniform float cell_size = 2.0;
-uniform float line_thickness = 0.04;
+uniform float line_thickness = 0.045;
 uniform vec4 grid_line_color : source_color = vec4(0.35, 0.85, 1.0, 0.45);
 uniform vec4 default_inner_color : source_color = vec4(0.08, 0.25, 0.45, 0.03);
 
-// 3态语义颜色
-uniform vec4 buildable_color : source_color = vec4(0.22, 0.88, 0.55, 0.09); // 可建青绿
-uniform vec4 occupied_color : source_color = vec4(0.95, 0.32, 0.15, 0.22);  // 占用琥珀红
-uniform vec4 blocked_color : source_color = vec4(0.12, 0.14, 0.18, 0.02);   // 道路暗灰
+// 3态语义颜色（增强对比度与发光质感）
+uniform vec4 buildable_color : source_color = vec4(0.20, 0.85, 0.52, 0.22); // 可建青绿微光
+uniform vec4 occupied_color : source_color = vec4(0.95, 0.30, 0.15, 0.35);  // 占用琥珀红
+uniform vec4 blocked_color : source_color = vec4(0.10, 0.12, 0.16, 0.06);   // 道路/不可建暗灰
 
 uniform vec2 stencil_origin = vec2(0.0, 0.0);
 uniform float stencil_world_size = 64.0;
 uniform bool stencil_enabled = false;
 
 uniform vec3 focus_pos = vec3(0.0, 0.0, 0.0);
-uniform float visible_radius = 36.0;
+uniform float visible_radius = 38.0;
 uniform float fade_margin = 12.0;
 uniform float grid_alpha = 1.0;
+
+// 投影盒半尺寸（用于世界空间严格包围盒裁剪，杜绝 0.5 单位误裁剪）
+uniform vec3 box_extents = vec3(70.0, 8.0, 70.0);
 
 void fragment() {
     float depth = texture(depth_texture, SCREEN_UV).x;
@@ -34,9 +37,9 @@ void fragment() {
     view.xyz /= view.w;
     vec4 world = INV_VIEW_MATRIX * vec4(view.xyz, 1.0);
 
-    // 严格限制在投影 BoxMesh 范围内
+    // 严格限制在投影 BoxMesh 范围内（支持 140m x 140m 等实际大尺寸）
     vec3 local_pos = (inverse(MODEL_MATRIX) * world).xyz;
-    if (abs(local_pos.y) > 0.5 || abs(local_pos.x) > 0.5 || abs(local_pos.z) > 0.5) {
+    if (abs(local_pos.x) > box_extents.x || abs(local_pos.y) > box_extents.y || abs(local_pos.z) > box_extents.z) {
         discard;
     }
 
@@ -69,18 +72,21 @@ void fragment() {
             if (state_val == 2) {
                 // 已被建筑占用：琥珀红 + 45度警告斜纹
                 float hatch = step(0.6, sin((world.x + world.z) * 5.0) * 0.5 + 0.5);
-                cell_tint = occupied_color * (0.7 + hatch * 0.6);
-                line_tint = vec4(1.0, 0.4, 0.2, 0.7);
+                cell_tint = occupied_color * (0.75 + hatch * 0.55);
+                line_tint = vec4(1.0, 0.4, 0.2, 0.75);
             } else if (state_val == 1) {
-                // 可建造空闲地块：柔和青绿微光 + 中心准星
+                // 可建造空闲地块：清晰青绿微光 + 中心战术十字准星
                 float center_dist = length(grid_uv - 0.5);
                 float center_dot = 1.0 - smoothstep(0.04, 0.09, center_dist);
-                cell_tint = buildable_color + vec4(0.3, 0.8, 0.5, 0.2) * center_dot;
-                line_tint = vec4(0.3, 0.95, 0.6, 0.65);
+                // 十字微光准星
+                vec2 cross_arm = step(abs(grid_uv - 0.5), vec2(0.015, 0.12)) + step(abs(grid_uv - 0.5), vec2(0.12, 0.015));
+                float cross_mask = clamp(cross_arm.x + cross_arm.y, 0.0, 1.0);
+                cell_tint = buildable_color + vec4(0.35, 0.95, 0.6, 0.25) * max(center_dot, cross_mask * 0.5);
+                line_tint = vec4(0.3, 1.0, 0.65, 0.75);
             } else {
-                // 不可建造地貌 / 道路：暗冷灰
+                // 不可建造地貌 / 道路：暗冷灰微弱指示
                 cell_tint = blocked_color;
-                line_tint = vec4(0.2, 0.35, 0.45, 0.15);
+                line_tint = vec4(0.25, 0.35, 0.45, 0.25);
             }
         }
     }

@@ -33,6 +33,9 @@ func run() -> void:
 	
 	check(grid_ctrl.cell_size == 2.0, "TacticalGridController default cell size is 2.0m")
 	grid_ctrl.show_grid(Vector3(10, 0, 10))
+	var extents = grid_ctrl._grid_material.get_shader_parameter("box_extents")
+	check(extents != null and extents.x >= 50.0 and extents.z >= 50.0, "box_extents uniform configured for full map coverage (>=50m)")
+	check(grid_ctrl._grid_material.get_shader_parameter("focus_pos") == Vector3(10, 0, 10), "focus_pos immediately set on show_grid")
 	
 	# 模拟地块状态回调（部分可建，部分占用，部分道路）
 	var mock_state_func = func(sub: Vector3i) -> int:
@@ -124,6 +127,8 @@ func run() -> void:
 	var build_skill = hero.skill_map.get(FOX_BUILD_CODE)
 	turret_manager._on_building_floor_indicator_show(build_skill.skill_context)
 	await process_frame
+	check(turret_manager.tactical_grid != null and turret_manager.tactical_grid.visible, "tactical_grid visible on building show")
+	check(turret_manager.tactical_grid._grid_material.get_shader_parameter("stencil_enabled") == true, "tactical_grid stencil enabled on building show")
 	
 	if found_buildable:
 		var ok = turret_manager.confirm_build(buildable_subcell)
