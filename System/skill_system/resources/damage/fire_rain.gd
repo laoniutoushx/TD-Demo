@@ -65,9 +65,15 @@ class InnerHandler extends Node3D:
         await tween.finished
 
         SystemUtil.damage_system.skill_range_damage(skill_context.skill, skill_context.source, point, skill_context.skill.damage_range)
+        CommonUtil.play_audio(skill_context.source, "火焰 爆炸 魔法 01_爱给网_aigei_com", 0.6)
 
-        # await CommonUtil.await_timer(2.0)
-        
+        # 在地面生成 PBR 焦黑灼烧贴花与余烬
+        var burn_decal_scene = preload("res://VFX/scorch/vfx_burn_decal.tscn")
+        var burn_decal = burn_decal_scene.instantiate()
+        if is_instance_valid(skill_context.source) and skill_context.source.get_parent():
+            skill_context.source.get_parent().add_child(burn_decal)
+            burn_decal.global_position = point
+
         if is_instance_valid(vfx):
             vfx.queue_free()
 

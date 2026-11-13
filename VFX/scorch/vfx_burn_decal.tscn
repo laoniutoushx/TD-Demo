@@ -1,0 +1,50 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://VFX/scorch/vfx_burn_decal.gd" id="1_sc"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/scorch_01.png" id="2_scorch"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/spark_05.png" id="3_spark"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ember"]
+emission_shape = 3
+emission_box_extents = Vector3(1.2, 0.1, 1.2)
+direction = Vector3(0, 1, 0)
+spread = 35.0
+initial_velocity_min = 0.5
+initial_velocity_max = 1.5
+gravity = Vector3(0, 0.2, 0)
+scale_min = 0.2
+scale_max = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ember"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(1, 0.5, 0.15, 0.85)
+albedo_texture = ExtResource("3_spark")
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_ember"]
+material = SubResource("StandardMaterial3D_ember")
+size = Vector2(0.35, 0.35)
+
+[node name="BurnDecal" type="Node3D"]
+script = ExtResource("1_sc")
+
+[node name="Decal" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+size = Vector3(3.5, 4, 3.5)
+texture_albedo = ExtResource("2_scorch")
+modulate = Color(0.08, 0.05, 0.04, 0.85)
+
+[node name="EmberParticles" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+amount = 12
+lifetime = 1.5
+explosiveness = 0.2
+process_material = SubResource("ParticleProcessMaterial_ember")
+draw_pass_1 = SubResource("QuadMesh_ember")

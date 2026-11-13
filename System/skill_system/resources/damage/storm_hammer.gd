@@ -22,4 +22,5 @@ func _on_hit(target, skill, source) -> void:
 	if target.is_alive():
 		for buff in skill.buff_map.values():
 			SystemUtil.buff_system.apply(buff, skill, target)
-	CommonUtil.play_audio(target, "魔法击中-YS070510_爱给网_aigei_com")
+	CommonUtil.play_audio(target, "爆炸电类击中－mcx20070509_爱给网_aigei_com", 0.65)
+	CommonUtil.play_audio(target, "魔法击中-YS070510_爱给网_aigei_com", 0.3)

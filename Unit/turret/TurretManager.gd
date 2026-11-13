@@ -1,6 +1,9 @@
 class_name TurretManager extends Node3D
 
 const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
+const HOLOGRAM_VALID_MAT: Material = preload("res://Asserts/shared/shader/3d/building/hologram_valid_mat.tres")
+const HOLOGRAM_INVALID_MAT: Material = preload("res://Asserts/shared/shader/3d/building/hologram_invalid_mat.tres")
+
 @export var cell_mesh_indicator_scene: PackedScene
 var turret: BaseUnit
 var cell_mesh_indicator: MeshInstance3D
@@ -12,6 +15,7 @@ var grid: GridMap
 var preview_cell := Vector3i.ZERO
 var preview_valid := false
 var last_reason := ""
+var _turret_original_materials: Dictionary = {}
 
 func _ready() -> void:
 	grid = get_parent().get_node("GridMap")
@@ -43,15 +47,42 @@ func placement_position(cell: Vector3i) -> Vector3:
 	var cells := footprint_cells(cell)
 	return (cell_to_world(cells[0]) + cell_to_world(cells[-1])) * 0.5
 
+func _apply_hologram(is_valid: bool) -> void:
+	if not is_instance_valid(turret): return
+	var target_mat = HOLOGRAM_VALID_MAT if is_valid else HOLOGRAM_INVALID_MAT
+	for node in turret.find_children("*", "MeshInstance3D"):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		if mesh == null: continue
+		if mesh.name == "mesh_standing": continue
+		if not _turret_original_materials.has(mesh):
+			_turret_original_materials[mesh] = mesh.material_override
+		mesh.material_override = target_mat
+
+func _restore_turret_materials() -> void:
+	for mesh in _turret_original_materials:
+		if is_instance_valid(mesh):
+			mesh.material_override = _turret_original_materials[mesh]
+	_turret_original_materials.clear()
+
 func callable_build_turret(ray: RayCast3D, _grid: GridMap) -> void:
 	preview_valid = false
 	if not is_instance_valid(turret) or not ray.is_colliding() or ray.get_collider() != grid: return
 	preview_cell = world_to_cell(ray.get_collision_point())
 	last_reason = placement_reason(preview_cell)
-	preview_valid = last_reason == ""
+	var cost_reason := ""
+	if skill_context and is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+		cost_reason = SOS.main.player_controller.validate_skill_cost(skill_context)
+	if cost_reason != "":
+		last_reason = cost_reason
+	preview_valid = (last_reason == "")
 	var point := placement_position(preview_cell)
 	turret.global_position = point + Vector3.UP * 0.001
-	if is_instance_valid(cell_mesh_indicator): cell_mesh_indicator.global_position = point + Vector3.UP * 0.02
+	_apply_hologram(preview_valid)
+	if is_instance_valid(cell_mesh_indicator):
+		cell_mesh_indicator.global_position = point + Vector3.UP * 0.02
+		if cell_mesh_indicator.material_override:
+			var col = Color(0.2, 2.5, 0.5, 1.0) if preview_valid else Color(2.5, 0.2, 0.2, 1.0)
+			cell_mesh_indicator.material_override.set_shader_parameter("ColorParameter", col)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_instance_valid(turret): return
@@ -82,6 +113,7 @@ func confirm_build(cell: Vector3i) -> bool:
 	building.set_meta("build_cells", cells)
 	building.tree_exiting.connect(_release_cells.bind(cells, building.get_instance_id()), CONNECT_ONE_SHOT)
 	building.logical_death.connect(_on_building_left.bind(cells, building.get_instance_id()), CONNECT_ONE_SHOT)
+	_restore_turret_materials()
 	skill_context.building = building
 	skill_context.callback = _finish_building.bind(building, point)
 	building.global_position = point
@@ -118,18 +150,12 @@ func _on_building_floor_indicator_show(context: SkillContext) -> void:
 	cancel_preview()
 	skill_context = context
 	skill_context.cost_paid = false
-	for cell in grid.get_used_cells():
-		if placement_reason(cell) != "": continue
-		var indicator := MeshInstance3D.new()
-		indicator.mesh = grid.mesh_library.get_item_mesh(1)
-		indicator.material_override = preload("res://Test/glow shader test 2/plane_edge_trans.tres")
-		add_child(indicator)
-		indicator.global_position = cell_to_world(cell) + Vector3.UP * 0.01
-		cell_mesh_container[cell] = indicator
+	_clear_cell_mesh_indicator_in_position()
 	var definition: BaseUnitResource = context.skill.skill_meta_res.building_res
 	if definition != null:
 		turret = SystemUtil.unit_system.create_unit(definition, SOS.main.player_controller.player_group_idx)
 		add_child(turret)
+		_apply_hologram(false)
 	if cell_mesh_indicator_scene:
 		cell_mesh_indicator = cell_mesh_indicator_scene.instantiate()
 		add_child(cell_mesh_indicator)
@@ -139,6 +165,7 @@ func _on_building_floor_indicator_hide(context: SkillContext) -> void:
 	if context != skill_context: return
 	SignalBus.ray_picker_unregist.emit(callable_build_turret)
 	_clear_cell_mesh_indicator_in_position()
+	_restore_turret_materials()
 	if is_instance_valid(cell_mesh_indicator): cell_mesh_indicator.queue_free()
 	cell_mesh_indicator = null
 	if context.cost_paid:
@@ -148,6 +175,7 @@ func _on_building_floor_indicator_hide(context: SkillContext) -> void:
 func cancel_preview() -> void:
 	SignalBus.ray_picker_unregist.emit(callable_build_turret)
 	_clear_cell_mesh_indicator_in_position()
+	_restore_turret_materials()
 	if is_instance_valid(turret): turret.queue_free()
 	if is_instance_valid(cell_mesh_indicator): cell_mesh_indicator.queue_free()
 	turret = null
