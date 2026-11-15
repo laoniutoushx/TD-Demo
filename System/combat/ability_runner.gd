@@ -300,7 +300,7 @@ func _emit_phase_cues(phase: PhaseDefinition) -> void:
 		return
 	for cue in phase.cues:
 		if cue != null:
-			var handle: Variant = presentation_port.call(&"emit", cue, ctx)
+			var handle: Variant = presentation_port.call(&"emit", cue, ctx, self)
 			if handle != null:
 				_cue_handles.append(handle)
 

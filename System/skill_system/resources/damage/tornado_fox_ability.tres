@@ -1,0 +1,127 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" format=3]
+
+[ext_resource type="Script" path="res://System/combat/phase_definition.gd" id="1_hogdv"]
+[ext_resource type="Script" path="res://System/combat/presentation_definition.gd" id="2_y6dda"]
+[ext_resource type="PackedScene" path="res://VFX/tornado/vfx_tornado_fox_running.tscn" id="3_w53rt"]
+[ext_resource type="Script" path="res://System/combat/effect_definition.gd" id="4_6ib1w"]
+[ext_resource type="Script" path="res://System/combat/effects/analytic_growth_effect.gd" id="5_cjxe5"]
+[ext_resource type="Script" path="res://System/combat/transition_definition.gd" id="6_sdoes"]
+[ext_resource type="Script" path="res://System/combat/condition_definition.gd" id="7_lwtw1"]
+[ext_resource type="Script" path="res://System/combat/effects/analytic_mover_effect.gd" id="8_y6au2"]
+[ext_resource type="Script" path="res://System/combat/attribute_modifier_def.gd" id="9_diqmw"]
+[ext_resource type="Script" path="res://System/combat/buff_definition.gd" id="10_afgbu"]
+[ext_resource type="Script" path="res://System/combat/effects/area_effect_emitter.gd" id="11_xsunk"]
+[ext_resource type="Script" path="res://System/combat/target_selector.gd" id="12_1q74c"]
+[ext_resource type="Script" path="res://System/combat/ability_definition.gd" id="13_dp8lj"]
+
+[sub_resource type="Resource" id="Resource_asiix"]
+script = ExtResource("2_y6dda")
+cue_id = &"tornado.forming"
+anim_semantic = &"cast"
+vfx = ExtResource("3_w53rt")
+attach_point = &"world"
+
+[sub_resource type="Resource" id="Resource_kyg2w"]
+script = ExtResource("5_cjxe5")
+effect_id = &"fox_growth"
+
+[sub_resource type="Resource" id="Resource_cevsy"]
+script = ExtResource("7_lwtw1")
+kind = 4
+param_key = &"growth_scale"
+threshold = 0.85
+
+[sub_resource type="Resource" id="Resource_sel34"]
+script = ExtResource("7_lwtw1")
+kind = 3
+gate_name = &"release"
+gate_timeout = 1.0
+
+[sub_resource type="Resource" id="Resource_kchhv"]
+script = ExtResource("7_lwtw1")
+kind = 1
+children = Array[Resource]([SubResource("Resource_cevsy"), SubResource("Resource_sel34")])
+
+[sub_resource type="Resource" id="Resource_lxjrr"]
+script = ExtResource("6_sdoes")
+target_phase = &"advancing"
+condition = SubResource("Resource_kchhv")
+
+[sub_resource type="Resource" id="Resource_au1m3"]
+script = ExtResource("1_hogdv")
+phase_id = &"forming"
+sustained = Array[ExtResource("4_6ib1w")]([SubResource("Resource_kyg2w")])
+transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_lxjrr")])
+max_duration = 1.5
+timeout_target = &"cancel"
+cues = Array[ExtResource("2_y6dda")]([SubResource("Resource_asiix")])
+
+[sub_resource type="Resource" id="Resource_hdlc3"]
+script = ExtResource("8_y6au2")
+effect_id = &"fox_mover"
+
+[sub_resource type="Resource" id="Resource_43w2k"]
+script = ExtResource("9_diqmw")
+value = 0.8
+
+[sub_resource type="Resource" id="Resource_mu1gq"]
+script = ExtResource("10_afgbu")
+buff_id = &"tornado_fox_slow"
+group_id = &"move_slow"
+modifiers = Array[ExtResource("9_diqmw")]([SubResource("Resource_43w2k")])
+lifetime_mode = 1
+stacking = 3
+tags = Array[StringName]([&"slow", &"debuff"])
+
+[sub_resource type="Resource" id="Resource_lrbno"]
+script = ExtResource("12_1q74c")
+
+[sub_resource type="Resource" id="Resource_anl5i"]
+script = ExtResource("11_xsunk")
+on_enter_buff = SubResource("Resource_mu1gq")
+effect_id = &"fox_area"
+targets = SubResource("Resource_lrbno")
+
+[sub_resource type="Resource" id="Resource_m4xaq"]
+script = ExtResource("7_lwtw1")
+kind = 4
+param_key = &"arrived"
+threshold = 1.0
+
+[sub_resource type="Resource" id="Resource_q6dn8"]
+script = ExtResource("6_sdoes")
+target_phase = &"dissipating"
+condition = SubResource("Resource_m4xaq")
+
+[sub_resource type="Resource" id="Resource_v7f0v"]
+script = ExtResource("1_hogdv")
+phase_id = &"advancing"
+sustained = Array[ExtResource("4_6ib1w")]([SubResource("Resource_hdlc3"), SubResource("Resource_anl5i")])
+transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_q6dn8")])
+max_duration = 3.0
+timeout_target = &"dissipating"
+transfers_to_world_scope = true
+
+[sub_resource type="Resource" id="Resource_l8kqs"]
+script = ExtResource("7_lwtw1")
+kind = 5
+threshold = 0.35
+
+[sub_resource type="Resource" id="Resource_xmf86"]
+script = ExtResource("6_sdoes")
+target_phase = &"end"
+condition = SubResource("Resource_l8kqs")
+
+[sub_resource type="Resource" id="Resource_wd5tr"]
+script = ExtResource("1_hogdv")
+phase_id = &"dissipating"
+transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_xmf86")])
+max_duration = 0.5
+timeout_target = &"end"
+
+[resource]
+script = ExtResource("13_dp8lj")
+ability_id = &"fox_tornado"
+phases = Array[ExtResource("1_hogdv")]([SubResource("Resource_au1m3"), SubResource("Resource_v7f0v"), SubResource("Resource_wd5tr")])
+entry_phase = &"forming"
+wave_interval = 0.3

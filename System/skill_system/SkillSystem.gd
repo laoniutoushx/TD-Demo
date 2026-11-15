@@ -328,3 +328,4 @@ func reset_session() -> void:
 	auto_release_skill_command_container.clear()
 	combat_ticker.cancel_all(&"session_reset")
 	_compiled_abilities.clear()
+	AreaEffectEmitter.clear_pool()

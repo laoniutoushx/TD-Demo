@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="SkillMetaResource" load_steps=4 format=3 uid="uid://bkogy56g0o3iq"]
+[gd_resource type="Resource" script_class="SkillMetaResource" format=3]
 
-[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="1_v07ic"]
-[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="2_88sn7"]
-[ext_resource type="Script" uid="uid://cvelqqp608klb" path="res://System/skill_system/resources/damage/tornado_fox.gd" id="3_v07ic"]
+[ext_resource type="Resource" path="res://System/skill_system/resources/damage/tornado_fox_ability.tres" id="1_88sn7"]
+[ext_resource type="Script" path="res://System/skill_system/domain/SkillMetaResource.gd" id="1_v07ic"]
+[ext_resource type="Script" path="res://System/buff_system/domain/buff_resource.gd" id="2_88sn7"]
+[ext_resource type="Script" path="res://System/skill_system/resources/damage/tornado_fox.gd" id="3_v07ic"]
 
 [resource]
 script = ExtResource("1_v07ic")
@@ -25,11 +26,11 @@ release_distance = 20.0
 stock = 1
 value = 50.0
 value_ext = {
-"formation_time": 1.0,
-"launch_size": 0.85,
 "acceleration_time": 0.28,
 "dissipation_time": 0.35,
-"initial_size": 0.18
+"formation_time": 1.0,
+"initial_size": 0.18,
+"launch_size": 0.85
 }
 run_distance = 20.0
 epoch = 1
@@ -41,6 +42,8 @@ end_time = 0.1
 wave = 1
 projection_speed = 15.0
 probability = 0.25
+can_crit = false
+can_miss = false
 disable_check = 1
 release_type = 1
 target_type = 33
@@ -49,5 +52,6 @@ building_level_up_time = -1.0
 wood_cost = 10.0
 money_cost = 10.0
 skill_script = ExtResource("3_v07ic")
-skill_level_config = Array[ExtResource("1_v07ic")]([])
+skill_level_config = Array[Resource]([])
 skill_buff_config = Array[ExtResource("2_88sn7")]([])
+ability_definition = ExtResource("1_88sn7")
