@@ -10,6 +10,7 @@ func create_runtime(_ctx: ExecutionContext) -> EffectRuntime:
 
 class _AcquireBuffRuntime extends EffectRuntime:
 	var _def: AcquireBuffEffect
+	var _lease: CombatTypes.Lease = null
 
 	func _init(p_def: AcquireBuffEffect) -> void:
 		_def = p_def
@@ -21,4 +22,13 @@ class _AcquireBuffRuntime extends EffectRuntime:
 		if not is_instance_valid(target):
 			return
 		var src := ctx.get_source()
-		SystemUtil.buff_system.buff_service.acquire(_def.buff_definition, src if is_instance_valid(src) else ctx, target, ctx.source_snapshot)
+		_lease = SystemUtil.buff_system.buff_service.acquire(_def.buff_definition, src if is_instance_valid(src) else self, target, ctx.source_snapshot)
+
+	func dispose() -> void:
+		if disposed:
+			return
+		super.dispose()
+		if _lease != null and _lease.is_valid() and _def.buff_definition != null and _def.buff_definition.lifetime_mode == CombatTypes.LifetimeMode.WHILE_SOURCE_PRESENT:
+			if SystemUtil.buff_system != null:
+				SystemUtil.buff_system.buff_service.release(_lease)
+		_lease = null

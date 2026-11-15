@@ -82,25 +82,44 @@ func advance(delta: float) -> void:
 		_finish(&"no_phase")
 		return
 
-	_phase_elapsed += maxf(0.0, delta)
-	for g in _gates.values():
-		(g as CombatGate).advance(delta)
+	var remaining_delta: float = maxf(0.0, delta)
+	while not _finished and not _disposed and _current_phase != null:
+		var phase_rem: float = maxf(0.0, _current_phase.max_duration - _phase_elapsed)
+		var step_delta: float = minf(remaining_delta, phase_rem) if remaining_delta > 0.0 else 0.0
 
-	for rt in _sustained_runtimes:
-		if not rt.disposed:
-			rt.advance(delta)
+		_phase_elapsed += step_delta
+		remaining_delta -= step_delta
 
-	_update_phase_cues()
+		for g in _gates.values():
+			(g as CombatGate).advance(step_delta)
 
-	for trans in _current_phase.transitions:
-		if _eval_condition(trans.condition):
-			_consume_condition_gates(trans.condition)
-			_transition_to(trans.target_phase, &"condition")
-			return
+		for rt in _sustained_runtimes:
+			if not rt.disposed:
+				rt.advance(step_delta)
 
-	if _phase_elapsed >= _current_phase.max_duration:
-		ctx.record_trace(&"phase_timeout", {"phase": _current_phase.phase_id, "target": _current_phase.timeout_target})
-		_transition_to(_current_phase.timeout_target, &"timeout")
+		_update_phase_cues()
+
+		var transitioned := false
+		for trans in _current_phase.transitions:
+			if _eval_condition(trans.condition):
+				_consume_condition_gates(trans.condition)
+				_transition_to(trans.target_phase, &"condition")
+				transitioned = true
+				break
+
+		if transitioned:
+			if remaining_delta <= 0.0:
+				break
+			continue
+
+		if _phase_elapsed >= _current_phase.max_duration - 0.000001:
+			ctx.record_trace(&"phase_timeout", {"phase": _current_phase.phase_id, "target": _current_phase.timeout_target})
+			_transition_to(_current_phase.timeout_target, &"timeout")
+			if remaining_delta <= 0.0:
+				break
+			continue
+
+		break
 
 
 func cancel(reason: StringName = &"cancel") -> void:

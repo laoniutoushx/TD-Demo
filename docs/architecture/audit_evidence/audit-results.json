@@ -1,0 +1,50 @@
+[
+  {
+    "actual": 8.0,
+    "case": "positive_slow_applied",
+    "expected": 8.0,
+    "met": true
+  },
+  {
+    "actual": 8.0,
+    "case": "source_deleted_auto_restore",
+    "expected": 10.0,
+    "met": false
+  },
+  {
+    "actual": 10.0,
+    "case": "positive_explicit_release_restores",
+    "expected": 10.0,
+    "met": true
+  },
+  {
+    "actual": 8.0,
+    "case": "clear_all_restores_attributes",
+    "expected": 10.0,
+    "met": false
+  },
+  {
+    "actual": 2,
+    "case": "periodic_signal_emitted",
+    "expected": 2,
+    "met": true
+  },
+  {
+    "actual": 0,
+    "case": "periodic_effect_executed_without_subscriber",
+    "expected": 2,
+    "met": false
+  },
+  {
+    "actual": true,
+    "case": "fine_timeline_finishes",
+    "expected": true,
+    "met": true
+  },
+  {
+    "actual": false,
+    "case": "coarse_timeline_finishes",
+    "expected": true,
+    "met": false
+  }
+]

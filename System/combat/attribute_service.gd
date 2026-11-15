@@ -86,9 +86,16 @@ func clear_target(target_id: int) -> void:
 
 
 func clear_all() -> void:
+	var targets_to_recalc: Array[Object] = []
+	for tid in _target_leases.keys():
+		var t: Object = _get_target(int(tid))
+		if is_instance_valid(t):
+			targets_to_recalc.append(t)
 	_entries.clear()
 	_target_leases.clear()
 	_targets.clear()
+	for t in targets_to_recalc:
+		recalculate(t, &"move_speed")
 
 
 func recalculate(target: Object, attribute: StringName = &"move_speed") -> float:

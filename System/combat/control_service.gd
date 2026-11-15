@@ -101,9 +101,18 @@ func clear_target(target_id: int) -> void:
 
 
 func clear_all() -> void:
+	var notifications: Array[Dictionary] = []
+	for tid in _target_caps.keys():
+		var t: Object = _get_target(int(tid))
+		if is_instance_valid(t):
+			notifications.append({"target": t, "caps": _target_caps[tid].keys()})
 	_entries.clear()
 	_target_caps.clear()
 	_targets.clear()
+	for item in notifications:
+		var t: Object = item["target"]
+		for cap in item["caps"]:
+			_notify_target(t, cap, true)
 
 
 func _notify_target(target: Object, capability: StringName, allowed: bool) -> void:

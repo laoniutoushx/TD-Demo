@@ -15,6 +15,8 @@ var _leases: Dictionary = {}            # lease_id -> {target_id, group_key, sou
 var _groups: Dictionary = {}            # target_id -> {group_key -> {lease_ids: Array[int], stacking, definition, source_map: {source_key -> lease_id}}}
 var _targets: Dictionary = {}           # target_id -> WeakRef
 var _hooked_targets: Dictionary = {}    # target_id -> true
+var _source_leases: Dictionary = {}     # source_id -> Dictionary(lease_id -> true)
+var _hooked_sources: Dictionary = {}    # source_id -> true
 
 
 func _init(attr_svc: AttributeService = null, ctrl_svc: ControlService = null) -> void:
@@ -74,6 +76,7 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 			"target_id": target_id,
 			"group_key": group_key,
 			"source_key": source_key,
+			"source_ref": weakref(source_token) if (source_token is Object and is_instance_valid(source_token)) else null,
 			"generation": new_gen,
 			"definition": definition,
 			"context": context.duplicate(),
@@ -84,6 +87,7 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 			"is_alias": true,
 			"primary_lid": primary_lid,
 		}
+		_register_source_hook(source_token, new_lid, definition)
 		lease_ids.append(new_lid)
 		group["source_map"][source_key] = new_lid
 		buff_updated.emit(target, definition.buff_id, group_key)
@@ -122,6 +126,7 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 		"target_id": target_id,
 		"group_key": group_key,
 		"source_key": source_key,
+		"source_ref": weakref(source_token) if (source_token is Object and is_instance_valid(source_token)) else null,
 		"generation": gen,
 		"definition": definition,
 		"context": context.duplicate(),
@@ -132,6 +137,7 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 		"is_alias": false,
 		"primary_lid": lid,
 	}
+	_register_source_hook(source_token, lid, definition)
 	lease_ids.append(lid)
 	if definition.stacking != CombatTypes.StackingPolicy.INDEPENDENT:
 		group["source_map"][source_key] = lid
@@ -171,6 +177,13 @@ func advance(delta: float) -> void:
 		var entry: Dictionary = _leases[lid]
 		var def: BuffDefinition = entry["definition"]
 
+		# Source presence check for WHILE_SOURCE_PRESENT
+		if def.lifetime_mode == CombatTypes.LifetimeMode.WHILE_SOURCE_PRESENT:
+			var s_ref: Variant = entry.get("source_ref")
+			if s_ref is WeakRef and not is_instance_valid((s_ref as WeakRef).get_ref()):
+				expired_lids.append(lid)
+				continue
+
 		# Periodic tick (only on primary/non-alias entries, never reset on normal refresh)
 		if not bool(entry.get("is_alias", false)) and def.period > 0.0 and not def.periodic_effects.is_empty():
 			entry["period_accum"] = float(entry["period_accum"]) + delta
@@ -179,6 +192,7 @@ func advance(delta: float) -> void:
 				var target: Object = _get_target(int(entry["target_id"]))
 				if is_instance_valid(target):
 					periodic_triggered.emit(target, def, entry["context"])
+					_execute_periodic_effects(target, def, entry)
 
 		if def.lifetime_mode == CombatTypes.LifetimeMode.TIMED:
 			entry["remaining"] = float(entry["remaining"]) - delta
@@ -188,6 +202,22 @@ func advance(delta: float) -> void:
 	for lid in expired_lids:
 		if _leases.has(lid):
 			_remove_lease_entry(lid)
+
+
+func _execute_periodic_effects(target: Object, def: BuffDefinition, entry: Dictionary) -> void:
+	var s_ref: Variant = entry.get("source_ref")
+	var source: Object = (s_ref as WeakRef).get_ref() if s_ref is WeakRef else null
+	var exec_ctx := ExecutionContext.create_for_cast(0, 0, source if is_instance_valid(source) else null, target)
+	var saved_ctx: Dictionary = entry.get("context", {})
+	if not saved_ctx.is_empty():
+		for k in saved_ctx.keys():
+			exec_ctx.source_snapshot[k] = saved_ctx[k]
+	for eff in def.periodic_effects:
+		if eff is EffectDefinition:
+			var rt := (eff as EffectDefinition).create_runtime(exec_ctx)
+			if rt != null:
+				rt.start(exec_ctx)
+				rt.dispose()
 
 
 func has_active_group(target: Object, group_key: StringName) -> bool:
@@ -216,6 +246,8 @@ func clear_all() -> void:
 	_groups.clear()
 	_targets.clear()
 	_hooked_targets.clear()
+	_source_leases.clear()
+	_hooked_sources.clear()
 	attribute_service.clear_all()
 	control_service.clear_all()
 
@@ -315,6 +347,33 @@ func _on_target_ended(_arg: Variant, target_id: int) -> void:
 
 func _on_target_tree_exiting(target_id: int) -> void:
 	clear_target(target_id)
+
+
+func _register_source_hook(source_token: Variant, lid: int, definition: BuffDefinition) -> void:
+	if definition.lifetime_mode != CombatTypes.LifetimeMode.WHILE_SOURCE_PRESENT:
+		return
+	if not (source_token is Object) or not is_instance_valid(source_token):
+		return
+	var source_id: int = (source_token as Object).get_instance_id()
+	if not _source_leases.has(source_id):
+		_source_leases[source_id] = {}
+	_source_leases[source_id][lid] = true
+	if source_token is Node and not _hooked_sources.has(source_id):
+		_hooked_sources[source_id] = true
+		var exit_cb := Callable(self, &"_on_source_tree_exiting").bind(source_id)
+		if not (source_token as Node).tree_exiting.is_connected(exit_cb):
+			(source_token as Node).tree_exiting.connect(exit_cb, CONNECT_ONE_SHOT)
+
+
+func _on_source_tree_exiting(source_id: int) -> void:
+	_hooked_sources.erase(source_id)
+	if not _source_leases.has(source_id):
+		return
+	var lids: Array = _source_leases[source_id].keys()
+	_source_leases.erase(source_id)
+	for lid in lids:
+		if _leases.has(int(lid)):
+			_remove_lease_entry(int(lid))
 
 
 func _get_target(target_id: int) -> Object:
