@@ -286,6 +286,15 @@ func is_fit_exclude_level(_buff: Buff, _target: Variant) -> bool:
 func refresh() -> void:
     # reference_instance 属性值修改
     if unit and prop:
+        if _uses_attribute_service(prop):
+            for lease in _attr_leases:
+                SystemUtil.buff_system.attribute_service.release(lease)
+            _attr_leases.clear()
+            var stacks = maxi(1, __buff_stack_num)
+            for i in range(stacks):
+                _acquire_attribute_lease(unit, StringName(prop))
+            return
+
         var ref_val = unit.get(prop)
         ref_val = (ref_val - prop_value_delta) # 撤回 buff 数值
         _value = ref_val

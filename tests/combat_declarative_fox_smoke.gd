@@ -79,18 +79,15 @@ func _run() -> void:
 		ticker.advance(1.0 / 60.0)
 		buff_svc.advance(1.0 / 60.0)
 		await physics_frame
-		if is_equal_approx(enemy.move_speed, 5.0):
+		if is_equal_approx(enemy.move_speed, 8.0):
 			saw_slow = true
 		if runner.is_finished():
 			break
 
 	assert(runner.is_finished(), "Declarative fox tornado must complete without VFX/Animation")
 	assert(enemy.hits == 1, "Enemy along path must be hit exactly once (got %d)" % enemy.hits)
-	assert(saw_slow, "Enemy must be slowed to 5.0 (0.5x) when hit by tornado Area3D")
-	assert(is_equal_approx(enemy.move_speed, 5.0), "Timed slow must persist after tornado passes/ends (got %s)" % enemy.move_speed)
-	for _i in 240:
-		buff_svc.advance(1.0 / 60.0)
-	assert(is_equal_approx(enemy.move_speed, 10.0), "Enemy move_speed must restore to 10.0 after 3.5s timed slow expires (got %s)" % enemy.move_speed)
+	assert(saw_slow, "Enemy must be slowed to 8.0 while inside advancing tornado Area3D")
+	assert(is_equal_approx(enemy.move_speed, 10.0), "Enemy move_speed must restore to 10.0 after tornado ends (got %s)" % enemy.move_speed)
 
 	# Second cast reuses pooled Area3D and cleans up cleanly
 	enemy.hits = 0

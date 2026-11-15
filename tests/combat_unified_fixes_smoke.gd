@@ -57,6 +57,10 @@ func _run() -> void:
 	buff_sys.call(&"apply", legacy_atk, ref_obj, unit)
 	assert(is_equal_approx(unit.attack_value, 150.0), "Legacy attack_value buff must scale to 150.0 (got %s)" % unit.attack_value)
 
+	# Buff.refresh() on AttributeService-managed attribute must replace lease, not double-add
+	legacy_atk.refresh()
+	assert(is_equal_approx(unit.attack_value, 150.0), "Buff.refresh() must keep 150.0 via AttributeService (got %s)" % unit.attack_value)
+
 	# 2. recalculate_all() must keep 150.0 attack_value AND must NOT refill health/mana!
 	attr_svc.recalculate_all(unit)
 	assert(is_equal_approx(unit.attack_value, 150.0), "recalculate_all must keep 150.0 (got %s)" % unit.attack_value)
@@ -102,12 +106,11 @@ func _run() -> void:
 	sig_bus.disconnect(&"unit_item_removed", rm_cb)
 	assert(removed_events.size() == 1 and removed_events[0][0] == unit and removed_events[0][1] == item, "ItemSystem.remove_item_from_inventory must emit unit_item_removed")
 
-	# 5. Repeated skill slot bind/unbind does not accumulate signal connections
+	# 5. Repeated skill slot bind/unbind does not accumulate signal connections (unparented Skill to avoid unrelated _ready UI hooks)
 	var sk = SkillCls.new()
 	sk.unit = unit
 	sk.title = "Test"
 	sk.desc = "Desc"
-	unit.add_child(sk)
 	var slot_scene: PackedScene = load("res://Components/action_bar/base_slot.tscn")
 	if slot_scene != null:
 		for _i in 3:
@@ -120,6 +123,7 @@ func _run() -> void:
 			slot.queue_free()
 			await process_frame
 		assert(sk.skill_level_up.get_connections().is_empty(), "Connections must be cleaned up on slot exit_tree")
+	sk.free()
 
 	buff_svc.clear_all()
 	src1.queue_free()
