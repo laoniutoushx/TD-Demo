@@ -181,6 +181,12 @@ func cancel_drop_preview() -> void:
 
 func _exit_tree() -> void:
 	cancel_drop_preview()
+	if is_instance_valid(reference) and reference is Skill:
+		var sk := reference as Skill
+		if sk.skill_disabled.is_connected(_on_skill_disabled):
+			sk.skill_disabled.disconnect(_on_skill_disabled)
+		if sk.skill_level_up.is_connected(_on_skill_level_up):
+			sk.skill_level_up.disconnect(_on_skill_level_up)
 
 # 注册 build_turret function 到 RayPicker
 func callable_drop_item(ray_cast_3d: RayCast3D) -> void:
@@ -213,15 +219,8 @@ func callable_drop_item(ray_cast_3d: RayCast3D) -> void:
 
 
 
-			var owner_unit: BaseUnit = reference.unit if reference is Item else null
-
-			# 删除装备信息（从背包中删除）
+			# 删除装备信息（从背包中删除，由 ItemSystem 统一发射移除事件）
 			SystemUtil.item_system.remove_item_from_inventory(reference)
-
-
-			# 响应式通知 item bar 删除
-			if is_instance_valid(owner_unit) and reference is Item:
-				SignalBus.unit_item_removed.emit(owner_unit, reference)
 
 
 			# 切换玩家状态
@@ -407,4 +406,11 @@ func _on_skill_disabled(skill_context: SkillContext, disabled: bool):
 	if _skill.get_instance_id() == reference.get_instance_id():
 		# print("skill %s - %s disabled %s" % [_skill.name, _skill.title, disabled])
 		call_deferred("do", !disabled)
+
+
+func _on_skill_level_up(sk: Skill, new_level: int) -> void:
+	if not is_instance_valid(sk) or sk != reference:
+		return
+	reset_level(new_level)
+	tooltip_text = "%s\n%s\n冷却 %.1fs · 魔法 %.0f" % [str(sk.title), str(sk.desc), maxf(sk.cooldown, 0.0), maxf(sk.mana_cost, 0.0)]
 

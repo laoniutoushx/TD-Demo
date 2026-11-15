@@ -64,8 +64,9 @@ var health : float :
 
 var max_health : float :
 	set(value):
-		health = value
-		max_health = value
+		max_health = maxf(0.0, value)
+		if health > max_health:
+			health = max_health
 		
 var mana : float : 
 	set(value):
@@ -78,8 +79,9 @@ var mana : float :
 
 @export var max_mana : float :
 	set(value):
-		mana = value
-		max_mana = value
+		max_mana = maxf(0.0, value)
+		if mana > max_mana:
+			mana = max_mana
 
 
 var _is_logic_alive := true
@@ -404,6 +406,8 @@ func clazz_init():
 	# bean property copy
 	if clazz != null:
 		CommonUtil.bean_properties_copy(clazz, self)
+		health = max_health
+		mana = max_mana
 		base_move_speed = move_speed
 		base_attack_value = attack_value
 		base_attack_speed = attack_speed

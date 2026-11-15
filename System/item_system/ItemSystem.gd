@@ -48,6 +48,7 @@ func remove_item_from_inventory(reference: Item):
 		if unit.item_map.has(reference.code):
 			remove_effects(reference, unit)
 			unit.item_map.erase(reference.code)
+			SignalBus.unit_item_removed.emit(unit, reference)
 
 			# res 中也清除
 			# unit.item_metas.erase(reference.item_res)
@@ -186,21 +187,14 @@ func transfer_all(source: BaseUnit, destination: BaseUnit) -> void:
 		if destination.item_map.has(item.code):
 			remove_item_from_inventory(destination.item_map[item.code])
 		source.item_map.erase(item.code)
+		SignalBus.unit_item_removed.emit(source, item)
 		CommonUtil.release_detached_nodes(item.buff_map)
 		item.unit = destination
 		item.slot = null
 		item.reparent(destination)
 		destination.item_map[item.code] = item
 		SystemUtil.buff_system.init_buff_for_unit_by_res(destination, item.item_res, item)
-	_refresh_inventory_ui.call_deferred(source.get_instance_id())
-	_refresh_inventory_ui.call_deferred(destination.get_instance_id())
-
-func _refresh_inventory_ui(id: int) -> void:
-	if not is_instance_valid(SOS.main) or not SOS.main.level_controller.battle_active: return
-	var bar = SOS.main.level_controller._cur_scene.action_bar
-	if not is_instance_valid(bar.active_unit) or bar.active_unit.get_instance_id() != id: return
-	var unit: BaseUnit = bar.active_unit
-	SOS.main.player_controller.refresh_selection_units(PlayerController.PlayerSelect.unit_map(), unit.global_position, PlayerController.PLAYER_STATUS.DEFAULT)
+		SignalBus.unit_item_added.emit(destination, item)
 
 # control item data
 class ItemManager:

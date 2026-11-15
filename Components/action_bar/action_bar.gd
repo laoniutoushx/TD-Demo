@@ -385,20 +385,35 @@ class BuffBarComponent extends BaseBarComponent:
 				slot_node.queue_free()
 
 
+	func _is_covered_by_service_slot(buff: Buff) -> bool:
+		if not is_instance_valid(buff):
+			return false
+		var code_sn := StringName(buff.code)
+		if _service_slots.has(code_sn):
+			return true
+		for slot_node in _service_slots.values():
+			if is_instance_valid(slot_node) and slot_node.get_meta(&"buff_id", &"") == code_sn:
+				return true
+		return false
+
+
 	func _add_service_buff_slot(unit: Object, snapshot: Dictionary) -> void:
 		if _slot_num >= 20:
 			return
 		var gkey: StringName = snapshot.get("group_key", &"")
 		var slot_instance: BaseSlot = super.add_element("svc_" + String(gkey), _buff_bar, add_element_hook, _action_bar.buff_slot)
 		if is_instance_valid(slot_instance):
+			slot_instance.set_meta(&"buff_id", snapshot.get("buff_id", &""))
 			slot_instance.set_buff_snapshot(snapshot, _is_friendly_unit(unit))
 			_service_slots[gkey] = slot_instance
 			_slot_num += 1
 
 
 	func _on_buff_enter(buff: Buff, _ref: Variant):
-		# 确认时当前激活单位，添加 buff 图标
+		# 确认时当前激活单位，添加 buff 图标（若已由 BuffService 展示则跳过，避免重复）
 		if _action_bar.active_unit and _ref.get_instance_id() == _action_bar.active_unit.get_instance_id():
+			if _is_covered_by_service_slot(buff):
+				return
 			add_elements([buff], func(): pass)
 
 
@@ -431,6 +446,8 @@ class BuffBarComponent extends BaseBarComponent:
 			for code in buff_map.keys():
 				if _slot_num <= 5:
 					var buff: Buff = buff_map[code]
+					if _is_covered_by_service_slot(buff):
+						continue
 					var _slot = _create_buff_slot(buff)
 					buff.slot = _slot
 					# _bind_mapping_key(_slot, _slot_num)		

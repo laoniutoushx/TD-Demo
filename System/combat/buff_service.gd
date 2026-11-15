@@ -246,18 +246,21 @@ func get_group_snapshot(target: Object, group_key: StringName) -> Dictionary:
 	var lease_ids: Array = grp["lease_ids"]
 	if lease_ids.is_empty():
 		return {}
-	var def: BuffDefinition = grp["definition"]
-	var primary_entry: Dictionary = _leases.get(int(lease_ids[0]), {})
+	var display_entry: Dictionary = _pick_display_entry(lease_ids, int(grp["stacking"]))
+	var def: BuffDefinition = display_entry.get("definition", grp["definition"]) as BuffDefinition
 	var best_remaining: float = -1.0
 	var is_timed: bool = def.lifetime_mode == CombatTypes.LifetimeMode.TIMED
 	if is_timed:
-		best_remaining = 0.0
-		for lid in lease_ids:
-			var e: Dictionary = _leases.get(int(lid), {})
-			if not e.is_empty():
-				best_remaining = maxf(best_remaining, float(e.get("remaining", 0.0)))
-	elif not primary_entry.is_empty():
-		best_remaining = float(primary_entry.get("remaining", -1.0))
+		if int(grp["stacking"]) == CombatTypes.StackingPolicy.STRONGEST_MAGNITUDE:
+			best_remaining = float(display_entry.get("remaining", 0.0))
+		else:
+			best_remaining = 0.0
+			for lid in lease_ids:
+				var e: Dictionary = _leases.get(int(lid), {})
+				if not e.is_empty():
+					best_remaining = maxf(best_remaining, float(e.get("remaining", 0.0)))
+	elif not display_entry.is_empty():
+		best_remaining = float(display_entry.get("remaining", -1.0))
 
 	return {
 		"group_key": group_key,
@@ -273,6 +276,33 @@ func get_group_snapshot(target: Object, group_key: StringName) -> Dictionary:
 		"stacking": def.stacking,
 		"definition": def,
 	}
+
+
+func _pick_display_entry(lease_ids: Array, stacking: int) -> Dictionary:
+	var best_entry: Dictionary = _leases.get(int(lease_ids[0]), {})
+	if stacking != CombatTypes.StackingPolicy.STRONGEST_MAGNITUDE or lease_ids.size() <= 1:
+		return best_entry
+	for i in range(1, lease_ids.size()):
+		var cand: Dictionary = _leases.get(int(lease_ids[i]), {})
+		if cand.is_empty():
+			continue
+		if _is_stronger_entry(cand, best_entry):
+			best_entry = cand
+	return best_entry
+
+
+func _is_stronger_entry(cand: Dictionary, current: Dictionary) -> bool:
+	var c_def: BuffDefinition = cand.get("definition") as BuffDefinition
+	var cur_def: BuffDefinition = current.get("definition") as BuffDefinition
+	if c_def == null or c_def.modifiers.is_empty():
+		return false
+	if cur_def == null or cur_def.modifiers.is_empty():
+		return true
+	var c_mod: AttributeModifierDef = c_def.modifiers[0]
+	var cur_mod: AttributeModifierDef = cur_def.modifiers[0]
+	var c_score: float = absf(c_mod.value - 1.0) if c_mod.op == CombatTypes.ModOp.MULTIPLY else absf(c_mod.value)
+	var cur_score: float = absf(cur_mod.value - 1.0) if cur_mod.op == CombatTypes.ModOp.MULTIPLY else absf(cur_mod.value)
+	return c_score > cur_score
 
 
 func get_active_buff_snapshots(target: Object) -> Array[Dictionary]:

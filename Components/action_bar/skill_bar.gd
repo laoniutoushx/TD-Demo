@@ -53,11 +53,7 @@ func _create_skill_slot(skill: Skill) -> BaseSlot:
 
 	# slot 监听技能禁用与升级信号
 	skill.skill_disabled.connect(slot_instance._on_skill_disabled)
-	skill.skill_level_up.connect(func(_sk: Skill, new_level: int):
-		if is_instance_valid(slot_instance) and is_instance_valid(_sk):
-			slot_instance.reset_level(new_level)
-			slot_instance.tooltip_text = "%s\n%s\n冷却 %.1fs · 魔法 %.0f" % [str(_sk.title), str(_sk.desc), maxf(_sk.cooldown, 0.0), maxf(_sk.mana_cost, 0.0)]
-	)
+	skill.skill_level_up.connect(slot_instance._on_skill_level_up)
 
 	_slot_num += 1
 

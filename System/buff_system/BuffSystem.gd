@@ -27,6 +27,8 @@ func _ready() -> void:
 	CommonUtil.load_resources_to_container_from_directory("res://System/buff_system/resources/", BuffManager.container())
 	if not buff_service.buff_applied.is_connected(_on_service_buff_applied):
 		buff_service.buff_applied.connect(_on_service_buff_applied)
+	if not buff_service.buff_updated.is_connected(_on_service_buff_updated):
+		buff_service.buff_updated.connect(_on_service_buff_updated)
 	if not buff_service.buff_removed.is_connected(_on_service_buff_removed):
 		buff_service.buff_removed.connect(_on_service_buff_removed)
 
@@ -40,16 +42,31 @@ func _cue_key(target: Object, group_key: StringName) -> String:
 
 
 func _on_service_buff_applied(target: Object, _buff_id: StringName, group_key: StringName) -> void:
+	_sync_service_cue(target, group_key, false)
+
+
+func _on_service_buff_updated(target: Object, _buff_id: StringName, group_key: StringName) -> void:
+	_sync_service_cue(target, group_key, true)
+
+
+func _sync_service_cue(target: Object, group_key: StringName, allow_replace: bool) -> void:
 	if not is_instance_valid(target) or not is_inside_tree():
 		return
 	var snap := buff_service.get_group_snapshot(target, group_key)
 	if snap.is_empty():
 		return
 	var def: BuffDefinition = snap.get("definition") as BuffDefinition
-	if def == null or def.cues.is_empty():
-		return
 	var key := _cue_key(target, group_key)
 	if _service_cue_handles.has(key):
+		if not allow_replace:
+			return
+		var current_rec: Dictionary = _service_cue_handles[key]
+		if def != null and current_rec.get("buff_id", &"") == def.buff_id:
+			return
+		for old_h in current_rec.get("handles", []):
+			_presentation_port.stop(old_h, &"buff_replaced")
+		_service_cue_handles.erase(key)
+	if def == null or def.cues.is_empty():
 		return
 	var ctx := ExecutionContext.create_for_cast(0, 0, target, target)
 	var handles: Array = []
@@ -59,7 +76,7 @@ func _on_service_buff_applied(target: Object, _buff_id: StringName, group_key: S
 			if not h.is_empty():
 				handles.append(h)
 	if not handles.is_empty():
-		_service_cue_handles[key] = handles
+		_service_cue_handles[key] = {"buff_id": def.buff_id, "handles": handles}
 
 
 func _on_service_buff_removed(target: Object, _buff_id: StringName, group_key: StringName) -> void:
@@ -68,14 +85,15 @@ func _on_service_buff_removed(target: Object, _buff_id: StringName, group_key: S
 	var key := _cue_key(target, group_key)
 	if not _service_cue_handles.has(key):
 		return
-	for h in _service_cue_handles[key]:
+	var rec: Dictionary = _service_cue_handles[key]
+	for h in rec.get("handles", []):
 		_presentation_port.stop(h, &"buff_removed")
 	_service_cue_handles.erase(key)
 
 
 func _stop_all_service_cues() -> void:
-	for handles in _service_cue_handles.values():
-		for h in handles:
+	for rec in _service_cue_handles.values():
+		for h in rec.get("handles", []):
 			_presentation_port.stop(h, &"session_reset")
 	_service_cue_handles.clear()
 

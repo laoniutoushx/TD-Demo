@@ -31,6 +31,7 @@ func acquire_modifier(
 		return CombatTypes.Lease.invalid(&"attribute")
 
 	var target_id: int = target.get_instance_id()
+	_ensure_base_seeded(target, target_id, attribute)
 	var lease_id: int = _next_id
 	_next_id += 1
 	var gen: int = int(_generations.get(lease_id, 0)) + 1
@@ -179,13 +180,33 @@ func _is_stronger(candidate: Dictionary, current: Dictionary) -> bool:
 	return absf(c_val) > absf(cur_val)
 
 
+func _has_active_attribute_modifier(target_id: int, attribute: StringName) -> bool:
+	if not _target_leases.has(target_id):
+		return false
+	for lid in _target_leases[target_id].keys():
+		var entry: Dictionary = _entries.get(lid, {})
+		if not entry.is_empty() and entry["attribute"] == attribute:
+			return true
+	return false
+
+
+func _ensure_base_seeded(target: Object, target_id: int, attribute: StringName) -> void:
+	var base_prop: StringName = ATTRIBUTE_BASE_MAP.get(attribute, &"")
+	if base_prop == &"" or _has_active_attribute_modifier(target_id, attribute):
+		return
+	var base_val: Variant = target.get(base_prop)
+	var cur_val: Variant = target.get(attribute)
+	if base_val != null and float(base_val) <= 0.0 and cur_val != null and float(cur_val) > 0.0:
+		target.set(base_prop, float(cur_val))
+
+
 func _read_base_attribute(target: Object, attribute: StringName) -> float:
 	var base_prop: StringName = ATTRIBUTE_BASE_MAP.get(attribute, &"")
+	var cur_val: Variant = target.get(attribute)
 	if base_prop != &"":
 		var base_val: Variant = target.get(base_prop)
 		if base_val != null:
 			return float(base_val)
-	var cur_val: Variant = target.get(attribute)
 	return float(cur_val) if cur_val != null else 0.0
 
 

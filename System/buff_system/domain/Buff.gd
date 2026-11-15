@@ -140,8 +140,8 @@ func apply(_reference: Variant, _target: Variant) -> bool:
 
         # 属性修改
         if prop:
-            if prop == "move_speed" and SystemUtil.buff_system != null:
-                _acquire_move_speed_lease(unit)
+            if _uses_attribute_service(prop):
+                _acquire_attribute_lease(unit, StringName(prop))
             else:
                 var ref_val = unit.get(prop)
                 _value = ref_val
@@ -160,20 +160,23 @@ func apply(_reference: Variant, _target: Variant) -> bool:
     
     return false
 
-func _acquire_move_speed_lease(target: Variant) -> void:
+func _uses_attribute_service(prop_name: String) -> bool:
+    return SystemUtil.buff_system != null and prop_name != "" and AttributeService.ATTRIBUTE_BASE_MAP.has(StringName(prop_name))
+
+func _acquire_attribute_lease(target: Variant, attr: StringName) -> void:
     if SystemUtil.buff_system == null or not is_instance_valid(target):
         return
     var op := CombatTypes.ModOp.PERCENT_ADD if value_unit == BuffResource.VALUE_UNIT.PERCENT else CombatTypes.ModOp.FLAT_ADD
     var mod_val := (value / 100.0) * _value_dir if value_unit == BuffResource.VALUE_UNIT.PERCENT else value * _value_dir
-    var lease := SystemUtil.buff_system.attribute_service.acquire_modifier(target, &"move_speed", op, mod_val)
+    var lease := SystemUtil.buff_system.attribute_service.acquire_modifier(target, attr, op, mod_val)
     if lease.is_valid():
         _attr_leases.append(lease)
 
 func apply_additional_stack() -> void:
     __buff_stack_num += 1
     if unit and prop:
-        if prop == "move_speed" and SystemUtil.buff_system != null:
-            _acquire_move_speed_lease(unit)
+        if _uses_attribute_service(prop):
+            _acquire_attribute_lease(unit, StringName(prop))
         else:
             var ref_val = unit.get(prop)
             var stack_delta: float = 0.0
@@ -191,7 +194,7 @@ func remove_single_stack(_target: Variant) -> void:
     if __buff_stack_num > 1:
         __buff_stack_num -= 1
         if _target and prop:
-            if prop == "move_speed" and SystemUtil.buff_system != null:
+            if _uses_attribute_service(prop):
                 if not _attr_leases.is_empty():
                     SystemUtil.buff_system.attribute_service.release(_attr_leases.pop_back())
             else:
@@ -222,7 +225,7 @@ func remove(_target: Variant) -> bool:
     if _target:
 
         if prop:
-            if prop == "move_speed" and SystemUtil.buff_system != null:
+            if _uses_attribute_service(prop):
                 for lease in _attr_leases:
                     SystemUtil.buff_system.attribute_service.release(lease)
                 _attr_leases.clear()
