@@ -74,6 +74,7 @@ var cool_down_timer: CommonUtil.Cimer
 var __buff_stack_num: int = 0     # buff 创建次数（程序内部调用）
 
 var prop_value_delta: float = 0.0   # buff 属性值变化量（buff 叠加时，属性值变化量）
+var _attr_leases: Array[CombatTypes.Lease] = []
 
 ## 独立概率器是否初始化
 var _prob_controller: ProbabilityController = null
@@ -139,46 +140,50 @@ func apply(_reference: Variant, _target: Variant) -> bool:
 
         # 属性修改
         if prop:
-            # 添加 buff
-            # _reference.add_child(buff_instance)
+            if prop == "move_speed" and SystemUtil.buff_system != null:
+                _acquire_move_speed_lease(unit)
+            else:
+                var ref_val = unit.get(prop)
+                _value = ref_val
 
-            # reference_instance 属性值修改
-            var ref_val = unit.get(prop)
-            _value = ref_val
+                if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+                    prop_value_delta = ref_val * value / 100 * _value_dir
+                    ref_val += prop_value_delta
+                elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+                    prop_value_delta = value * _value_dir
+                    ref_val += prop_value_delta
 
-
-            if value_unit == BuffResource.VALUE_UNIT.PERCENT:
-                prop_value_delta = ref_val * value / 100 * _value_dir
-                ref_val += prop_value_delta
-
-
-            elif value_unit == BuffResource.VALUE_UNIT.VALUE:
-                prop_value_delta = value * _value_dir
-                ref_val += prop_value_delta
-
-
-
-            unit.set(prop, ref_val)
-
-            # print("REF_VAL %s" % ref_val)
+                unit.set(prop, ref_val)
 
         __buff_stack_num = 1
         return true
     
     return false
 
+func _acquire_move_speed_lease(target: Variant) -> void:
+    if SystemUtil.buff_system == null or not is_instance_valid(target):
+        return
+    var op := CombatTypes.ModOp.PERCENT_ADD if value_unit == BuffResource.VALUE_UNIT.PERCENT else CombatTypes.ModOp.FLAT_ADD
+    var mod_val := (value / 100.0) * _value_dir if value_unit == BuffResource.VALUE_UNIT.PERCENT else value * _value_dir
+    var lease := SystemUtil.buff_system.attribute_service.acquire_modifier(target, &"move_speed", op, mod_val)
+    if lease.is_valid():
+        _attr_leases.append(lease)
+
 func apply_additional_stack() -> void:
     __buff_stack_num += 1
     if unit and prop:
-        var ref_val = unit.get(prop)
-        var stack_delta: float = 0.0
-        if value_unit == BuffResource.VALUE_UNIT.PERCENT:
-            stack_delta = _value * value / 100.0 * _value_dir
-        elif value_unit == BuffResource.VALUE_UNIT.VALUE:
-            stack_delta = value * _value_dir
-        prop_value_delta += stack_delta
-        ref_val += stack_delta
-        unit.set(prop, ref_val)
+        if prop == "move_speed" and SystemUtil.buff_system != null:
+            _acquire_move_speed_lease(unit)
+        else:
+            var ref_val = unit.get(prop)
+            var stack_delta: float = 0.0
+            if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+                stack_delta = _value * value / 100.0 * _value_dir
+            elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+                stack_delta = value * _value_dir
+            prop_value_delta += stack_delta
+            ref_val += stack_delta
+            unit.set(prop, ref_val)
     if slot and is_instance_valid(slot):
         slot.reset_level(__buff_stack_num)
 
@@ -186,15 +191,19 @@ func remove_single_stack(_target: Variant) -> void:
     if __buff_stack_num > 1:
         __buff_stack_num -= 1
         if _target and prop:
-            var ref_val = _target.get(prop)
-            var stack_delta: float = 0.0
-            if value_unit == BuffResource.VALUE_UNIT.PERCENT:
-                stack_delta = _value * value / 100.0 * _value_dir
-            elif value_unit == BuffResource.VALUE_UNIT.VALUE:
-                stack_delta = value * _value_dir
-            prop_value_delta -= stack_delta
-            ref_val -= stack_delta
-            _target.set(prop, ref_val)
+            if prop == "move_speed" and SystemUtil.buff_system != null:
+                if not _attr_leases.is_empty():
+                    SystemUtil.buff_system.attribute_service.release(_attr_leases.pop_back())
+            else:
+                var ref_val = _target.get(prop)
+                var stack_delta: float = 0.0
+                if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+                    stack_delta = _value * value / 100.0 * _value_dir
+                elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+                    stack_delta = value * _value_dir
+                prop_value_delta -= stack_delta
+                ref_val -= stack_delta
+                _target.set(prop, ref_val)
         if slot and is_instance_valid(slot):
             slot.reset_level(__buff_stack_num)
 
@@ -213,21 +222,19 @@ func remove(_target: Variant) -> bool:
     if _target:
 
         if prop:
-            var ref_val = _target.get(prop)
+            if prop == "move_speed" and SystemUtil.buff_system != null:
+                for lease in _attr_leases:
+                    SystemUtil.buff_system.attribute_service.release(lease)
+                _attr_leases.clear()
+            else:
+                var ref_val = _target.get(prop)
 
+                if value_unit == BuffResource.VALUE_UNIT.PERCENT:
+                    ref_val -= prop_value_delta
+                elif value_unit == BuffResource.VALUE_UNIT.VALUE:
+                    ref_val -= prop_value_delta
 
-            if value_unit == BuffResource.VALUE_UNIT.PERCENT:
-                # ref_val -= ref_val / (1.0 + value / 100 * _value_dir)
-                ref_val -= prop_value_delta
-
-
-            elif value_unit == BuffResource.VALUE_UNIT.VALUE:
-                # ref_val -= value * _value_dir
-                ref_val -= prop_value_delta
-
-
-
-            _target.set(prop, ref_val)
+                _target.set(prop, ref_val)
             # 恢复为当前 buff 修改前的数值
             # _reference.set(prop, _value)
 

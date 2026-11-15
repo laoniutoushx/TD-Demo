@@ -20,6 +20,7 @@ func action(skill_context: SkillContext) -> void:
 
     # ui相关处理（升级中，升级动画，升级提示，升级完成）
     # 升级中，开启倒计时，锁定单位
+    source_unit.set(&"is_upgrading", true)
     source_unit.change_state(Turret.TurretState.FREEZEING)
 
 

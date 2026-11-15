@@ -109,6 +109,9 @@ func _finish_action_animation(finished: StringName) -> void:
 	action_animation_name = &""
 
 
+var base_move_speed : float = 0.0
+@export var immune_tags : Array[StringName] = []
+
 var move_speed : float :
 	set(value):
 		move_speed = value
@@ -384,8 +387,13 @@ func clazz_init():
 	# bean property copy
 	if clazz != null:
 		CommonUtil.bean_properties_copy(clazz, self)
+		base_move_speed = move_speed
 
 	
+func _on_control_state_changed(_capability: StringName, _allowed: bool) -> void:
+	pass
+
+
 func is_alive() -> bool:
 	return _is_logic_alive
 

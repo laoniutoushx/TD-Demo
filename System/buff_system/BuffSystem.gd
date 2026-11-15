@@ -10,6 +10,14 @@ class_name BuffSystem extends Node3D
 # key: buff_code&instance_id -> count(*)
 var __buff_inst_counter: Dictionary = {}
 
+var attribute_service: AttributeService = AttributeService.new()
+var control_service: ControlService = ControlService.new()
+var buff_service: BuffService = BuffService.new(attribute_service, control_service)
+
+
+func _physics_process(delta: float) -> void:
+	buff_service.advance(delta)
+
 
 func _ready() -> void:
 	SystemUtil.buff_system = self
@@ -232,3 +240,63 @@ class BuffManager:
 func reset_session() -> void:
 	__buff_inst_counter.clear()
 	BuffManager._buff_domain_container.clear()
+	buff_service.clear_all()
+	_area_slow_leases.clear()
+	_area_slow_defs.clear()
+
+
+var _area_slow_leases: Dictionary = {} # source_id -> {target_id -> CombatTypes.Lease}
+var _area_slow_defs: Dictionary = {}   # percent_key -> BuffDefinition
+
+func _get_area_slow_def(percent: float) -> BuffDefinition:
+	var key := snappedi(roundi(percent * 100.0), 1)
+	if _area_slow_defs.has(key):
+		return _area_slow_defs[key]
+	var mod := AttributeModifierDef.new()
+	mod.attribute = &"move_speed"
+	mod.op = CombatTypes.ModOp.MULTIPLY
+	mod.value = maxf(0.0, 1.0 - percent / 100.0)
+	var def := BuffDefinition.new()
+	def.buff_id = &"tornado_fox_slow"
+	def.group_id = &"move_slow"
+	def.modifiers = [mod]
+	def.lifetime_mode = CombatTypes.LifetimeMode.WHILE_SOURCE_PRESENT
+	def.stacking = CombatTypes.StackingPolicy.STRONGEST_MAGNITUDE
+	def.tags = [&"slow", &"debuff"]
+	_area_slow_defs[key] = def
+	return def
+
+func acquire_area_slow(source: Node, target: BaseUnit, percent: float = 20.0) -> void:
+	if not is_instance_valid(source) or not is_instance_valid(target) or not target.is_alive():
+		return
+	var sid: int = source.get_instance_id()
+	var tid: int = target.get_instance_id()
+	if not _area_slow_leases.has(sid):
+		_area_slow_leases[sid] = {}
+	if _area_slow_leases[sid].has(tid) and (_area_slow_leases[sid][tid] as CombatTypes.Lease).is_valid():
+		return
+	var lease: CombatTypes.Lease = buff_service.acquire(_get_area_slow_def(percent), source, target)
+	if lease.is_valid():
+		_area_slow_leases[sid][tid] = lease
+
+func release_all_area_slows(source: Node) -> void:
+	if not is_instance_valid(source):
+		return
+	var sid: int = source.get_instance_id()
+	if not _area_slow_leases.has(sid):
+		return
+	for lease in _area_slow_leases[sid].values():
+		buff_service.release(lease)
+	_area_slow_leases.erase(sid)
+
+func release_area_slow(source: Node, target: BaseUnit) -> void:
+	if not is_instance_valid(source) or not is_instance_valid(target):
+		return
+	var sid: int = source.get_instance_id()
+	var tid: int = target.get_instance_id()
+	if not _area_slow_leases.has(sid) or not _area_slow_leases[sid].has(tid):
+		return
+	buff_service.release(_area_slow_leases[sid][tid])
+	_area_slow_leases[sid].erase(tid)
+	if _area_slow_leases[sid].is_empty():
+		_area_slow_leases.erase(sid)

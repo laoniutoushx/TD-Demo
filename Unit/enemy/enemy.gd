@@ -43,6 +43,19 @@ func take_damage(damage_ctx: DamageCtx) -> bool:
 	return super.take_damage(damage_ctx)
 
 
+func _on_control_state_changed(_capability: StringName, _allowed: bool) -> void:
+	if not is_alive():
+		change_state(EnemyState.DEAD)
+		return
+	var ctrl_svc: ControlService = SystemUtil.buff_system.control_service if SystemUtil.buff_system != null else null
+	if ctrl_svc == null:
+		return
+	if not ctrl_svc.is_allowed(self, &"CanMove"):
+		change_state(EnemyState.STUN)
+	elif current_state == EnemyState.STUN:
+		change_state(EnemyState.WALKING)
+
+
 #func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	#print("++++" + anim_name)
 	#pass # Replace with function body.

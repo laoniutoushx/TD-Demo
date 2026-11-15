@@ -232,3 +232,23 @@ func _on_enemy_logic_death(enemy: BaseUnit) -> void:
 func change_state(new_state: TurretState) -> void:
 	pre_state = current_state
 	current_state = new_state
+
+
+
+var is_upgrading: bool = false
+
+
+func _on_control_state_changed(_capability: StringName, _allowed: bool) -> void:
+	if not is_alive():
+		return
+	if current_state == TurretState.BUILDING or is_upgrading:
+		return
+	var ctrl_svc: ControlService = SystemUtil.buff_system.control_service if SystemUtil.buff_system != null else null
+	if ctrl_svc == null:
+		return
+	var can_act: bool = ctrl_svc.is_allowed(self, &"CanAttack") and ctrl_svc.is_allowed(self, &"CanCast")
+	if not can_act:
+		change_state(TurretState.FREEZEING)
+	elif current_state == TurretState.FREEZEING:
+		set_physics_process(true)
+		change_state(TurretState.IDLE)
