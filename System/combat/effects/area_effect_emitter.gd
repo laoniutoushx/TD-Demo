@@ -59,7 +59,8 @@ class _AreaEmitterRuntime extends EffectRuntime:
 	var _def: AreaEffectEmitter
 	var _ctx: ExecutionContext
 	var _hit_ids: Dictionary = {}
-	var _active_leases: Dictionary = {} # target_id -> CombatTypes.Lease
+	var _timed_buffed_ids: Dictionary = {}
+	var _active_leases: Dictionary = {} # target_id -> CombatTypes.Lease (WHILE_SOURCE_PRESENT)
 	var _overlapping_counts: Dictionary = {} # target_id -> int (multi-collider aggregation)
 	var _reconcile_accum: float = 0.0
 	var _dirty: bool = false
@@ -168,10 +169,15 @@ class _AreaEmitterRuntime extends EffectRuntime:
 				target.call(&"take_damage", dmg_ctx)
 
 		var buff_svc := _get_buff_service()
-		if _def.on_enter_buff != null and buff_svc != null and not _active_leases.has(tid):
-			var lease := buff_svc.acquire(_def.on_enter_buff, self, target, _ctx.source_snapshot)
-			if lease.is_valid():
-				_active_leases[tid] = lease
+		if _def.on_enter_buff != null and buff_svc != null:
+			if _def.on_enter_buff.lifetime_mode == CombatTypes.LifetimeMode.TIMED:
+				if not _timed_buffed_ids.has(tid):
+					_timed_buffed_ids[tid] = true
+					buff_svc.acquire(_def.on_enter_buff, self, target, _ctx.source_snapshot)
+			elif not _active_leases.has(tid):
+				var lease := buff_svc.acquire(_def.on_enter_buff, self, target, _ctx.source_snapshot)
+				if lease.is_valid():
+					_active_leases[tid] = lease
 
 	func notify_body_exited(target: Object) -> void:
 		if not is_instance_valid(target):
@@ -193,7 +199,7 @@ class _AreaEmitterRuntime extends EffectRuntime:
 					if is_instance_valid(target):
 						present[target.get_instance_id()] = target
 			for tid in present.keys():
-				if not _active_leases.has(tid) and not _hit_ids.has(tid):
+				if not _active_leases.has(tid) and not _hit_ids.has(tid) and not _timed_buffed_ids.has(tid):
 					notify_body_entered(present[tid])
 			for tid in _active_leases.keys():
 				if not present.has(tid):
@@ -226,4 +232,5 @@ class _AreaEmitterRuntime extends EffectRuntime:
 				buff_svc.release(lease)
 		_active_leases.clear()
 		_overlapping_counts.clear()
+		_timed_buffed_ids.clear()
 		_hit_ids.clear()
