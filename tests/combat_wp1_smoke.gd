@@ -118,6 +118,39 @@ func _run() -> void:
 	buff_svc.release(ld1)
 	buff_svc.release(ld2)
 
+	# 5b. STACK allows same-source stacking up to max_stacks without exceeding cap
+	var stack_def := _make_slow_def(&"stack_slow", &"stack_group", 0.8)
+	stack_def.lifetime_mode = CombatTypesScript.LifetimeMode.TIMED
+	stack_def.duration = 2.0
+	stack_def.stacking = CombatTypesScript.StackingPolicy.STACK
+	stack_def.max_stacks = 2
+	var stk1 := buff_svc.acquire(stack_def, src1, unit)
+	assert(stk1.is_valid() and is_equal_approx(unit.move_speed, 8.0), "1 stack -> 8.0")
+	var stk2 := buff_svc.acquire(stack_def, src1, unit)
+	assert(stk2.is_valid() and is_equal_approx(unit.move_speed, 6.4), "2 stacks from same source -> 6.4")
+	var stk3 := buff_svc.acquire(stack_def, src1, unit)
+	assert(not stk3.is_valid() and is_equal_approx(unit.move_speed, 6.4), "3rd stack capped at max_stacks=2 -> 6.4")
+	buff_svc.release(stk1)
+	buff_svc.release(stk2)
+	assert(is_equal_approx(unit.move_speed, 10.0), "releasing stacks restores 10.0")
+
+	# 5c. LONGEST_REMAINING with multiple sources does NOT double-stack attributes and keeps longest remaining
+	var long_def := _make_slow_def(&"long_slow", &"long_group", 0.5)
+	long_def.lifetime_mode = CombatTypesScript.LifetimeMode.TIMED
+	long_def.duration = 2.0
+	long_def.stacking = CombatTypesScript.StackingPolicy.LONGEST_REMAINING
+	var ll1 := buff_svc.acquire(long_def, src1, unit)
+	buff_svc.advance(1.5) # 0.5s remaining on ll1
+	long_def.duration = 1.0 # shorter than 2.0, but longer than 0.5s remaining
+	var ll2 := buff_svc.acquire(long_def, src2, unit)
+	assert(is_equal_approx(unit.move_speed, 5.0), "LONGEST_REMAINING must not double-stack across sources (got %s)" % unit.move_speed)
+	buff_svc.advance(0.6) # ll1 (0.5s) would have expired, but longest remaining was updated to 1.0s
+	assert(is_equal_approx(unit.move_speed, 5.0), "LONGEST_REMAINING keeps slow active for longest duration (got %s)" % unit.move_speed)
+	buff_svc.advance(0.5) # total 1.1s >= 1.0s -> expired
+	assert(is_equal_approx(unit.move_speed, 10.0), "LONGEST_REMAINING restores 10.0 after expiry (got %s)" % unit.move_speed)
+	buff_svc.release(ll1)
+	buff_svc.release(ll2)
+
 	# 6. Death clears all leases
 	var l_slow := buff_svc.acquire(slow20, src1, unit)
 	assert(l_slow.is_valid())

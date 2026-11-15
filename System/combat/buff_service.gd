@@ -42,8 +42,8 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 		_groups[target_id] = {}
 	var target_groups: Dictionary = _groups[target_id]
 
-	# Idempotent per (target, group_key, source_key) for non-independent policies.
-	if definition.stacking != CombatTypes.StackingPolicy.INDEPENDENT and target_groups.has(group_key):
+	# Idempotent per (target, group_key, source_key) for non-stacking/non-independent policies.
+	if definition.stacking != CombatTypes.StackingPolicy.INDEPENDENT and definition.stacking != CombatTypes.StackingPolicy.STACK and target_groups.has(group_key):
 		var grp: Dictionary = target_groups[group_key]
 		if grp["source_map"].has(source_key):
 			var existing_lid: int = int(grp["source_map"][source_key])
@@ -64,12 +64,15 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 	var group: Dictionary = target_groups[group_key]
 	var lease_ids: Array = group["lease_ids"]
 
-	# REFRESH reuses a single group instance, resetting duration and tracking active sources.
-	if definition.stacking == CombatTypes.StackingPolicy.REFRESH and not is_new_group and not lease_ids.is_empty():
+	# REFRESH and LONGEST_REMAINING reuse a single group instance, updating duration and tracking active sources.
+	if (definition.stacking == CombatTypes.StackingPolicy.REFRESH or definition.stacking == CombatTypes.StackingPolicy.LONGEST_REMAINING) and not is_new_group and not lease_ids.is_empty():
 		var primary_lid: int = int(lease_ids[0])
 		var primary_entry: Dictionary = _leases[primary_lid]
 		if definition.lifetime_mode == CombatTypes.LifetimeMode.TIMED:
-			primary_entry["remaining"] = definition.duration
+			if definition.stacking == CombatTypes.StackingPolicy.LONGEST_REMAINING:
+				primary_entry["remaining"] = maxf(float(primary_entry["remaining"]), definition.duration)
+			else:
+				primary_entry["remaining"] = definition.duration
 		var new_lid: int = _alloc_lease_id()
 		var new_gen: int = _generations[new_lid]
 		_leases[new_lid] = {
@@ -93,34 +96,34 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 		buff_updated.emit(target, definition.buff_id, group_key)
 		return CombatTypes.Lease.create(new_lid, new_gen, &"buff")
 
-	# STACK cap check
-	var at_stack_cap: bool = (
-		definition.stacking == CombatTypes.StackingPolicy.STACK
-		and definition.max_stacks > 0
-		and lease_ids.size() >= definition.max_stacks
-	)
+	# STACK cap check: refresh oldest stack instead of exceeding max_stacks
+	if definition.stacking == CombatTypes.StackingPolicy.STACK and definition.max_stacks > 0 and lease_ids.size() >= definition.max_stacks:
+		var oldest_lid: int = int(lease_ids[0])
+		if _leases.has(oldest_lid) and definition.lifetime_mode == CombatTypes.LifetimeMode.TIMED:
+			_leases[oldest_lid]["remaining"] = maxf(float(_leases[oldest_lid]["remaining"]), definition.duration)
+		buff_updated.emit(target, definition.buff_id, group_key)
+		return CombatTypes.Lease.invalid(&"buff")
 
 	var lid: int = _alloc_lease_id()
 	var gen: int = _generations[lid]
 	var attr_leases: Array[CombatTypes.Lease] = []
 	var ctrl_leases: Array[CombatTypes.Lease] = []
 
-	if not at_stack_cap:
-		for mod in definition.modifiers:
-			var a_lease := attribute_service.acquire_modifier(
-				target,
-				mod.attribute,
-				mod.op,
-				mod.value,
-				group_key,
-				definition.stacking
-			)
-			if a_lease.is_valid():
-				attr_leases.append(a_lease)
-		for cap in definition.controls:
-			var c_lease := control_service.acquire(target, cap)
-			if c_lease.is_valid():
-				ctrl_leases.append(c_lease)
+	for mod in definition.modifiers:
+		var a_lease := attribute_service.acquire_modifier(
+			target,
+			mod.attribute,
+			mod.op,
+			mod.value,
+			group_key,
+			definition.stacking
+		)
+		if a_lease.is_valid():
+			attr_leases.append(a_lease)
+	for cap in definition.controls:
+		var c_lease := control_service.acquire(target, cap)
+		if c_lease.is_valid():
+			ctrl_leases.append(c_lease)
 
 	_leases[lid] = {
 		"target_id": target_id,
@@ -139,7 +142,7 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 	}
 	_register_source_hook(source_token, lid, definition)
 	lease_ids.append(lid)
-	if definition.stacking != CombatTypes.StackingPolicy.INDEPENDENT:
+	if definition.stacking != CombatTypes.StackingPolicy.INDEPENDENT and definition.stacking != CombatTypes.StackingPolicy.STACK:
 		group["source_map"][source_key] = lid
 
 	if is_new_group:
@@ -278,8 +281,8 @@ func _remove_lease_entry(lid: int) -> void:
 		if group["source_map"].get(entry["source_key"]) == lid:
 			group["source_map"].erase(entry["source_key"])
 
-		# If primary entry of REFRESH was removed while aliases remain, transfer remaining/sub-leases to first alias.
-		if not bool(entry.get("is_alias", false)) and not lease_ids.is_empty() and def.stacking == CombatTypes.StackingPolicy.REFRESH:
+		# If primary entry of REFRESH or LONGEST_REMAINING was removed while aliases remain, transfer remaining/sub-leases to first alias.
+		if not bool(entry.get("is_alias", false)) and not lease_ids.is_empty() and (def.stacking == CombatTypes.StackingPolicy.REFRESH or def.stacking == CombatTypes.StackingPolicy.LONGEST_REMAINING):
 			var next_lid: int = int(lease_ids[0])
 			if _leases.has(next_lid):
 				var next_entry: Dictionary = _leases[next_lid]
