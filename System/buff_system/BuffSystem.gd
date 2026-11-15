@@ -13,6 +13,8 @@ var __buff_inst_counter: Dictionary = {}
 var attribute_service: AttributeService = AttributeService.new()
 var control_service: ControlService = ControlService.new()
 var buff_service: BuffService = BuffService.new(attribute_service, control_service)
+var _presentation_port: PresentationPort = PresentationPort.new()
+var _service_cue_handles: Dictionary = {}
 
 
 func _physics_process(delta: float) -> void:
@@ -23,6 +25,59 @@ func _ready() -> void:
 	SystemUtil.buff_system = self
 	# 在系统启动时，初始化所有 item template resource，将起保存在 container 当中
 	CommonUtil.load_resources_to_container_from_directory("res://System/buff_system/resources/", BuffManager.container())
+	if not buff_service.buff_applied.is_connected(_on_service_buff_applied):
+		buff_service.buff_applied.connect(_on_service_buff_applied)
+	if not buff_service.buff_removed.is_connected(_on_service_buff_removed):
+		buff_service.buff_removed.connect(_on_service_buff_removed)
+
+
+func _exit_tree() -> void:
+	_stop_all_service_cues()
+
+
+func _cue_key(target: Object, group_key: StringName) -> String:
+	return "%d:%s" % [target.get_instance_id(), String(group_key)]
+
+
+func _on_service_buff_applied(target: Object, _buff_id: StringName, group_key: StringName) -> void:
+	if not is_instance_valid(target) or not is_inside_tree():
+		return
+	var snap := buff_service.get_group_snapshot(target, group_key)
+	if snap.is_empty():
+		return
+	var def: BuffDefinition = snap.get("definition") as BuffDefinition
+	if def == null or def.cues.is_empty():
+		return
+	var key := _cue_key(target, group_key)
+	if _service_cue_handles.has(key):
+		return
+	var ctx := ExecutionContext.create_for_cast(0, 0, target, target)
+	var handles: Array = []
+	for cue_res in def.cues:
+		if cue_res is PresentationDefinition:
+			var h := _presentation_port.emit(cue_res as PresentationDefinition, ctx)
+			if not h.is_empty():
+				handles.append(h)
+	if not handles.is_empty():
+		_service_cue_handles[key] = handles
+
+
+func _on_service_buff_removed(target: Object, _buff_id: StringName, group_key: StringName) -> void:
+	if target == null:
+		return
+	var key := _cue_key(target, group_key)
+	if not _service_cue_handles.has(key):
+		return
+	for h in _service_cue_handles[key]:
+		_presentation_port.stop(h, &"buff_removed")
+	_service_cue_handles.erase(key)
+
+
+func _stop_all_service_cues() -> void:
+	for handles in _service_cue_handles.values():
+		for h in handles:
+			_presentation_port.stop(h, &"session_reset")
+	_service_cue_handles.clear()
 
 
 
@@ -238,6 +293,7 @@ class BuffManager:
 		return _buff_res_container
 
 func reset_session() -> void:
+	_stop_all_service_cues()
 	__buff_inst_counter.clear()
 	BuffManager._buff_domain_container.clear()
 	buff_service.clear_all()

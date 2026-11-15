@@ -159,10 +159,8 @@ func pick_up(source: BaseUnit, chest: TreasureChest) -> Item:
 	source.add_child(new_item)
 	new_item.add_child(new_item.item_script_instance)
 
-	# action bar item bar 处理
-	# 获取一个空白的 item slot
-	var bar = SOS.main.level_controller._cur_scene.action_bar
-	if bar.active_unit == source: bar.item_bar_comp.pick_up(new_item)
+	# 响应式通知装备栏刷新
+	SignalBus.unit_item_added.emit(source, new_item)
 
 
 	# 删除掉宝箱

@@ -122,6 +122,11 @@ func _finish_action_animation(finished: StringName) -> void:
 
 
 var base_move_speed : float = 0.0
+var base_attack_value : float = 0.0
+var base_attack_speed : float = 0.0
+var base_attack_range : float = 0.0
+var base_max_health : float = 0.0
+var base_max_mana : float = 0.0
 @export var immune_tags : Array[StringName] = []
 
 var move_speed : float :
@@ -400,6 +405,11 @@ func clazz_init():
 	if clazz != null:
 		CommonUtil.bean_properties_copy(clazz, self)
 		base_move_speed = move_speed
+		base_attack_value = attack_value
+		base_attack_speed = attack_speed
+		base_attack_range = attack_range
+		base_max_health = max_health
+		base_max_mana = max_mana
 
 	
 func _on_control_state_changed(_capability: StringName, _allowed: bool) -> void:
@@ -497,8 +507,15 @@ func is_logic_dead() -> bool:
 # 单位升级
 func _on_unit_level_up(id: int, unit: BaseUnit, level: int) -> void:
 	if self.get_instance_id() == id:
-		# 升级后攻击力=前一级攻击力×(1+成长率+随机波动)
-		attack_value = attack_value *  (1 + unit_growth_factor + randf_range(0, SOS.main.player_controller.lucky_factor))  
+		# 升级后基础攻击力=前一级基础攻击力×(1+成长率+随机波动)，再由 AttributeService 重算有效值
+		var growth_mult := 1.0 + unit_growth_factor + randf_range(0, SOS.main.player_controller.lucky_factor)
+		if base_attack_value <= 0.0 and attack_value > 0.0:
+			base_attack_value = attack_value
+		base_attack_value = base_attack_value * growth_mult
+		if SystemUtil.buff_system != null and SystemUtil.buff_system.attribute_service != null:
+			SystemUtil.buff_system.attribute_service.recalculate(self, &"attack_value")
+		else:
+			attack_value = base_attack_value
 
 
 

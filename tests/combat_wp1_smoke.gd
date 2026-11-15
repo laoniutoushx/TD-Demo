@@ -11,6 +11,8 @@ class MockUnit extends RefCounted:
 	signal logical_death(unit)
 	var base_move_speed: float = 10.0
 	var move_speed: float = 10.0
+	var base_attack_value: float = 100.0
+	var attack_value: float = 100.0
 	var immune_tags: Array[StringName] = []
 	var alive: bool = true
 	var control_events: Array = []
@@ -150,6 +152,43 @@ func _run() -> void:
 	assert(is_equal_approx(unit.move_speed, 10.0), "LONGEST_REMAINING restores 10.0 after expiry (got %s)" % unit.move_speed)
 	buff_svc.release(ll1)
 	buff_svc.release(ll2)
+
+	# 5d. BuffService snapshots + AttributeService multi-attribute & attribute_changed signal
+	var attr_events := []
+	attr_svc.attribute_changed.connect(func(t: Object, a: StringName, eff: float, _base: float):
+		if t == unit:
+			attr_events.append([a, eff])
+	)
+	var atk_mod := AttributeModifierDefScript.new()
+	atk_mod.attribute = &"attack_value"
+	atk_mod.op = CombatTypesScript.ModOp.PERCENT_ADD
+	atk_mod.value = 0.5
+	var atk_def := BuffDefinitionScript.new()
+	atk_def.buff_id = &"rage_test"
+	atk_def.group_id = &"rage_group"
+	atk_def.title = "狂暴"
+	atk_def.desc = "攻击力提高 50%"
+	atk_def.icon_path = "rage"
+	atk_def.modifiers = [atk_mod]
+	atk_def.lifetime_mode = CombatTypesScript.LifetimeMode.TIMED
+	atk_def.duration = 2.0
+	atk_def.stacking = CombatTypesScript.StackingPolicy.REFRESH
+	unit.set(&"base_attack_value", 100.0)
+	unit.set(&"attack_value", 100.0)
+	var updated_count := [0]
+	buff_svc.buff_updated.connect(func(_t, _bid, _gk): updated_count[0] += 1)
+	var l_atk := buff_svc.acquire(atk_def, src1, unit)
+	assert(is_equal_approx(float(unit.get(&"attack_value")), 150.0), "attack_value buff must scale to 150.0")
+	var snaps := buff_svc.get_active_buff_snapshots(unit)
+	assert(snaps.size() == 1 and snaps[0]["title"] == "狂暴" and snaps[0]["icon_path"] == "rage" and snaps[0]["is_timed"], "snapshot must expose metadata")
+	buff_svc.advance(1.0)
+	buff_svc.acquire(atk_def, src1, unit) # same-source refresh emits buff_updated
+	assert(updated_count[0] >= 1, "same-source refresh must emit buff_updated")
+	var snap_after := buff_svc.get_group_snapshot(unit, &"rage_group")
+	assert(is_equal_approx(float(snap_after["remaining"]), 2.0), "refreshed snapshot remaining must reset to 2.0")
+	assert(not attr_events.is_empty(), "AttributeService must emit attribute_changed")
+	buff_svc.release(l_atk)
+	assert(is_equal_approx(float(unit.get(&"attack_value")), 100.0), "releasing attack buff restores 100.0")
 
 	# 6. Death clears all leases
 	var l_slow := buff_svc.acquire(slow20, src1, unit)

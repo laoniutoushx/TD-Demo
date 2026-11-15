@@ -1,6 +1,17 @@
 class_name AttributeService
 extends RefCounted
 
+signal attribute_changed(target: Object, attribute: StringName, effective: float, base_val: float)
+
+const ATTRIBUTE_BASE_MAP: Dictionary = {
+	&"move_speed": &"base_move_speed",
+	&"attack_value": &"base_attack_value",
+	&"attack_speed": &"base_attack_speed",
+	&"attack_range": &"base_attack_range",
+	&"max_health": &"base_max_health",
+	&"max_mana": &"base_max_mana",
+}
+
 var _next_id: int = 1
 var _generations: Dictionary = {} # lease_id -> generation
 var _entries: Dictionary = {}     # lease_id -> Dictionary
@@ -81,7 +92,7 @@ func clear_target(target_id: int) -> void:
 	_target_leases.erase(target_id)
 	var target: Object = _get_target(target_id)
 	if is_instance_valid(target):
-		recalculate(target, &"move_speed")
+		recalculate_all(target)
 	_targets.erase(target_id)
 
 
@@ -95,17 +106,25 @@ func clear_all() -> void:
 	_target_leases.clear()
 	_targets.clear()
 	for t in targets_to_recalc:
-		recalculate(t, &"move_speed")
+		recalculate_all(t)
+
+
+func recalculate_all(target: Object) -> void:
+	if not is_instance_valid(target):
+		return
+	for attr in ATTRIBUTE_BASE_MAP.keys():
+		if target.get(attr) != null:
+			recalculate(target, attr)
 
 
 func recalculate(target: Object, attribute: StringName = &"move_speed") -> float:
 	if not is_instance_valid(target):
 		return 0.0
-	if attribute != &"move_speed":
+	if not ATTRIBUTE_BASE_MAP.has(attribute):
 		return 0.0
 
 	var target_id: int = target.get_instance_id()
-	var base_val: float = _read_base_move_speed(target)
+	var base_val: float = _read_base_attribute(target, attribute)
 	var active_mods: Array[Dictionary] = _collect_active_modifiers(target_id, attribute)
 
 	var flat_sum: float = 0.0
@@ -124,7 +143,8 @@ func recalculate(target: Object, attribute: StringName = &"move_speed") -> float
 				multiply_prod *= val
 
 	var effective: float = maxf(0.0, (base_val + flat_sum) * (1.0 + percent_sum) * multiply_prod)
-	target.set(&"move_speed", effective)
+	target.set(attribute, effective)
+	attribute_changed.emit(target, attribute, effective, base_val)
 	return effective
 
 
@@ -159,11 +179,13 @@ func _is_stronger(candidate: Dictionary, current: Dictionary) -> bool:
 	return absf(c_val) > absf(cur_val)
 
 
-func _read_base_move_speed(target: Object) -> float:
-	var base_val: Variant = target.get(&"base_move_speed")
-	if base_val != null:
-		return float(base_val)
-	var cur_val: Variant = target.get(&"move_speed")
+func _read_base_attribute(target: Object, attribute: StringName) -> float:
+	var base_prop: StringName = ATTRIBUTE_BASE_MAP.get(attribute, &"")
+	if base_prop != &"":
+		var base_val: Variant = target.get(base_prop)
+		if base_val != null:
+			return float(base_val)
+	var cur_val: Variant = target.get(attribute)
 	return float(cur_val) if cur_val != null else 0.0
 
 

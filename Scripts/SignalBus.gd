@@ -44,7 +44,12 @@ signal skill_level_up(skill_context: SkillContext)   # 技能升级开始
 # Buff
 signal buff_enter(buff: Buff, _ref: Variant)   # buff 新增
 signal buff_exit(buff: Buff, _ref: Variant)    # buff 删除
-signal buff_cooldown_extend(buff: Buff, _ref: Variant)    # buff 删除
+signal buff_cooldown_extend(buff: Buff, _ref: Variant)    # buff 延长
+
+
+# Item
+signal unit_item_added(unit: BaseUnit, item: Item)
+signal unit_item_removed(unit: BaseUnit, item: Item)
 
 
 # UI

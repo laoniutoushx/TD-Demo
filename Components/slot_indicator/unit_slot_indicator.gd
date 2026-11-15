@@ -20,7 +20,17 @@ class_name UnitSlotIndicator extends BaseSlotIndicator
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	super._ready()	
+	super._ready()
+	if SystemUtil.buff_system != null and SystemUtil.buff_system.attribute_service != null:
+		if not SystemUtil.buff_system.attribute_service.attribute_changed.is_connected(_on_attribute_changed):
+			SystemUtil.buff_system.attribute_service.attribute_changed.connect(_on_attribute_changed)
+
+
+func _on_attribute_changed(target: Object, _attribute: StringName, _effective: float, _base_val: float) -> void:
+	if not visible or not is_instance_valid(cur_slot):
+		return
+	if cur_slot.reference == target:
+		refresh_slot_indicator_info(cur_slot)
 
 
 func refresh_slot_indicator_info(_slot: BaseSlot) -> void:

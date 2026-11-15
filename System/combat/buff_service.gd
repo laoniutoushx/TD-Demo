@@ -51,6 +51,7 @@ func acquire(definition: BuffDefinition, source_token: Variant, target: Object, 
 				var existing: Dictionary = _leases[existing_lid]
 				if definition.lifetime_mode == CombatTypes.LifetimeMode.TIMED:
 					existing["remaining"] = maxf(float(existing["remaining"]), definition.duration) if definition.stacking == CombatTypes.StackingPolicy.LONGEST_REMAINING else definition.duration
+				buff_updated.emit(target, definition.buff_id, group_key)
 				return CombatTypes.Lease.create(existing_lid, int(existing["generation"]), &"buff")
 
 	var is_new_group: bool = not target_groups.has(group_key)
@@ -233,6 +234,59 @@ func has_active_group(target: Object, group_key: StringName) -> bool:
 		return false
 	var target_id: int = target.get_instance_id()
 	return _groups.has(target_id) and _groups[target_id].has(group_key) and not _groups[target_id][group_key]["lease_ids"].is_empty()
+
+
+func get_group_snapshot(target: Object, group_key: StringName) -> Dictionary:
+	if not is_instance_valid(target):
+		return {}
+	var target_id: int = target.get_instance_id()
+	if not _groups.has(target_id) or not _groups[target_id].has(group_key):
+		return {}
+	var grp: Dictionary = _groups[target_id][group_key]
+	var lease_ids: Array = grp["lease_ids"]
+	if lease_ids.is_empty():
+		return {}
+	var def: BuffDefinition = grp["definition"]
+	var primary_entry: Dictionary = _leases.get(int(lease_ids[0]), {})
+	var best_remaining: float = -1.0
+	var is_timed: bool = def.lifetime_mode == CombatTypes.LifetimeMode.TIMED
+	if is_timed:
+		best_remaining = 0.0
+		for lid in lease_ids:
+			var e: Dictionary = _leases.get(int(lid), {})
+			if not e.is_empty():
+				best_remaining = maxf(best_remaining, float(e.get("remaining", 0.0)))
+	elif not primary_entry.is_empty():
+		best_remaining = float(primary_entry.get("remaining", -1.0))
+
+	return {
+		"group_key": group_key,
+		"buff_id": def.buff_id,
+		"title": def.title if def.title != "" else String(def.buff_id),
+		"desc": def.desc,
+		"icon_path": def.icon_path,
+		"remaining": best_remaining,
+		"duration": def.duration,
+		"stacks": lease_ids.size() if def.stacking == CombatTypes.StackingPolicy.STACK or def.stacking == CombatTypes.StackingPolicy.INDEPENDENT else 1,
+		"is_timed": is_timed,
+		"tags": def.tags.duplicate(),
+		"stacking": def.stacking,
+		"definition": def,
+	}
+
+
+func get_active_buff_snapshots(target: Object) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if not is_instance_valid(target):
+		return result
+	var target_id: int = target.get_instance_id()
+	if not _groups.has(target_id):
+		return result
+	for gkey in _groups[target_id].keys():
+		var snap := get_group_snapshot(target, gkey)
+		if not snap.is_empty():
+			result.append(snap)
+	return result
 
 
 func clear_target(target_id: int) -> void:

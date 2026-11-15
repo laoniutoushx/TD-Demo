@@ -31,6 +31,9 @@ signal slot_right_clicked(s: BaseSlot)
 
 var timer: Timer
 var cimer: CommonUtil.Cimer
+var _buff_snapshot_active: bool = false
+var _buff_remaining: float = 0.0
+var _buff_duration: float = 0.0
 
 static var action_bar: ActionBar
 
@@ -210,12 +213,15 @@ func callable_drop_item(ray_cast_3d: RayCast3D) -> void:
 
 
 
+			var owner_unit: BaseUnit = reference.unit if reference is Item else null
+
 			# 删除装备信息（从背包中删除）
 			SystemUtil.item_system.remove_item_from_inventory(reference)
 
 
-			# item bar 删除
-			SOS.main.level_controller._cur_scene.action_bar.item_bar_comp.drop_item(self)
+			# 响应式通知 item bar 删除
+			if is_instance_valid(owner_unit) and reference is Item:
+				SignalBus.unit_item_removed.emit(owner_unit, reference)
 
 
 			# 切换玩家状态
@@ -292,6 +298,45 @@ func reset_level(level: int) -> void:
 		level_key.text = "LV " + str(level)
 
 
+func set_buff_snapshot(snapshot: Dictionary, is_friendly: bool) -> void:
+	custome_init(null, str(snapshot.get("icon_path", "")), SLOT_TYPE.BUFF, is_friendly)
+	update_buff_snapshot(snapshot)
+
+
+func update_buff_snapshot(snapshot: Dictionary) -> void:
+	var title_str := str(snapshot.get("title", ""))
+	var desc_str := str(snapshot.get("desc", ""))
+	tooltip_text = title_str if desc_str == "" else "%s\n%s" % [title_str, desc_str]
+
+	var stacks := int(snapshot.get("stacks", 1))
+	if is_instance_valid(level_key):
+		if stacks > 1:
+			level_key.text = "x%d" % stacks
+			level_key.visible = true
+		else:
+			level_key.text = ""
+			level_key.visible = false
+
+	var is_timed := bool(snapshot.get("is_timed", false))
+	var dur := float(snapshot.get("duration", 0.0))
+	var rem := float(snapshot.get("remaining", 0.0))
+	if is_timed and dur > 0.0:
+		_buff_snapshot_active = true
+		_buff_duration = dur
+		_buff_remaining = clampf(rem, 0.0, dur)
+		progress_bar.max_value = dur
+		progress_bar.value = _buff_remaining
+		progress_bar.visible = true
+		set_process(true)
+	else:
+		_buff_snapshot_active = false
+		_buff_duration = 0.0
+		_buff_remaining = 0.0
+		progress_bar.value = 0.0
+		progress_bar.visible = false
+		set_process(false)
+
+
 
 # 延长冷却时间
 func extend_cooldown(cooldown: float) -> void:
@@ -349,6 +394,10 @@ func _process(delta: float) -> void:
 	# cimer 引用 buff 实例，此处可能 buff 会先于这里释放，需要判断
 	if cimer and is_instance_valid(cimer):
 		progress_bar.value = cimer.time_left
+
+	if _buff_snapshot_active and _buff_duration > 0.0:
+		_buff_remaining = maxf(0.0, _buff_remaining - delta)
+		progress_bar.value = _buff_remaining
 
 
 # 监听技能是否禁用

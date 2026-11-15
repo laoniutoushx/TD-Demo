@@ -3,6 +3,9 @@ extends Resource
 
 @export var buff_id: StringName
 @export var group_id: StringName
+@export var title: String = ""
+@export var desc: String = ""
+@export var icon_path: String = ""
 @export var modifiers: Array[AttributeModifierDef] = []
 @export var controls: Array[StringName] = []
 @export var lifetime_mode: CombatTypes.LifetimeMode = CombatTypes.LifetimeMode.TIMED

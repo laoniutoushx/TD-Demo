@@ -4,6 +4,24 @@ class_name ItemBarComponent extends ActionBar.BaseBarComponent
 var cur_active_slot: BaseSlot	
 
 
+func _ready() -> void:
+	super._ready()
+	if not SignalBus.unit_item_added.is_connected(_on_unit_item_added):
+		SignalBus.unit_item_added.connect(_on_unit_item_added)
+	if not SignalBus.unit_item_removed.is_connected(_on_unit_item_removed):
+		SignalBus.unit_item_removed.connect(_on_unit_item_removed)
+
+
+func _on_unit_item_added(unit: BaseUnit, item: Item) -> void:
+	if is_instance_valid(_action_bar.active_unit) and unit == _action_bar.active_unit and is_instance_valid(item):
+		pick_up(item)
+
+
+func _on_unit_item_removed(unit: BaseUnit, item: Item) -> void:
+	if is_instance_valid(_action_bar.active_unit) and unit == _action_bar.active_unit and is_instance_valid(item) and is_instance_valid(item.slot):
+		drop_item(item.slot)
+
+
 
 # 装配 skill 时，需要检查 skill 状态，当 skill 处于 release 状态时，需要处理 progress_bar  等信息
 func setup_for_unit(unit_map: Dictionary):

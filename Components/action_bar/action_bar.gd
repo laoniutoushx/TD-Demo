@@ -303,15 +303,97 @@ class SelectionBarComponent extends BaseBarComponent:
 
 # BUFF BAR	
 class BuffBarComponent extends BaseBarComponent:
+	var _service_slots: Dictionary = {} # group_key (StringName) -> BaseSlot
 
 
 	func _ready() -> void:
 		super._ready()
 
-		# 监听 buff enter 事件
+		# 监听旧版 buff enter 事件（兼容未迁移 Buff）
 		SignalBus.buff_enter.connect(_on_buff_enter)
 		SignalBus.buff_exit.connect(_on_buff_exit)
 		SignalBus.buff_cooldown_extend.connect(_on_buff_cooldown_extend)
+
+		# 响应式监听新版 BuffService 生命周期事件
+		var svc := _get_buff_service()
+		if svc != null:
+			if not svc.buff_applied.is_connected(_on_service_buff_applied):
+				svc.buff_applied.connect(_on_service_buff_applied)
+			if not svc.buff_updated.is_connected(_on_service_buff_updated):
+				svc.buff_updated.connect(_on_service_buff_updated)
+			if not svc.buff_removed.is_connected(_on_service_buff_removed):
+				svc.buff_removed.connect(_on_service_buff_removed)
+
+
+	func _get_buff_service() -> BuffService:
+		if SystemUtil.buff_system != null:
+			return SystemUtil.buff_system.buff_service
+		return null
+
+
+	func _is_active_target(target: Object) -> bool:
+		return is_instance_valid(_action_bar.active_unit) and is_instance_valid(target) and target.get_instance_id() == _action_bar.active_unit.get_instance_id()
+
+
+	func _is_friendly_unit(unit: Object) -> bool:
+		if not is_instance_valid(unit) or not is_instance_valid(SOS.main) or not is_instance_valid(SOS.main.player_controller):
+			return true
+		var pg: Variant = unit.get(&"player_group")
+		return pg != null and int(pg) == SOS.main.player_controller.get_player_group_idx()
+
+
+	func _on_service_buff_applied(target: Object, _buff_id: StringName, group_key: StringName) -> void:
+		if not _is_active_target(target):
+			return
+		var svc := _get_buff_service()
+		if svc == null:
+			return
+		var snap := svc.get_group_snapshot(target, group_key)
+		if snap.is_empty():
+			return
+		if _service_slots.has(group_key) and is_instance_valid(_service_slots[group_key]):
+			(_service_slots[group_key] as BaseSlot).update_buff_snapshot(snap)
+			return
+		_add_service_buff_slot(target, snap)
+
+
+	func _on_service_buff_updated(target: Object, _buff_id: StringName, group_key: StringName) -> void:
+		if not _is_active_target(target):
+			return
+		var svc := _get_buff_service()
+		if svc == null:
+			return
+		var snap := svc.get_group_snapshot(target, group_key)
+		if snap.is_empty():
+			return
+		if _service_slots.has(group_key) and is_instance_valid(_service_slots[group_key]):
+			(_service_slots[group_key] as BaseSlot).update_buff_snapshot(snap)
+		else:
+			_add_service_buff_slot(target, snap)
+
+
+	func _on_service_buff_removed(target: Object, _buff_id: StringName, group_key: StringName) -> void:
+		if not _is_active_target(target):
+			return
+		if _service_slots.has(group_key):
+			var slot_node: BaseSlot = _service_slots[group_key]
+			_service_slots.erase(group_key)
+			if is_instance_valid(slot_node):
+				_action_bar.deregister_active(slot_node.active_callback)
+				_slots.erase(slot_node)
+				_slot_num = maxi(0, _slot_num - 1)
+				slot_node.queue_free()
+
+
+	func _add_service_buff_slot(unit: Object, snapshot: Dictionary) -> void:
+		if _slot_num >= 20:
+			return
+		var gkey: StringName = snapshot.get("group_key", &"")
+		var slot_instance: BaseSlot = super.add_element("svc_" + String(gkey), _buff_bar, add_element_hook, _action_bar.buff_slot)
+		if is_instance_valid(slot_instance):
+			slot_instance.set_buff_snapshot(snapshot, _is_friendly_unit(unit))
+			_service_slots[gkey] = slot_instance
+			_slot_num += 1
 
 
 	func _on_buff_enter(buff: Buff, _ref: Variant):
@@ -340,6 +422,10 @@ class BuffBarComponent extends BaseBarComponent:
 	# 装配 skill 时，需要检查 skill 状态，当 skill 处于 release 状态时，需要处理 progress_bar  等信息
 	func setup_for_unit(unit_map: Dictionary):
 		var unit: BaseUnit = unit_map.values()[0]
+		var svc := _get_buff_service()
+		if svc != null:
+			for snap in svc.get_active_buff_snapshots(unit):
+				_add_service_buff_slot(unit, snap)
 		var buff_map: Dictionary = unit.buff_map
 		if buff_map != null and buff_map.keys().size() > 0:
 			for code in buff_map.keys():
@@ -442,6 +528,7 @@ class BuffBarComponent extends BaseBarComponent:
 			
 			
 	func clear():
+		_service_slots.clear()
 		_slots = []
 		for child: BaseSlot in _buff_bar.get_children():
 			_action_bar.deregister_active(child.active_callback)
