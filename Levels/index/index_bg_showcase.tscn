@@ -1,0 +1,138 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="ArrayMesh" path="res://render_v10/assets/terrain.res" id="1_terrain"]
+[ext_resource type="Material" path="res://render_v10/materials/ground_standard_pbr.tres" id="2_ground_mat"]
+[ext_resource type="Shader" path="res://render_v10/shaders/forest_air.gdshader" id="3_forest_air"]
+[ext_resource type="Script" path="res://render_v10/monster_road.gd" id="4_monster_road"]
+[ext_resource type="Script" path="res://render_v10/ruins_builder.gd" id="5_ruins_builder"]
+[ext_resource type="PackedScene" path="res://render_v10/scenery_layout.tscn" id="6_scenery"]
+[ext_resource type="PackedScene" path="res://Asserts/Models/rts_ultimate_fantiasy/glTF/TownCenter_SecondAge_Level2.gltf" id="7_sanctuary"]
+[ext_resource type="PackedScene" path="res://render_v10/brazier.tscn" id="8_brazier"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_golden"]
+sky_top_color = Color(0.24, 0.37, 0.56, 1)
+sky_horizon_color = Color(0.85, 0.73, 0.54, 1)
+ground_bottom_color = Color(0.16, 0.19, 0.12, 1)
+ground_horizon_color = Color(0.54, 0.50, 0.38, 1)
+
+[sub_resource type="Sky" id="Sky_golden"]
+sky_material = SubResource("ProceduralSkyMaterial_golden")
+
+[sub_resource type="Environment" id="Environment_golden"]
+background_mode = 2
+sky = SubResource("Sky_golden")
+ambient_light_source = 2
+ambient_light_color = Color(0.42, 0.55, 0.66, 1)
+ambient_light_energy = 0.46
+reflected_light_source = 2
+tonemap_mode = 3
+tonemap_exposure = 1.05
+tonemap_white = 4.0
+ssao_enabled = true
+ssao_radius = 0.30
+ssao_intensity = 1.15
+ssao_power = 1.2
+ssao_detail = 0.5
+ssao_light_affect = 0.06
+ssil_enabled = true
+ssil_radius = 1.8
+ssil_intensity = 0.38
+glow_enabled = true
+glow_intensity = 0.24
+glow_hdr_threshold = 1.15
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.005
+volumetric_fog_albedo = Color(0.95, 0.84, 0.68, 1)
+volumetric_fog_length = 72.0
+volumetric_fog_detail_spread = 0.7
+volumetric_fog_ambient_inject = 0.05
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_forest_air"]
+shader = ExtResource("3_forest_air")
+
+[sub_resource type="Curve3D" id="Curve3D_road"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -40.942, -3.8147e-06, 7.22268, -2, 0, 2, 2, 0, -2, 18, 0, 6, 2, 0, 2, -2, 0, -2, 18, 0, -6, 2, 0, 2, -2, 0, -2, -29.2242, 0, -7.33026, 0, 0, 0, 0, 0, 0, -29.8582, 0, -17.7681, 0, 0, 0, 0, 0, 0, 26.8472, 0, -17.7681),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
+[node name="IndexBgShowcase" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_golden")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 0)
+rotation_degrees = Vector3(-19, -124, 0)
+light_color = Color(1, 0.81, 0.58, 1)
+light_energy = 1.62
+light_volumetric_fog_energy = 2.6
+shadow_enabled = true
+shadow_bias = 0.025
+shadow_normal_bias = 0.65
+shadow_blur = 1.0
+directional_shadow_mode = 0
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.4, 7.6, -0.2)
+rotation_degrees = Vector3(-19.5, -36.5, 0)
+current = true
+fov = 45.0
+near = 0.2
+far = 180.0
+
+[node name="GroundMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.001, 0)
+layers = 524289
+mesh = ExtResource("1_terrain")
+material_override = ExtResource("2_ground_mat")
+
+[node name="GridMap" type="GridMap" parent="."]
+cell_size = Vector3(2, 2, 2)
+
+[node name="Path3D" type="Path3D" parent="."]
+curve = SubResource("Curve3D_road")
+
+[node name="SanctuaryFountain" parent="." instance=ExtResource("7_sanctuary")]
+transform = Transform3D(-0.173648, 0, -0.984808, 0, 1, 0, 0.984808, 0, -0.173648, 28.6, 0, -17.6)
+
+[node name="ShrineBrazierL" parent="." instance=ExtResource("8_brazier")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.8, 0, -15.2)
+
+[node name="FlameLightL" type="OmniLight3D" parent="ShrineBrazierL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+light_color = Color(1, 0.58, 0.22, 1)
+light_energy = 2.6
+omni_range = 8.5
+
+[node name="ShrineBrazierR" parent="." instance=ExtResource("8_brazier")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.4, 0, -20.2)
+
+[node name="FlameLightR" type="OmniLight3D" parent="ShrineBrazierR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+light_color = Color(1, 0.56, 0.20, 1)
+light_energy = 2.2
+omni_range = 7.5
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="ContinuousForestAir" type="FogVolume" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 4, -7)
+size = Vector3(68, 12, 48)
+material = SubResource("ShaderMaterial_forest_air")
+
+[node name="MonsterRoad" type="Node3D" parent="Environment"]
+script = ExtResource("4_monster_road")
+path_node_path = NodePath("../../Path3D")
+road_width = 2.4
+slab_height = 0.08
+curb_height = 0.11
+curb_width = 0.16
+
+[node name="RuinsBuilder" type="Node3D" parent="Environment"]
+script = ExtResource("5_ruins_builder")
+path_node_path = NodePath("../../Path3D")
+grid_map_path = NodePath("../../GridMap")
+
+[node name="SceneryLayout" parent="Environment" instance=ExtResource("6_scenery")]

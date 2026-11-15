@@ -10,6 +10,19 @@ var walk_run_blending = 0.0 : set = _set_walk_run_blending
 
 
 func _ready() -> void:
+	if clazz == null and max_health <= 0.0:
+		var hero_res := load("res://Unit/player/resources/gdbot_skin.tres") as BaseUnitResource
+		if hero_res != null:
+			max_health = hero_res.max_health
+			base_max_health = hero_res.max_health
+			if move_speed <= 0.0:
+				move_speed = hero_res.move_speed
+				base_move_speed = hero_res.move_speed
+			if attack_speed <= 0.0:
+				attack_speed = hero_res.attack_speed
+				base_attack_speed = hero_res.attack_speed
+			if unit_growth_factor <= 0.0:
+				unit_growth_factor = hero_res.unit_growth_factor
 	for mesh in CommonUtil.get_all_mesh_instances(self):
 		for surface in mesh.mesh.get_surface_count():
 			var material = mesh.get_active_material(surface)

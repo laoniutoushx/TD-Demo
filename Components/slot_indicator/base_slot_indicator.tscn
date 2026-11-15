@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://cwvfq1h6pfj5i" path="res://Components/slot_indicator/base_slot_indicator.gd" id="1_7nnp2"]
 [ext_resource type="PackedScene" uid="uid://bk72dt5ar01dx" path="res://Components/background/background_slot_basic.tscn" id="2_mymhx"]
+[ext_resource type="Theme" path="res://UI/theme/moss_stone_theme.tres" id="3_theme"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_tooltip.tres" id="4_tooltip"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ljmcq"]
 
@@ -21,6 +23,7 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_theme")
 script = ExtResource("1_7nnp2")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
@@ -37,9 +40,10 @@ offset_right = 160.0
 offset_bottom = 172.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxEmpty_ljmcq")
+theme_override_styles/panel = ExtResource("4_tooltip")
 
 [node name="BackgroundSlotBasic" parent="PanelContainer" instance=ExtResource("2_mymhx")]
+visible = false
 layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]

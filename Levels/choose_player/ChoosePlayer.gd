@@ -3,8 +3,8 @@ extends Node
 var choose_player_tres = ResourceLoader.load("res://Levels/choose_player/ChoosePlayer.tres")
 @onready var canvas_layer: CanvasLayer = $CanvasLayer
 
-@onready var texture_rect: TextureRect = $CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer/VSplitContainer/TextureRect
-@onready var texture_rect2: TextureRect = $CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer2/VSplitContainer/TextureRect
+@onready var texture_rect: TextureRect = %HeroPortrait1
+@onready var texture_rect2: TextureRect = %HeroPortrait2
 
 var choose_player_shader = preload("res://Levels/choose_player/ChoosePlayer.gdshader")
 

@@ -1,0 +1,105 @@
+[gd_resource type="Theme" format=3 uid="uid://ct2aklrusbqtq"]
+
+[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_obsidian.tres" id="1_panel"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/button_disabled.tres" id="2_btn_dis"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/button_secondary_hover.tres" id="3_btn_hov"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/button_secondary_normal.tres" id="4_btn_nor"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/button_secondary_pressed.tres" id="5_btn_pre"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/progress_bg.tres" id="6_prog_bg"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/progress_hp_fill.tres" id="7_prog_fill"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_tooltip.tres" id="8_popup"]
+
+[ext_resource type="Font" path="res://UI/theme/fonts/body.tres" id="20_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+bg_color = Color(0.11, 0.165, 0.137, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.271, 0.839, 0.627, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_grabber"]
+bg_color = Color(0.165, 0.549, 0.42, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.271, 0.839, 0.627, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_track"]
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.047, 0.067, 0.055, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.306, 0.337, 0.298, 0.9)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_popup_hover"]
+bg_color = Color(0.122, 0.22, 0.18, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.271, 0.839, 0.627, 0.9)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[resource]
+default_font = ExtResource("20_font")
+default_font_size = 16
+Button/colors/font_color = Color(0.918, 0.902, 0.847, 1)
+Button/colors/font_disabled_color = Color(0.45, 0.48, 0.45, 0.7)
+Button/colors/font_focus_color = Color(0.95, 0.95, 0.9, 1)
+Button/colors/font_hover_color = Color(0.96, 0.98, 0.94, 1)
+Button/colors/font_pressed_color = Color(0.85, 0.95, 0.9, 1)
+Button/styles/disabled = ExtResource("2_btn_dis")
+Button/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+Button/styles/hover = ExtResource("3_btn_hov")
+Button/styles/normal = ExtResource("4_btn_nor")
+Button/styles/pressed = ExtResource("5_btn_pre")
+HSlider/styles/grabber_area = SubResource("StyleBoxFlat_slider_grabber")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_grabber")
+HSlider/styles/slider = SubResource("StyleBoxFlat_slider_track")
+Label/colors/font_color = Color(0.918, 0.902, 0.847, 1)
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.75)
+Label/constants/shadow_offset_x = 1
+Label/constants/shadow_offset_y = 1
+OptionButton/colors/font_color = Color(0.918, 0.902, 0.847, 1)
+OptionButton/colors/font_disabled_color = Color(0.45, 0.48, 0.45, 0.7)
+OptionButton/styles/disabled = ExtResource("2_btn_dis")
+OptionButton/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+OptionButton/styles/hover = ExtResource("3_btn_hov")
+OptionButton/styles/normal = ExtResource("4_btn_nor")
+OptionButton/styles/pressed = ExtResource("5_btn_pre")
+PanelContainer/styles/panel = ExtResource("1_panel")
+PopupMenu/colors/font_color = Color(0.918, 0.902, 0.847, 1)
+PopupMenu/colors/font_hover_color = Color(0.96, 0.98, 0.94, 1)
+PopupMenu/styles/hover = SubResource("StyleBoxFlat_popup_hover")
+PopupMenu/styles/panel = ExtResource("8_popup")
+ProgressBar/styles/background = ExtResource("6_prog_bg")
+ProgressBar/styles/fill = ExtResource("7_prog_fill")
+RichTextLabel/colors/default_color = Color(0.918, 0.902, 0.847, 1)
+RichTextLabel/colors/font_shadow_color = Color(0, 0, 0, 0.75)
+RichTextLabel/constants/shadow_offset_x = 1
+RichTextLabel/constants/shadow_offset_y = 1

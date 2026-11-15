@@ -1,92 +1,159 @@
-[gd_scene load_steps=8 format=3 uid="uid://dt6nat6rbetj6"]
+[gd_scene load_steps=11 format=3 uid="uid://dt6nat6rbetj6"]
 
-[ext_resource type="Script" uid="uid://c2u6cwiof1ecx" path="res://Levels/choose_player/ChoosePlayer.gd" id="1_04x2j"]
-[ext_resource type="Texture2D" uid="uid://bflsp3y0iihgl" path="res://Asserts/Images/00011-2797661415.png" id="2_51um2"]
-[ext_resource type="Shader" uid="uid://b6hu7pigktaha" path="res://Levels/choose_player/ChoosePlayer.gdshader" id="2_f3m4m"]
-[ext_resource type="Texture2D" uid="uid://c34aywixmee4i" path="res://Asserts/Images/00042-1141281929.png" id="3_qjn0w"]
+[ext_resource type="Script" uid="uid://c2u6cwiof1ecx" path="res://Levels/choose_player/ChoosePlayer.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bflsp3y0iihgl" path="res://Asserts/Images/00011-2797661415.png" id="2_hero1"]
+[ext_resource type="Texture2D" uid="uid://c34aywixmee4i" path="res://Asserts/Images/00042-1141281929.png" id="3_hero2"]
+[ext_resource type="Theme" path="res://UI/theme/moss_stone_theme.tres" id="4_theme"]
+[ext_resource type="PackedScene" path="res://UI/theme/components/title_banner.tscn" id="5_banner"]
+[ext_resource type="PackedScene" path="res://UI/theme/components/moss_frame_accents.tscn" id="6_moss"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_obsidian.tres" id="7_obsidian"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_recessed.tres" id="8_recessed"]
+[ext_resource type="FontFile" path="res://UI/theme/fonts/display.tres" id="9_display"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ey8ka"]
-shader = ExtResource("2_f3m4m")
-shader_parameter/outline_color = Color(0, 0, 0, 1)
-shader_parameter/outline_width = 1.0
-
-[sub_resource type="LabelSettings" id="LabelSettings_1w3dy"]
-font_size = 60
-outline_size = 10
-outline_color = Color(0.45098, 1, 0.866667, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_t60bw"]
-font_size = 60
-outline_size = 10
-outline_color = Color(1, 0.580392, 0.67451, 1)
+[sub_resource type="LabelSettings" id="LabelSettings_hero_name"]
+font = ExtResource("9_display")
+font_size = 28
+font_color = Color(0.95, 0.91, 0.78, 1)
+outline_size = 2
+outline_color = Color(0.06, 0.08, 0.06, 0.92)
+shadow_size = 3
+shadow_color = Color(0.03, 0.04, 0.03, 0.65)
+shadow_offset = Vector2(0, 2)
 
 [node name="ChoosePlayer" type="Node"]
-script = ExtResource("1_04x2j")
+script = ExtResource("1_script")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 129
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer"]
+[node name="DimScrim" type="ColorRect" parent="CanvasLayer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+color = Color(0.02, 0.035, 0.028, 0.72)
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/PanelContainer"]
-layout_mode = 2
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_bottom = 30
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("4_theme")
 
-[node name="GridContainer" type="GridContainer" parent="CanvasLayer/PanelContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer"]
 layout_mode = 2
-columns = 2
+theme_override_constants/separation = 18
 
-[node name="HSplitContainer" type="HSplitContainer" parent="CanvasLayer/PanelContainer/MarginContainer/GridContainer"]
+[node name="TitleBanner" parent="CanvasLayer/CenterContainer/VBoxContainer" instance=ExtResource("5_banner")]
 layout_mode = 2
-size_flags_horizontal = 3
+title_text = "选择英雄"
+title_font_size = 40
+plaque_min_size = Vector2(360, 84)
+
+[node name="CardFrame" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame"]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("7_obsidian")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
+
+[node name="GridContainer" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 26
+
+[node name="HeroCard1" type="PanelContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(268, 356)
+layout_mode = 2
+focus_mode = 2
+theme_override_styles/panel = ExtResource("8_recessed")
+
+[node name="CardMargin1" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard1"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox1" type="VBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard1/CardMargin1"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="HeroPortrait1" type="TextureRect" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard1/CardMargin1/VBox1"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(236, 268)
+layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
+texture = ExtResource("2_hero1")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="VSplitContainer" type="VSplitContainer" parent="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard1/CardMargin1/VBox1"]
 layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer/VSplitContainer"]
-material = SubResource("ShaderMaterial_ey8ka")
-layout_mode = 2
-texture = ExtResource("2_51um2")
-expand_mode = 4
-stretch_mode = 5
-
-[node name="Label" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer/VSplitContainer"]
-layout_mode = 2
-size_flags_vertical = 8
+mouse_filter = 2
 text = "法师"
-label_settings = SubResource("LabelSettings_1w3dy")
+label_settings = SubResource("LabelSettings_hero_name")
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="HSplitContainer2" type="HSplitContainer" parent="CanvasLayer/PanelContainer/MarginContainer/GridContainer"]
+[node name="HeroCard2" type="PanelContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(268, 356)
 layout_mode = 2
-size_flags_horizontal = 3
+focus_mode = 2
+theme_override_styles/panel = ExtResource("8_recessed")
+
+[node name="CardMargin2" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard2"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 14
+
+[node name="VBox2" type="VBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard2/CardMargin2"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="HeroPortrait2" type="TextureRect" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard2/CardMargin2/VBox2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(236, 268)
+layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
+texture = ExtResource("3_hero2")
+expand_mode = 1
+stretch_mode = 6
 
-[node name="VSplitContainer" type="VSplitContainer" parent="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer2"]
+[node name="Label" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard2/CardMargin2/VBox2"]
 layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer2/VSplitContainer"]
-layout_mode = 2
-texture = ExtResource("3_qjn0w")
-expand_mode = 4
-stretch_mode = 5
-
-[node name="Label2" type="Label" parent="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer2/VSplitContainer"]
-layout_mode = 2
-size_flags_vertical = 8
+mouse_filter = 2
 text = "战士"
-label_settings = SubResource("LabelSettings_t60bw")
+label_settings = SubResource("LabelSettings_hero_name")
 horizontal_alignment = 1
+vertical_alignment = 1
 
-[connection signal="focus_entered" from="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer/VSplitContainer" to="." method="_on_v_split_container_focus_entered"]
-[connection signal="focus_exited" from="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer/VSplitContainer" to="." method="_on_v_split_container_focus_exited"]
-[connection signal="mouse_entered" from="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer/VSplitContainer" to="." method="_on_v_split_container_mouse_entered"]
-[connection signal="mouse_exited" from="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer/VSplitContainer" to="." method="_on_v_split_container_mouse_exited"]
-[connection signal="mouse_entered" from="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer2" to="." method="_on_h_split_container_2_mouse_entered"]
-[connection signal="mouse_exited" from="CanvasLayer/PanelContainer/MarginContainer/GridContainer/HSplitContainer2" to="." method="_on_h_split_container_2_mouse_exited"]
+[node name="MossFrameAccents" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame" instance=ExtResource("6_moss")]
+layout_mode = 2
+
+[connection signal="focus_entered" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard1" to="." method="_on_v_split_container_focus_entered"]
+[connection signal="focus_exited" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard1" to="." method="_on_v_split_container_focus_exited"]
+[connection signal="mouse_entered" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard1" to="." method="_on_v_split_container_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard1" to="." method="_on_v_split_container_mouse_exited"]
+[connection signal="mouse_entered" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard2" to="." method="_on_h_split_container_2_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/MarginContainer/GridContainer/HeroCard2" to="." method="_on_h_split_container_2_mouse_exited"]

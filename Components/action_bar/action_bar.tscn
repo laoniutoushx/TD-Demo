@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://cddhheg1d4j32"]
+[gd_scene load_steps=33 format=3 uid="uid://cddhheg1d4j32"]
 
 [ext_resource type="Script" uid="uid://dajj0nq7ygyay" path="res://Components/action_bar/action_bar.gd" id="1_dpfvq"]
 [ext_resource type="PackedScene" uid="uid://d2fad1mnop0tn" path="res://Components/action_bar/base_slot.tscn" id="2_7x41a"]
@@ -9,6 +9,13 @@
 [ext_resource type="PackedScene" uid="uid://0pwttra0hfwy" path="res://Components/action_bar/player_slot.tscn" id="6_gevm2"]
 [ext_resource type="PackedScene" uid="uid://c2f5edaxam3r8" path="res://Components/action_bar/item_slot_empty.tscn" id="6_t2jrh"]
 [ext_resource type="PackedScene" uid="uid://bax0nhyh31t2m" path="res://Components/action_bar/player_slot_empty.tscn" id="7_t2jrh"]
+[ext_resource type="Theme" path="res://UI/theme/moss_stone_theme.tres" id="8_theme"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_obsidian.tres" id="9_obsidian"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_recessed.tres" id="10_recessed"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/progress_hp_fill.tres" id="11_hp_fill"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/progress_mp_fill.tres" id="12_mp_fill"]
+
+[ext_resource type="PackedScene" path="res://UI/theme/components/moss_frame_accents.tscn" id="30_moss"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_y5he4"]
 
@@ -698,93 +705,181 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -437.0
-offset_top = -290.0
+offset_top = -250.0
 offset_right = 437.0
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 3
 size_flags_vertical = 10
+theme = ExtResource("8_theme")
 theme_override_styles/panel = SubResource("StyleBoxEmpty_y5he4")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Container"]
 layout_mode = 2
 size_flags_vertical = 8
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_bottom = 12
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer"]
-material = SubResource("ShaderMaterial_5vfmd")
 layout_mode = 2
 size_flags_vertical = 8
-theme_override_styles/panel = SubResource("StyleBoxFlat_gevm2")
+theme_override_styles/panel = ExtResource("9_obsidian")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer"]
 layout_mode = 2
 size_flags_vertical = 8
+theme_override_constants/separation = 6
 
 [node name="TopC" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer"]
-material = SubResource("ShaderMaterial_t2jrh")
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxEmpty_gevm2")
+theme_override_styles/panel = ExtResource("10_recessed")
 
 [node name="TopMarginC" type="MarginContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC"]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 2
 
-[node name="SelectionBar" type="GridContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC"]
+[node name="TopRow" type="HBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="SelectionBar" type="GridContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow"]
 unique_name_in_owner = true
 layout_direction = 2
 layout_mode = 2
-theme_override_constants/h_separation = 15
-theme_override_constants/v_separation = 10
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 8
 columns = 11
 
-[node name="BaseSlot" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot2" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot2" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot3" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot3" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot4" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot4" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot5" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot5" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot6" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot6" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot7" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot7" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot8" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot8" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot9" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot9" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot10" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot10" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
 
-[node name="BaseSlot11" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/SelectionBar" instance=ExtResource("2_7x41a")]
+[node name="BaseSlot11" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SelectionBar" instance=ExtResource("2_7x41a")]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0vryi")
+
+[node name="SingleUnitSummary" type="HBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Bars" type="VBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary"]
+custom_minimum_size = Vector2(184, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+
+[node name="HPRow" type="HBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Bars"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Label" type="Label" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Bars/HPRow"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.651, 0.922, 0.722, 1)
+theme_override_font_sizes/font_size = 15
+text = "HP"
+
+[node name="UnitHPBar" type="ProgressBar" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Bars/HPRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 15)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/fill = ExtResource("11_hp_fill")
+show_percentage = false
+
+[node name="UnitHPLabel" type="Label" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Bars/HPRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "0/0"
+
+[node name="MPRow" type="HBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Bars"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Label" type="Label" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Bars/MPRow"]
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.839, 0.98, 1)
+theme_override_font_sizes/font_size = 15
+text = "MP"
+
+[node name="UnitMPBar" type="ProgressBar" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Bars/MPRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 15)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_styles/fill = ExtResource("12_mp_fill")
+show_percentage = false
+
+[node name="UnitMPLabel" type="Label" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Bars/MPRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "0/0"
+
+[node name="Stats" type="HBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 10
+
+[node name="UnitAtkLabel" type="Label" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "攻击 0"
+
+[node name="UnitSpdLabel" type="Label" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC/TopRow/SingleUnitSummary/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "移速 0"
 
 [node name="BottomC" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer"]
 material = SubResource("ShaderMaterial_t2jrh")
@@ -902,12 +997,11 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="Buff" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomContainer/MarginContainer2/ItemABuff/GridContainer"]
-material = SubResource("ShaderMaterial_tnudx")
 custom_minimum_size = Vector2(328, 42)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_5vfmd")
+theme_override_styles/panel = ExtResource("10_recessed")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomContainer/MarginContainer2/ItemABuff/GridContainer/Buff"]
 layout_mode = 2
@@ -937,9 +1031,8 @@ size_flags_vertical = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomContainer/MarginContainer3"]
-material = SubResource("ShaderMaterial_7c2rw")
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_4bm7g")
+theme_override_styles/panel = ExtResource("10_recessed")
 
 [node name="MarginContainer3" type="MarginContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomContainer/MarginContainer3/PanelContainer"]
 layout_mode = 2
@@ -970,3 +1063,6 @@ unique_name_in_owner = true
 visible = false
 
 [node name="Timer" type="Timer" parent="."]
+
+[node name="MossFrameAccents" parent="CanvasLayer/Container/MarginContainer" instance=ExtResource("30_moss")]
+layout_mode = 2

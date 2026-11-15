@@ -1,0 +1,79 @@
+[
+  {
+    "id": "01_main_menu",
+    "title": "主菜单",
+    "file": "01_main_menu.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-7d4d7094-529f-47f2-a0db-dfb7bfa17a28.png",
+    "reviewed": true
+  },
+  {
+    "id": "02_choose_player",
+    "title": "角色选择",
+    "file": "02_choose_player.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-7fad2f84-bd00-40a4-a1b4-3f2648a9083e.png",
+    "reviewed": true
+  },
+  {
+    "id": "03_battle_idle",
+    "title": "战斗·未选中",
+    "file": "03_battle_idle.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-3184c96e-2d7e-40de-bb49-3ffe9e09f56e.png",
+    "reviewed": true
+  },
+  {
+    "id": "04_battle_selected",
+    "title": "战斗·单选",
+    "file": "04_battle_selected.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-11bc92c1-1203-4e55-9a74-2d646fcb6567.png",
+    "reviewed": true
+  },
+  {
+    "id": "05_battle_multiselect",
+    "title": "战斗·多选",
+    "file": "05_battle_multiselect.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-932b497c-c87a-499f-86ad-37af243920fa.png",
+    "reviewed": true
+  },
+  {
+    "id": "06_skill_tooltip",
+    "title": "技能详情与施法",
+    "file": "06_skill_tooltip.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-59c2706e-23e7-43b8-80b3-af18a451ef3b.png",
+    "reviewed": true
+  },
+  {
+    "id": "07_item_buff_tooltip",
+    "title": "装备与状态详情",
+    "file": "07_item_buff_tooltip.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-dd318f27-0340-4402-8fe0-3a62955106d2.png",
+    "reviewed": true
+  },
+  {
+    "id": "08_talent_selection",
+    "title": "天赋选择",
+    "file": "08_talent_selection.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-3d33b3ff-7bb2-455e-9d43-395509bf5787.png",
+    "reviewed": true
+  },
+  {
+    "id": "09_settings",
+    "title": "设置",
+    "file": "09_settings.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-e73e5d7b-7dcb-4ffa-9176-1bc5da80ef27.png",
+    "reviewed": true
+  },
+  {
+    "id": "10_victory",
+    "title": "胜利结算",
+    "file": "10_victory.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-56d55f2c-bf85-4927-8359-72dc2d12a3a0.png",
+    "reviewed": true
+  },
+  {
+    "id": "11_defeat",
+    "title": "失败结算",
+    "file": "11_defeat.png",
+    "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-0c635d3b-0ade-497f-a332-b3121e1d7b07.png",
+    "reviewed": true
+  }
+]

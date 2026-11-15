@@ -9,6 +9,19 @@ class_name ActionBar extends Control
 @onready var buff_bar: GridContainer = %BuffBar
 
 @onready var progress_util_bar: ProgressUtilBar = %ProgressUtilBar
+@onready var single_unit_summary: HBoxContainer = %SingleUnitSummary
+@onready var hp_row: HBoxContainer = %HPRow
+@onready var unit_hp_bar: ProgressBar = %UnitHPBar
+@onready var unit_hp_label: Label = %UnitHPLabel
+@onready var mp_row: HBoxContainer = %MPRow
+@onready var unit_mp_bar: ProgressBar = %UnitMPBar
+@onready var unit_mp_label: Label = %UnitMPLabel
+@onready var unit_atk_label: Label = %UnitAtkLabel
+@onready var unit_spd_label: Label = %UnitSpdLabel
+
+var _summary_elapsed: float = 0.0
+var _summary_cache: Array = []
+var _summary_unit: BaseUnit = null
 
 
 @export var slot: PackedScene
@@ -123,7 +136,90 @@ func _on_player_select_units(unit_map: Dictionary, mouse_pos: Vector3, on_select
 			open_buff_bar(unit_map)
 			# progress bar
 			progress_util_bar.close()
+			# single-unit summary (hidden on multi-select)
+			_update_single_unit_summary(unit_map)
 		
+
+func _process(delta: float) -> void:
+	if not (single_unit_summary and single_unit_summary.visible and is_instance_valid(active_unit)):
+		return
+	_summary_elapsed += delta
+	if _summary_elapsed >= 0.15:
+		_summary_elapsed = 0.0
+		_refresh_unit_summary_values(active_unit)
+
+
+func _on_summary_unit_stat_changed(_unit: BaseUnit = null, _arg = null) -> void:
+	if single_unit_summary and single_unit_summary.visible and is_instance_valid(active_unit):
+		_refresh_unit_summary_values(active_unit)
+
+
+func _bind_summary_unit(unit: BaseUnit) -> void:
+	if _summary_unit == unit:
+		return
+	if is_instance_valid(_summary_unit):
+		if _summary_unit.health_changed.is_connected(_on_summary_unit_stat_changed):
+			_summary_unit.health_changed.disconnect(_on_summary_unit_stat_changed)
+		if _summary_unit.mana_changed.is_connected(_on_summary_unit_stat_changed):
+			_summary_unit.mana_changed.disconnect(_on_summary_unit_stat_changed)
+	_summary_unit = unit
+	if is_instance_valid(_summary_unit):
+		if not _summary_unit.health_changed.is_connected(_on_summary_unit_stat_changed):
+			_summary_unit.health_changed.connect(_on_summary_unit_stat_changed)
+		if not _summary_unit.mana_changed.is_connected(_on_summary_unit_stat_changed):
+			_summary_unit.mana_changed.connect(_on_summary_unit_stat_changed)
+
+
+func _update_single_unit_summary(unit_map: Dictionary) -> void:
+	if not single_unit_summary:
+		return
+	if unit_map.size() == 1 and is_instance_valid(active_unit):
+		single_unit_summary.visible = true
+		_bind_summary_unit(active_unit)
+		_summary_cache.clear()
+		_summary_elapsed = 0.0
+		_refresh_unit_summary_values(active_unit)
+	else:
+		_bind_summary_unit(null)
+		_summary_cache.clear()
+		single_unit_summary.visible = false
+
+
+func _refresh_unit_summary_values(unit: BaseUnit) -> void:
+	var hp_i := int(round(unit.health))
+	var max_hp_f := float(unit.max_health)
+	var max_hp_i := int(round(max_hp_f))
+	var mp_i := int(round(unit.mana))
+	var max_mp_f := float(unit.max_mana)
+	var max_mp_i := int(round(max_mp_f))
+	var atk_i := int(round(unit.attack_value))
+	var spd_i := int(round(unit.move_speed))
+	var snapshot := [unit.get_instance_id(), hp_i, max_hp_i, mp_i, max_mp_i, atk_i, spd_i]
+	if snapshot == _summary_cache:
+		return
+	_summary_cache = snapshot
+
+	var has_hp := max_hp_f > 0.0
+	hp_row.visible = has_hp
+	if has_hp:
+		unit_hp_bar.max_value = max_hp_f
+		unit_hp_bar.value = clampf(float(unit.health), 0.0, max_hp_f)
+		unit_hp_label.text = "%d/%d" % [hp_i, max_hp_i]
+
+	var has_mana := max_mp_f > 0.0
+	mp_row.visible = has_mana
+	if has_mana:
+		unit_mp_bar.max_value = max_mp_f
+		unit_mp_bar.value = clampf(float(unit.mana), 0.0, max_mp_f)
+		unit_mp_label.text = "%d/%d" % [mp_i, max_mp_i]
+
+	unit_atk_label.visible = unit.attack_value > 0.0
+	if unit_atk_label.visible:
+		unit_atk_label.text = "攻击 %d" % atk_i
+	unit_spd_label.visible = unit.move_speed > 0.0
+	if unit_spd_label.visible:
+		unit_spd_label.text = "移速 %d" % spd_i
+
 
 func _on_unit_logic_death(id:int, unit :BaseUnit):
 	selection_bar_comp.remove_element(unit)

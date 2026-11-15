@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://UI/theme/components/title_banner.gd" id="1_script"]
+[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_title_plaque.tres" id="2_plaque"]
+[ext_resource type="LabelSettings" path="res://UI/theme/styles/title_label_main.tres" id="3_ls"]
+
+[node name="TitleBanner" type="CenterContainer"]
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="BannerPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 88)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = ExtResource("2_plaque")
+
+[node name="BannerMargin" type="MarginContainer" parent="BannerPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 4
+
+[node name="TitleText" type="Label" parent="BannerPanel/BannerMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "丛林塔防"
+label_settings = ExtResource("3_ls")
+horizontal_alignment = 1
+vertical_alignment = 1

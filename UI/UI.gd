@@ -23,6 +23,8 @@ func _ready() -> void:
 	_on_wood_changed(null, SOS.main.player_controller.wood)
 
 
+	if is_instance_valid(%WavePanel):
+		%WavePanel.resized.connect(reset_wave_tip_pivot_offset_center)
 	reset_wave_tip_pivot_offset_center()
 
 	

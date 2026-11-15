@@ -39,6 +39,8 @@ static var action_bar: ActionBar
 
 static var slot_panel_container_unactive_theme: Theme = preload("res://Components/action_bar/slot_panel_container_unactive_theme.tres")
 static var _slot_material = preload("res://Components/action_bar/corner_boder_color.tres")
+static var _slot_normal_style: StyleBox = preload("res://UI/theme/styles/slot_normal.tres")
+static var _slot_active_style: StyleBox = preload("res://UI/theme/styles/slot_active.tres")
 # static var _slot_shader = preload("res://Components/action_bar/corner_boder_color.gdshader")
 
 # 槽位引用的实体对象
@@ -61,6 +63,7 @@ func _ready() -> void:
 	for child in find_children("*", "Control", true, false):
 		child.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_process(false)
+	add_theme_stylebox_override("panel", _slot_normal_style)
 	# set_process_input(false)
 	slot_material = _slot_material.duplicate(true)
 	progress_bar.value = 0.0
@@ -334,6 +337,7 @@ func update_buff_snapshot(snapshot: Dictionary) -> void:
 		progress_bar.value = 0.0
 		progress_bar.visible = false
 		set_process(false)
+	add_theme_stylebox_override("panel", _slot_normal_style)
 
 
 
@@ -348,9 +352,8 @@ func extend_cooldown(cooldown: float) -> void:
 
 
 func _on_mouse_entered() -> void:
-	# set_process_input(true)
-	# print("mouse hover")
 	is_mouse_hover = true
+	add_theme_stylebox_override("panel", _slot_active_style)
 
 	if icon_texture and icon_texture.material:
 		icon_texture.material.set_shader_parameter("show_border", true)
@@ -358,28 +361,28 @@ func _on_mouse_entered() -> void:
 
 	# 显示 slot_indicator 
 	if is_instance_valid(reference) and reference is Skill:
-		SOS.main.skill_slot_indicator.show_toggle(self)
+		SOS.main.skill_slot_indicator.show_for_slot(self)
 	elif is_instance_valid(reference) and reference is BaseUnit:
-		SOS.main.unit_slot_indicator.show_toggle(self)
+		SOS.main.unit_slot_indicator.show_for_slot(self)
 	elif is_instance_valid(reference) and reference is Item:
-		SOS.main.item_slot_indicator.show_toggle(self)
+		SOS.main.item_slot_indicator.show_for_slot(self)
 	
 
 
 func _on_mouse_exited() -> void:
-	# print("mouse out")
 	is_mouse_hover = false
-	
-	if icon_texture  and icon_texture.material:
+	add_theme_stylebox_override("panel", _slot_normal_style)
+
+	if icon_texture and icon_texture.material:
 		icon_texture.material.set_shader_parameter("show_border", false)
 
 	# 关闭 slot_indicator 
-	if is_instance_valid(reference) and  reference is Skill:
-		SOS.main.skill_slot_indicator.show_toggle(self)
+	if is_instance_valid(reference) and reference is Skill:
+		SOS.main.skill_slot_indicator.hide_for_slot(self)
 	elif is_instance_valid(reference) and reference is BaseUnit:
-		SOS.main.unit_slot_indicator.show_toggle(self)
+		SOS.main.unit_slot_indicator.hide_for_slot(self)
 	elif is_instance_valid(reference) and reference is Item:
-		SOS.main.item_slot_indicator.show_toggle(self)
+		SOS.main.item_slot_indicator.hide_for_slot(self)
 
 	# set_process_input(false)
 

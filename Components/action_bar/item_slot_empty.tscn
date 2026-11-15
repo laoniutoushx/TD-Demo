@@ -101,7 +101,7 @@ animations = [{
 }]
 
 [node name="ItemSlotEmpty" type="PanelContainer"]
-material = SubResource("ShaderMaterial_rbb42")
+
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5

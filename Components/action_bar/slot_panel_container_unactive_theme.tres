@@ -1,13 +1,8 @@
-[gd_resource type="Theme" format=3 uid="uid://diau7m8wv81l3"]
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://diau7m8wv81l3"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5pm7c"]
-texture_margin_left = 5.0
-texture_margin_top = 5.0
-texture_margin_right = 5.0
-texture_margin_bottom = 5.0
-modulate_color = Color(0.394353, 0.394353, 0.394353, 1)
+[ext_resource type="StyleBox" path="res://UI/theme/styles/slot_normal.tres" id="1_slot"]
 
 [resource]
-Label/font_sizes/font_size = 32
+Label/font_sizes/font_size = 22
 Label/fonts/font = null
-PanelContainer/styles/panel = SubResource("StyleBoxTexture_5pm7c")
+PanelContainer/styles/panel = ExtResource("1_slot")

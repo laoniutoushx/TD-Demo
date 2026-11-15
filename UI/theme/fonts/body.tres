@@ -1,0 +1,6 @@
+[gd_resource type="FontVariation" load_steps=2 format=3]
+
+[ext_resource type="FontFile" path="res://Asserts/resources/demo_ui/Font/江城圆体 500W.ttf" id="1_font"]
+
+[resource]
+base_font = ExtResource("1_font")
