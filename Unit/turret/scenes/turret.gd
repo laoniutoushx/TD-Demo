@@ -162,8 +162,7 @@ func attack(turret_top) -> void:
 	#add_child(projectile_ins) 
 
 	# animation play
-	var ap: AnimationPlayer = _ap
-	play_action_animation(anim_attack)
+	play_attack_animation(anim_attack, attack_speed)
 
 	# 选择 N 个单位攻击
 	if attack_num == 1:

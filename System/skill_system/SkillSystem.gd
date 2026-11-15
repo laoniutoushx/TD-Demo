@@ -12,6 +12,13 @@ class_name SkillSystem extends Node
 
 # variable define
 var skill_meta_map: Dictionary = {}
+var combat_ticker: CombatTicker = CombatTicker.new()
+var presentation_port: PresentationPort = PresentationPort.new()
+var _compiled_abilities: Dictionary = {}
+
+
+func _physics_process(delta: float) -> void:
+	combat_ticker.advance(delta)
 
 
 func _ready() -> void:
@@ -148,6 +155,9 @@ func release(skill_context: SkillContext) -> void:
 	if not is_instance_valid(skill) or not is_instance_valid(source_unit):
 		return
 	var generation = SOS.main.level_controller.session_id
+	if skill.skill_meta_res != null and skill.skill_meta_res.ability_definition != null:
+		_release_declarative(skill_context, skill.skill_meta_res.ability_definition, generation)
+		return
 	if source_unit is Gdbot:
 		source_unit.jump()
 		await CommonUtil.await_timer(0.1)
@@ -288,5 +298,33 @@ func skill_release_right_now(skill_context: SkillContext) -> void:
 		skill.change_state(Skill.SKILL_STATE.Release)
 		return
 
+func _release_declarative(skill_context: SkillContext, def: AbilityDefinition, session_id: int) -> void:
+	var key := def.ability_id if def.ability_id != &"" else StringName(def.resource_path)
+	if not _compiled_abilities.has(key):
+		var res := CombatCompiler.compile(def)
+		if not res.get("ok", false):
+			push_error("Failed to compile AbilityDefinition '%s': %s" % [key, str(res["diagnostics"].errors)])
+			return
+		_compiled_abilities[key] = res["plan"]
+	var plan: CombatCompiler.CompiledAbility = _compiled_abilities[key]
+	var buff_svc: BuffService = SystemUtil.buff_system.buff_service if SystemUtil.buff_system != null else null
+	var ctrl_svc: ControlService = SystemUtil.buff_system.control_service if SystemUtil.buff_system != null else null
+	var validator := func(sid: int) -> bool:
+		return is_instance_valid(SOS.main) and is_instance_valid(SOS.main.level_controller) and SOS.main.level_controller.session_id == sid
+	combat_ticker.spawn_runner(
+		plan,
+		session_id,
+		skill_context.source,
+		skill_context.target,
+		skill_context.target_position,
+		presentation_port,
+		buff_svc,
+		ctrl_svc,
+		validator
+	)
+
+
 func reset_session() -> void:
 	auto_release_skill_command_container.clear()
+	combat_ticker.cancel_all(&"session_reset")
+	_compiled_abilities.clear()

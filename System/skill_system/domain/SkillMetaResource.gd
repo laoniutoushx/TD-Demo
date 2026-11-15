@@ -177,3 +177,6 @@ enum SKILL_EFFECT_TYPE{
 
 # skill buff config
 @export var skill_buff_config: Array[BuffResource] = []
+
+# 可选声明式战斗效果定义；存在时走新 CombatTicker 执行器，否则走旧 skill_script
+@export var ability_definition: AbilityDefinition

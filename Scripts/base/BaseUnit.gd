@@ -102,6 +102,18 @@ func play_action_animation(animation: StringName) -> void:
 	_ap.speed_scale = 1.0
 	_ap.play(animation)
 
+func play_attack_animation(animation: StringName, attack_interval: float, max_speed_scale: float = 4.0) -> float:
+	if not is_instance_valid(_ap) or animation == &"" or not _ap.has_animation(animation):
+		return 1.0
+	action_animation_generation += 1
+	action_animation_name = animation
+	if is_instance_valid(_at) and _at.active:
+		resume_animation_tree = true
+		_at.active = false
+	if is_instance_valid(_at) and not _ap.animation_finished.is_connected(_finish_action_animation):
+		_ap.animation_finished.connect(_finish_action_animation)
+	return PresentationPort.play_attack_synced(_ap, animation, attack_interval, max_speed_scale)
+
 func _finish_action_animation(finished: StringName) -> void:
 	if finished != action_animation_name or not is_alive(): return
 	if resume_animation_tree and is_instance_valid(_at): _at.active = true
