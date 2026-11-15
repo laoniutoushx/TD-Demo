@@ -67,14 +67,14 @@ effect_id = &"fox_mover"
 
 [sub_resource type="Resource" id="Resource_mu1gq"]
 script = ExtResource("9_diqmw")
-value = 0.8
+value = 0.5
 
 [sub_resource type="Resource" id="Resource_lrbno"]
 script = ExtResource("10_afgbu")
 buff_id = &"tornado_fox_slow"
 group_id = &"move_slow"
 title = "龙卷风减速"
-desc = "移动速度降低 20%"
+desc = "移动速度降低 50%"
 icon_path = "ice_storm"
 modifiers = Array[ExtResource("9_diqmw")]([SubResource("Resource_mu1gq")])
 lifetime_mode = 1
