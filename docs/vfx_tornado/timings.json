@@ -1,0 +1,23 @@
+{
+  "empty": {
+    "frames": 60,
+    "gpu_median_ms": 0.328999996185303,
+    "gpu_p95_ms": 0.344999998807907,
+    "resolution": "1280x800",
+    "steps": 56
+  },
+  "one_tornado": {
+    "frames": 60,
+    "gpu_median_ms": 0.972000002861023,
+    "gpu_p95_ms": 1.00499999523163,
+    "resolution": "1280x800",
+    "steps": 56
+  },
+  "three_tornadoes": {
+    "frames": 60,
+    "gpu_median_ms": 5.05000019073486,
+    "gpu_p95_ms": 5.38199996948242,
+    "resolution": "1280x800",
+    "steps": 56
+  }
+}

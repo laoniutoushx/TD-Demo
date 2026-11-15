@@ -1,7 +1,7 @@
 param(
     [string]$GodotExecutable = 'H:\Godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe',
     [ValidateSet('forward', 'headless')][string]$Renderer = 'forward',
-    [ValidateSet('projectile-trails', 'full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'skill-vfx-buff', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click', 'building-vfx', 'foundation-blend', 'tactical-grid', 'tactical-subgrid')][string]$Scenario = 'full',
+    [ValidateSet('tornado-fox', 'vfx-parameters', 'tornado-reference', 'tornado-review', 'vfx-catalog', 'vfx-lab', 'reference-projectiles', 'reference-review', 'projectile-trails', 'full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'skill-vfx-buff', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click', 'building-vfx', 'foundation-blend', 'tactical-grid', 'tactical-subgrid')][string]$Scenario = 'full',
     [int]$TimeoutSeconds = 180
 )
 
@@ -54,6 +54,46 @@ if ($Scenario -eq 'skill-vfx-buff') {
     if ($Renderer -eq 'headless') { $arguments += '--headless' }
 }
 $marker = 'FLOW_TEST_OK'
+if ($Scenario -eq 'tornado-fox') {
+    if ($Renderer -eq 'headless') { throw 'tornado-fox requires native rendering and physics' }
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/tornado_fox_smoke.gd', '--log-file', $logPath)
+    $marker = 'TORNADO_FOX_OK'
+}
+if ($Scenario -eq 'vfx-parameters') {
+    if ($Renderer -eq 'headless') { throw 'vfx-parameters requires native rendering for its focused viewport checks' }
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/vfx_parameters_smoke.gd', '--log-file', $logPath)
+    $marker = 'VFX_PARAMETERS_OK'
+}
+if ($Scenario -eq 'tornado-reference') {
+    if ($Renderer -eq 'headless') { throw 'tornado-reference requires native rendering' }
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/tornado_reference_review.gd', '--log-file', $logPath)
+    $marker = 'TORNADO_REFERENCE_OK'
+}
+if ($Scenario -eq 'tornado-review') {
+    if ($Renderer -eq 'headless') { throw 'tornado-review requires native rendering' }
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/tornado_vfx_review.gd', '--log-file', $logPath)
+    $marker = 'TORNADO_VFX_REVIEW_OK'
+}
+if ($Scenario -eq 'vfx-catalog') {
+    if ($Renderer -eq 'headless') { throw 'vfx-catalog requires native rendering' }
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/vfx_lab_catalog_review.gd', '--log-file', $logPath)
+    $marker = 'VFX_CATALOG_REVIEW_OK'
+}
+
+if ($Scenario -eq 'vfx-lab') {
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/vfx_lab_smoke.gd', '--log-file', $logPath)
+    if ($Renderer -eq 'headless') { $arguments += '--headless' }
+    $marker = 'VFX_LAB_OK'
+}
+
+if ($Scenario -in @('reference-projectiles', 'reference-review')) {
+    $scriptPath = if ($Scenario -eq 'reference-review') { 'res://tests/reference_projectiles_review.gd' } else { 'res://tests/reference_projectiles_smoke.gd' }
+    if ($Scenario -eq 'reference-review' -and $Renderer -eq 'headless') { throw 'reference-review requires native rendering' }
+    $arguments = @('--path', $projectRoot, '--script', $scriptPath, '--log-file', $logPath)
+    if ($Renderer -eq 'headless') { $arguments += '--headless' }
+    $marker = if ($Scenario -eq 'reference-review') { 'REFERENCE_REVIEW_OK' } else { 'REFERENCE_PROJECTILES_OK' }
+}
+
 if ($Scenario -eq 'projectile-trails') {
     $arguments = @('--path', $projectRoot, '--script', 'res://tests/projectile_trails_smoke.gd', '--log-file', $logPath)
     if ($Renderer -eq 'headless') { $arguments += '--headless' }

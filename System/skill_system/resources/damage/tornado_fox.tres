@@ -8,7 +8,7 @@
 script = ExtResource("1_v07ic")
 code = "tornado_fox"
 title = "龙卷风"
-desc = "玩家点击施放，向指定方向召唤一道龙卷风，对路径上所有敌人造成一次魔法伤害。"
+desc = "原地聚风成形，龙卷风长大后加速向指定方向推进，对路径上每个敌人造成一次魔法伤害。"
 icon_path = "tornado"
 level = 1
 level_up_gap = 1
@@ -24,7 +24,13 @@ range = 20.0
 release_distance = 20.0
 stock = 1
 value = 50.0
-value_ext = {}
+value_ext = {
+"formation_time": 1.0,
+"launch_size": 0.85,
+"acceleration_time": 0.28,
+"dissipation_time": 0.35,
+"initial_size": 0.18
+}
 run_distance = 20.0
 epoch = 1
 init_num = 15

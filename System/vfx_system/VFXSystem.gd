@@ -86,6 +86,8 @@ func _prepare_vfx_for_reuse(inst: Node3D) -> void:
 	inst.transform = Transform3D.IDENTITY
 	inst.set_process(true)
 	inst.set_physics_process(true)
+	if inst.has_method(&"reset_effect"):
+		inst.call(&"reset_effect")
 	if "transparency" in inst:
 		inst.transparency = 0.0
 	for p in inst.find_children("*", "GPUParticles3D", true, false):

@@ -1,0 +1,45 @@
+{
+  "adapter": "NVIDIA GeForce RTX 3060",
+  "cases": [
+    {
+      "draw_calls": 2.0,
+      "frames": 3683,
+      "instances": 0,
+      "objects": 18.0,
+      "p50_ms": 1.273,
+      "p95_ms": 2.165,
+      "p99_ms": 2.342
+    },
+    {
+      "draw_calls": 6.0,
+      "frames": 3494,
+      "instances": 1,
+      "objects": 22.0,
+      "p50_ms": 1.357,
+      "p95_ms": 2.237,
+      "p99_ms": 2.415
+    },
+    {
+      "draw_calls": 66.0,
+      "frames": 2480,
+      "instances": 10,
+      "objects": 82.0,
+      "p50_ms": 1.939,
+      "p95_ms": 2.51,
+      "p99_ms": 2.827
+    },
+    {
+      "draw_calls": 202.0,
+      "frames": 957,
+      "instances": 30,
+      "objects": 218.0,
+      "p50_ms": 5.112,
+      "p95_ms": 6.044,
+      "p99_ms": 6.531
+    }
+  ],
+  "note": "Short isolated mixed-flight workload; not gameplay FPS or comparison against old prototype",
+  "sample_seconds": 5,
+  "viewport": "1920x1080",
+  "warmup_seconds": 3
+}

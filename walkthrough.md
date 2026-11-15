@@ -108,3 +108,70 @@ Python烘焙依赖NumPy、Pillow。离线PNG读盘提示与headless编辑器现�
 新增 `projectile-trails` 回归入口，加载并移动全部17个场景，检查配置及资源生命周期。Headless / Forward+ 专项通过；Forward+ skill-vfx-buff、Headless full 与 cursor-policy 通过。日志位于 `.godot/check-*-*.log`。Forward+ 首轮因沙箱缓存写入失败，沙箱外重跑通过。
 
 当前专项仅证明场景加载、配置、运动过程与退出无诊断；尚未完成带相机的画面截图、连续性/遮挡视觉验收、跨地点对象池轨迹及性能对比，不声明这些检查通过。
+
+## 三款参考 Projectile 第二轮重做（2026-11-14）
+
+已将方块、螺旋、冰蓝三款从纯色几何原型改为分层材质：黄绿格框与青绿核心、连续宽螺旋带、带噪声缺口和Voronoi裂纹的冰蓝薄壳。碎片改用MultiMesh及独立实例色，尾迹保留世界位置历史；命中拆为短闪、扩张环和碎片消散。对象池复用会清空时间与轨迹。
+
+制作逻辑、贴图用途、Shader公式、截图及性能限制见 [制作拆解](VFX/projectiles/reference_set/制作拆解.md)。[同机位前后对比](docs/vfx_reference/comparison.png) · [侧视](docs/vfx_reference/after_side.png) · [命中](docs/vfx_reference/after_destory_120.png)。
+
+Headless/Forward+ reference-projectiles、Forward+ reference-review，以及Headless skill-vfx-buff、full通过。实验室六个新增条目的切换/播放/退出无头检查通过，沿用现有Shader采样器诊断过滤。RTX3060、1080p、30混合实例的短采样P95 7.279ms、P99 8.598ms；数据为独立预览，不代表实战。正式战场混战与源视频逐像素对齐未声明完成。
+
+
+## 三款参考 Projectile 第三轮对齐（2026-11-14）
+
+逐帧复查后纠正结构：橙色从连续螺旋改为3个独立后向脉冲环；冰蓝从球壳/轨道改为开口冠壳、宽后缘和不对称薄片；绿色改为单一3×3格框和不同尺寸的80实例碎块。增加冠壳顶点起伏和轴向尾迹抖动，保留资源路径兼容。
+
+[参考/实机对照](docs/vfx_reference/reference_vs_iteration03.png) · [上一轮/本轮](docs/vfx_reference/iteration02_vs_03.png) · [三秒动态](docs/vfx_reference/iteration03.mp4)。实现与边界详见 [当前制作拆解](VFX/projectiles/reference_set/制作拆解.md)。
+
+Headless/Forward+ reference-projectiles通过；Forward+关键帧及72帧动态序列无错误；并发短基准完成，30实例P95 6.044ms、P99 6.531ms、202 DrawCall。实际数据见docs/vfx_reference/benchmark.json，不代表战场负载或逐像素还原。上一轮截图保存在docs/vfx_reference/iteration02。
+
+
+## VFX实验室易用性更新（2026-11-14）
+
+实验室改为可在Godot场景树编辑的三栏布局：左侧搜索/分类与常用预设操作，中间独立SubViewport预览，右侧效果/舞台页；顶部固定播放栏。默认显式使用中性哑光地板和淡出网格，地板与背景独立调色，提供深灰/浅灰/纯黑/草地色衬底。新增暂停、鼠标旋转/平移/缩放、自动取景、Tab隐藏面板、预设加载和A/B控件回填；重播保留图层开关。纯预览截图附带参数与JSON，输出路径可复制。
+
+预设保持旧索引0默认值兼容；新开实验室默认选择绿色方块。专属参数可以在面板直接调整。全局时间倍率及窗口缩放配置在退出后恢复。为一致调色给参考碎片材质增加默认白色tint，默认表现不变。
+
+[1080界面](docs/vfx_lab/workbench_1080.png) · [舞台设置](docs/vfx_lab/stage_settings.png) · [小窗口](docs/vfx_lab/workbench_900.png)。Headless/Forward+ vfx-lab回归通过，覆盖全部12资源、筛选、鼠标缩放、Tab、暂停、A/B回填、预设往返与旧版兼容、重播图层和三个窗口尺寸。使用入口仍为VFX/lab/VFXLab.tscn，F6运行。
+
+
+## 全量特效目录接入（2026-11-14）
+
+实验室由固定12项改为自动扫描VFX目录，当前61个场景，含2个原有空占位并明确标注。增加建造、升级、掉落、贴花、治疗和占位分类、中文名称、刷新按钮、自动同名飞行/命中配对。预设/A-B改为优先稳定资源路径，保留原12索引兼容。
+
+补充激光独立线段、动画启动、VFXInstance.play、自销毁后循环重播、贴花落地及粒子范围取景。挂点控制尺度，保留场景原始缩放；未改变正式游戏技能或特效素材。
+
+Headless/Forward+ vfx-lab及Forward+ vfx-catalog通过；61项逐一启动并截图，原生回归无错误/警告。新测试覆盖路径错位恢复、刷新保留参数和自销毁后的自动重播。[资源清单](docs/vfx_lab/catalog/manifest.json) · [全量预览1](docs/vfx_lab/catalog/contact_1.png) · [预览2](docs/vfx_lab/catalog/contact_2.png) · [预览3](docs/vfx_lab/catalog/contact_3.png)。
+
+
+## 2026-11-14 写实体积龙卷风升级
+
+- 两款龙卷风正式资源改用共享 3D 噪声驱动的体积射线步进；加入密度吸收、内部遮光、差速旋转、向上气流、扬尘、碎屑和接地遮光。
+- 保留大型旋风原 Area3D、碰撞形状和技能接入路径；形成阶段不再缩放根节点。实验场增加烟尘厚度和体积采样步数，支持预设/A-B/暂停/重播。
+- 实机检查了透视、正交和进入体积内部的视角。验证：Forward+ tornado-review、skill-vfx-buff、vfx-lab，以及 headless full 通过，无意外报错或泄漏警告。
+- 制作原理、调节与性能边界见 [制作说明](VFX/tornado/制作说明.md)；实际画面见 docs/vfx_tornado/。
+
+
+## 视频参考龙卷风：12 款深度改进
+
+- 从细线圈重做为双层连续漏斗、宽幅破碎风带、起伏扩口、贴地旋流与解析 MultiMesh 碎屑；各款独立材质、尺寸与运动参数。
+- 增加火焰热度流动、上下火舌/火星/局部光，分叉电弧及顶部电晕，沙尘体积/悬尘/碎石，动漫硬边和独立青绿版。现有灰色技能未切换。
+- 新增独立入口 `tests/TornadoReferencePreview.tscn`，可切换/暂停/重播；新增 `tornado-reference` 定向检查已通过，包含对象池复用和多视角截图，无意外报错或泄漏警告。遵照要求未运行 VFX Lab 或全库回归。
+- 总览、逐款短片与 24 秒合集：`docs/vfx_tornado_reference/`。技术与调节说明：`VFX/tornado/reference_set/README.md`。
+
+
+## 专属参数面板与白风保留
+
+- 保留独立白风及旧技能灰色龙卷风。白风资源路径与默认外观不变。
+- VFX Lab 从导出属性、可编辑 Shader Uniform 和普通 GPU 粒子配置自动生成专属控件，支持数值、枚举、布尔、颜色和向量；参数跨预设、A/B、重播保存。几何配置在实例就绪前恢复，修改后重建预览；原始素材保持隔离。
+- 龙卷风新增独立流动速度、透明度、能量亮度、碎石尺度和悬尘浓度 API，旋转与纹理流动解耦。
+- Forward+ `vfx-parameters` 定向检查通过，无意外报错或泄漏警告。未运行 VFX Lab 全库或全游戏回归。面板截图：`docs/vfx_parameters/panel.png`。
+
+
+## 狐狸法师聚风龙卷阶段升级
+
+- 专属 `vfx_tornado_fox_running.tscn`：旋转 2.8、流速 1.5、卷动力度 1.45，叠加低亮度破碎风带；通用灰色及保留白风资源不替换。
+- 实体从 18% 长大，85% 时启动（默认约 0.727 秒），0.28 秒加速，维持原 20 m 射程；到达后 0.35 秒消退。视觉与命中区域同步成长，成形/消退无路径伤害，每目标每波一次命中。
+- `tornado-fox` Forward+ 专项验证通过，包括多波次、复用施法脚本、真实 Area 重叠、去重、边界与清理，无意外报错或泄漏警告；未运行 VFX Lab 或全库验证。
+- 阶段图和原生预览：`docs/tornado_fox/`。参数说明：`System/skill_system/resources/damage/tornado_fox_notes.md`。

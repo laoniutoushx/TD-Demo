@@ -1,0 +1,493 @@
+{
+  "count": 61,
+  "entries": [
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_00.png",
+      "category": "飞行",
+      "index": 0,
+      "label": "子弹",
+      "path": "res://VFX/projectiles/missile/vfx_missile_01_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_01.png",
+      "category": "飞行",
+      "index": 1,
+      "label": "火球",
+      "path": "res://VFX/projectiles/fireball/vfx_Fire_ball_standar_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_02.png",
+      "category": "技能",
+      "index": 2,
+      "label": "雷霆一击",
+      "path": "res://VFX/thunderclap/vfx_thunderclap_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_03.png",
+      "category": "状态",
+      "index": 3,
+      "label": "晕眩",
+      "path": "res://VFX/stun/vfx_stunvfx_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_04.png",
+      "category": "状态",
+      "index": 4,
+      "label": "护盾",
+      "path": "res://VFX/force_field/vfx_force_field_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_05.png",
+      "category": "命中",
+      "index": 5,
+      "label": "受击火花",
+      "path": "res://VFX/impact/vfx_hit_sparks.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_06.png",
+      "category": "飞行",
+      "index": 6,
+      "label": "绿色方块飞行",
+      "path": "res://VFX/projectiles/reference_set/vfx_lattice_orb_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_07.png",
+      "category": "命中",
+      "index": 7,
+      "label": "绿色方块命中",
+      "path": "res://VFX/projectiles/reference_set/vfx_lattice_orb_destory.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_08.png",
+      "category": "飞行",
+      "index": 8,
+      "label": "橙色脉冲环飞行",
+      "path": "res://VFX/projectiles/reference_set/vfx_helix_orb_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_09.png",
+      "category": "命中",
+      "index": 9,
+      "label": "橙色脉冲环命中",
+      "path": "res://VFX/projectiles/reference_set/vfx_helix_orb_destory.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_10.png",
+      "category": "飞行",
+      "index": 10,
+      "label": "冰蓝冠壳飞行",
+      "path": "res://VFX/projectiles/reference_set/vfx_frost_orb_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_11.png",
+      "category": "命中",
+      "index": 11,
+      "label": "冰蓝冠壳命中",
+      "path": "res://VFX/projectiles/reference_set/vfx_frost_orb_destory.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_12.png",
+      "category": "状态",
+      "index": 12,
+      "label": "流血 · 原始粒子样例",
+      "path": "res://VFX/blood/vfx_blood_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_13.png",
+      "category": "建造",
+      "index": 13,
+      "label": "建造定位圈",
+      "path": "res://VFX/building/vfx_build_located_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_14.png",
+      "category": "建造",
+      "index": 14,
+      "label": "建造落地冲击",
+      "path": "res://VFX/building/vfx_building_impact.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_15.png",
+      "category": "建造",
+      "index": 15,
+      "label": "施工法阵",
+      "path": "res://VFX/building/vfx_construction_circle.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_16.png",
+      "category": "建造",
+      "index": 16,
+      "label": "施工扬尘",
+      "path": "res://VFX/building/vfx_construction_dust.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_17.png",
+      "category": "占位",
+      "index": 17,
+      "label": "能量护盾",
+      "path": "res://VFX/energy_shield/vfx_energy_shield_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_18.png",
+      "category": "技能",
+      "index": 18,
+      "label": "漏斗龙卷风",
+      "path": "res://VFX/funnel_tornado/vfx_funnel_tornado_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_19.png",
+      "category": "技能",
+      "index": 19,
+      "label": "闪电连线 / 激光",
+      "path": "res://VFX/laser/vfx_laser_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_20.png",
+      "category": "升级",
+      "index": 20,
+      "label": "升级光效 A",
+      "path": "res://VFX/level_up/vfx_LV_Up_style_a_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_21.png",
+      "category": "升级",
+      "index": 21,
+      "label": "升级光效 B",
+      "path": "res://VFX/level_up/vfx_LV_Up_style_b_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_22.png",
+      "category": "升级",
+      "index": 22,
+      "label": "升级光效 D",
+      "path": "res://VFX/level_up/vfx_LV_Up_style_d_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_23.png",
+      "category": "升级",
+      "index": 23,
+      "label": "升级光效 E",
+      "path": "res://VFX/level_up/vfx_LV_Up_style_e_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_24.png",
+      "category": "升级",
+      "index": 24,
+      "label": "升级光效 C",
+      "path": "res://VFX/level_up/vfx_Lv_Up_style_c_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_25.png",
+      "category": "升级",
+      "index": 25,
+      "label": "技能升级光效",
+      "path": "res://VFX/level_up/vfx_level_up_skill_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_26.png",
+      "category": "升级",
+      "index": 26,
+      "label": "防御塔升级光效",
+      "path": "res://VFX/level_up/vfx_level_up_tower_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_27.png",
+      "category": "升级",
+      "index": 27,
+      "label": "防御塔升级 · 粒子版",
+      "path": "res://VFX/level_up/vfx_level_up_tower_no_ani_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_28.png",
+      "category": "升级",
+      "index": 28,
+      "label": "升级箭头",
+      "path": "res://VFX/level_up/vfx_leveling_up_arrow_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_29.png",
+      "category": "升级",
+      "index": 29,
+      "label": "升级圆环",
+      "path": "res://VFX/level_up/vfx_leveling_up_circle_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_30.png",
+      "category": "掉落",
+      "index": 30,
+      "label": "绿色掉落光效",
+      "path": "res://VFX/loot_drop/VFX_Loot_drop_B_green.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_31.png",
+      "category": "治疗",
+      "index": 31,
+      "label": "治疗光柱",
+      "path": "res://VFX/peaceful/vfx_healing_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_32.png",
+      "category": "治疗",
+      "index": 32,
+      "label": "宁静恢复光环",
+      "path": "res://VFX/peaceful/vfx_peaceful_burning.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_33.png",
+      "category": "飞行",
+      "index": 33,
+      "label": "苦无 · 飞行",
+      "path": "res://VFX/projectiles/asif20_kunai_knife/vfx_asif20_kunai_knife_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_34.png",
+      "category": "飞行",
+      "index": 34,
+      "label": "黑紫弹 · 飞行",
+      "path": "res://VFX/projectiles/black_bird/vfx_black_bird_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_35.png",
+      "category": "占位",
+      "index": 35,
+      "label": "默认弹 · 命中",
+      "path": "res://VFX/projectiles/default/vfx_default_destory.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_36.png",
+      "category": "飞行",
+      "index": 36,
+      "label": "默认弹 · 飞行",
+      "path": "res://VFX/projectiles/default/vfx_default_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_37.png",
+      "category": "飞行",
+      "index": 37,
+      "label": "电枪 · 飞行",
+      "path": "res://VFX/projectiles/electric/vfx_Electric_strike_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_38.png",
+      "category": "飞行",
+      "index": 38,
+      "label": "火焰枪 · 飞行",
+      "path": "res://VFX/projectiles/fireball/vfx_Fire_strike_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_39.png",
+      "category": "命中",
+      "index": 39,
+      "label": "火球 · 命中",
+      "path": "res://VFX/projectiles/fireball/vfx_fireball_destory.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_40.png",
+      "category": "飞行",
+      "index": 40,
+      "label": "火球 · 原版飞行",
+      "path": "res://VFX/projectiles/fireball/vfx_fireball_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_41.png",
+      "category": "飞行",
+      "index": 41,
+      "label": "火焰雨弹体 · 资源变体",
+      "path": "res://VFX/projectiles/fireball_another/fireball_another.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_42.png",
+      "category": "命中",
+      "index": 42,
+      "label": "火焰雨弹体 · 命中",
+      "path": "res://VFX/projectiles/fireball_another/vfx_fireball_another_destory.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_43.png",
+      "category": "飞行",
+      "index": 43,
+      "label": "火焰雨弹体 · 飞行",
+      "path": "res://VFX/projectiles/fireball_another/vfx_fireball_another_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_44.png",
+      "category": "命中",
+      "index": 44,
+      "label": "风暴之锤 · 命中",
+      "path": "res://VFX/projectiles/hammer/vfx_hammer_destory.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_45.png",
+      "category": "飞行",
+      "index": 45,
+      "label": "风暴之锤 · 飞行",
+      "path": "res://VFX/projectiles/hammer/vfx_hammer_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_46.png",
+      "category": "命中",
+      "index": 46,
+      "label": "冰刺 · 命中",
+      "path": "res://VFX/projectiles/ice_prise/vfx_ice_prise_destory.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_47.png",
+      "category": "飞行",
+      "index": 47,
+      "label": "冰刺 · 飞行",
+      "path": "res://VFX/projectiles/ice_prise/vfx_ice_prise_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_48.png",
+      "category": "飞行",
+      "index": 48,
+      "label": "子弹 02",
+      "path": "res://VFX/projectiles/missile/vfx_missile_02_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_49.png",
+      "category": "飞行",
+      "index": 49,
+      "label": "子弹 03",
+      "path": "res://VFX/projectiles/missile/vfx_missile_03_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_50.png",
+      "category": "飞行",
+      "index": 50,
+      "label": "子弹 07",
+      "path": "res://VFX/projectiles/missile/vfx_missile_07_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_51.png",
+      "category": "飞行",
+      "index": 51,
+      "label": "子弹 7 · 资源变体",
+      "path": "res://VFX/projectiles/missile/vfx_missile_7_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_52.png",
+      "category": "飞行",
+      "index": 52,
+      "label": "痛苦之球 · 飞行",
+      "path": "res://VFX/projectiles/scream_ball/vfx_scream_ball_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_53.png",
+      "category": "飞行",
+      "index": 53,
+      "label": "水系弹 · 备用款",
+      "path": "res://VFX/projectiles/water/vfx_water_another_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_54.png",
+      "category": "飞行",
+      "index": 54,
+      "label": "水系弹 · 飞行",
+      "path": "res://VFX/projectiles/water/vfx_water_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_55.png",
+      "category": "贴花",
+      "index": 55,
+      "label": "地面焦痕",
+      "path": "res://VFX/scorch/vfx_burn_decal.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_56.png",
+      "category": "技能",
+      "index": 56,
+      "label": "尖叫波 · Dota2 变体",
+      "path": "res://VFX/scream_wave/vfx_scream_wave_dota2_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_57.png",
+      "category": "技能",
+      "index": 57,
+      "label": "尖叫波",
+      "path": "res://VFX/scream_wave/vfx_scream_wave_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_58.png",
+      "category": "技能",
+      "index": 58,
+      "label": "冲击波",
+      "path": "res://VFX/shockwave/vfx_shockwave_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_59.png",
+      "category": "技能",
+      "index": 59,
+      "label": "传送法阵",
+      "path": "res://VFX/teleport/vfx_teleport_running.tscn"
+    },
+    {
+      "alive_at_capture": true,
+      "capture": "res://.godot/vfx_lab/catalog/item_60.png",
+      "category": "技能",
+      "index": 60,
+      "label": "龙卷风",
+      "path": "res://VFX/tornado/vfx_tornado_running.tscn"
+    }
+  ]
+}

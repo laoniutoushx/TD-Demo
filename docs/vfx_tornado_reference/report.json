@@ -1,0 +1,107 @@
+{
+  "empty": {
+    "median_ms": 1.1360000371933,
+    "p95_ms": 2.47699999809265,
+    "samples": 32
+  },
+  "entries": [
+    {
+      "gpu": {
+        "median_ms": 1.3309999704361,
+        "p95_ms": 1.34800004959106,
+        "samples": 32
+      },
+      "style": "wind"
+    },
+    {
+      "gpu": {
+        "median_ms": 4.20499992370605,
+        "p95_ms": 5.07800006866455,
+        "samples": 32
+      },
+      "style": "dark_red"
+    },
+    {
+      "gpu": {
+        "median_ms": 1.40199995040894,
+        "p95_ms": 1.4190000295639,
+        "samples": 32
+      },
+      "style": "chaos"
+    },
+    {
+      "gpu": {
+        "median_ms": 4.13600015640259,
+        "p95_ms": 5.37900018692017,
+        "samples": 32
+      },
+      "style": "violet"
+    },
+    {
+      "gpu": {
+        "median_ms": 1.33399999141693,
+        "p95_ms": 1.36199998855591,
+        "samples": 32
+      },
+      "style": "blue"
+    },
+    {
+      "gpu": {
+        "median_ms": 1.97500002384186,
+        "p95_ms": 1.99199998378754,
+        "samples": 32
+      },
+      "style": "debris"
+    },
+    {
+      "gpu": {
+        "median_ms": 1.40699994564056,
+        "p95_ms": 5.18900012969971,
+        "samples": 32
+      },
+      "style": "electric"
+    },
+    {
+      "gpu": {
+        "median_ms": 3.19899988174438,
+        "p95_ms": 3.43099999427795,
+        "samples": 32
+      },
+      "style": "sand"
+    },
+    {
+      "gpu": {
+        "median_ms": 1.81599998474121,
+        "p95_ms": 4.0310001373291,
+        "samples": 32
+      },
+      "style": "fire"
+    },
+    {
+      "gpu": {
+        "median_ms": 1.40499997138977,
+        "p95_ms": 5.01800012588501,
+        "samples": 32
+      },
+      "style": "wild_blue"
+    },
+    {
+      "gpu": {
+        "median_ms": 1.3400000333786,
+        "p95_ms": 1.36199998855591,
+        "samples": 32
+      },
+      "style": "anime"
+    },
+    {
+      "gpu": {
+        "median_ms": 1.42799997329712,
+        "p95_ms": 4.46199989318848,
+        "samples": 32
+      },
+      "style": "green"
+    }
+  ],
+  "renderer": "Forward+",
+  "resolution": "1280x800"
+}
