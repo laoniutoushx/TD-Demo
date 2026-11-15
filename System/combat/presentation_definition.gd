@@ -8,3 +8,4 @@ extends Resource
 @export var attach_point: StringName = &"origin"
 @export var bindings: Dictionary = {}
 @export var end_mode: CombatTypes.CueEndMode = CombatTypes.CueEndMode.ON_STOP
+@export var persist_across_phases: bool = false

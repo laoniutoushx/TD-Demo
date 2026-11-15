@@ -164,27 +164,47 @@ func _acquire_anim_priority(src: Object, unit_id: int, hid: int, semantic: Strin
 	if prio < current_top:
 		return
 
+	var played_anim: StringName = &""
 	if semantic == &"attack" and src.has_method(&"play_attack_animation"):
 		var atk_interval := float(ctx.source_snapshot.get("attack_interval", 1.0))
 		var anim_name: Variant = src.get(&"anim_attack")
-		if anim_name != null:
+		if anim_name != null and anim_name != &"":
+			played_anim = StringName(anim_name)
 			src.call(&"play_attack_animation", anim_name, atk_interval)
 	elif semantic == &"cast" and src.has_method(&"play_action_animation"):
 		var rel_anim: Variant = src.get(&"anim_release")
 		var cast_anim: Variant = rel_anim if (rel_anim != null and rel_anim != &"") else src.get(&"anim_attack")
 		if cast_anim != null and cast_anim != &"":
+			played_anim = StringName(cast_anim)
 			src.call(&"play_action_animation", cast_anim)
 
-	if runner != null:
+	if runner != null and played_anim != &"":
 		var ap: Variant = src.get(&"_ap")
 		if ap is AnimationPlayer and is_instance_valid(ap):
-			var gen := ctx.phase_generation
-			(ap as AnimationPlayer).animation_finished.connect(
-				func(_name: StringName):
-					if runner != null and not runner.is_finished():
-						runner.signal_gate(&"release", gen),
-				CONNECT_ONE_SHOT
-			)
+			var anim_ap := ap as AnimationPlayer
+			var anim_cb := Callable(self, &"_on_animation_finished").bind(hid, played_anim, weakref(runner), ctx.phase_generation, anim_ap)
+			anim_ap.animation_finished.connect(anim_cb)
+
+
+func _on_animation_finished(
+	finished_name: StringName,
+	hid: int,
+	expected_anim: StringName,
+	runner_ref: WeakRef,
+	gen: int,
+	anim_player: AnimationPlayer
+) -> void:
+	if finished_name != expected_anim:
+		return
+	if is_instance_valid(anim_player):
+		var bound_cb := Callable(self, &"_on_animation_finished").bind(hid, expected_anim, runner_ref, gen, anim_player)
+		if anim_player.animation_finished.is_connected(bound_cb):
+			anim_player.animation_finished.disconnect(bound_cb)
+	if not _handles.has(hid):
+		return
+	var r: AbilityRunner = runner_ref.get_ref() as AbilityRunner
+	if r != null and not r.is_finished():
+		r.signal_gate(&"release", gen)
 
 
 func _release_anim_priority(unit_id: int, hid: int) -> void:

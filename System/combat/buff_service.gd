@@ -184,9 +184,14 @@ func advance(delta: float) -> void:
 				expired_lids.append(lid)
 				continue
 
+		# Compute effective active window so periodic ticks never exceed TIMED lifetime.
+		var effective_delta: float = delta
+		if def.lifetime_mode == CombatTypes.LifetimeMode.TIMED:
+			effective_delta = minf(delta, maxf(0.0, float(entry["remaining"])))
+
 		# Periodic tick (only on primary/non-alias entries, never reset on normal refresh)
-		if not bool(entry.get("is_alias", false)) and def.period > 0.0 and not def.periodic_effects.is_empty():
-			entry["period_accum"] = float(entry["period_accum"]) + delta
+		if not bool(entry.get("is_alias", false)) and def.period > 0.0 and not def.periodic_effects.is_empty() and effective_delta > 0.0:
+			entry["period_accum"] = float(entry["period_accum"]) + effective_delta
 			while float(entry["period_accum"]) >= def.period:
 				entry["period_accum"] = float(entry["period_accum"]) - def.period
 				var target: Object = _get_target(int(entry["target_id"]))

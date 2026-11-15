@@ -16,112 +16,117 @@
 
 [sub_resource type="Resource" id="Resource_asiix"]
 script = ExtResource("2_y6dda")
-cue_id = &"tornado.forming"
+cue_id = &"tornado.cast"
 anim_semantic = &"cast"
-vfx = ExtResource("3_w53rt")
-attach_point = &"world"
 
 [sub_resource type="Resource" id="Resource_kyg2w"]
+script = ExtResource("2_y6dda")
+cue_id = &"tornado.entity"
+vfx = ExtResource("3_w53rt")
+attach_point = &"world"
+persist_across_phases = true
+
+[sub_resource type="Resource" id="Resource_cevsy"]
 script = ExtResource("5_cjxe5")
 effect_id = &"fox_growth"
 
-[sub_resource type="Resource" id="Resource_cevsy"]
+[sub_resource type="Resource" id="Resource_sel34"]
 script = ExtResource("7_lwtw1")
 kind = 4
 param_key = &"growth_scale"
 threshold = 0.85
 
-[sub_resource type="Resource" id="Resource_sel34"]
+[sub_resource type="Resource" id="Resource_kchhv"]
 script = ExtResource("7_lwtw1")
 kind = 3
 gate_name = &"release"
 gate_timeout = 1.0
 
-[sub_resource type="Resource" id="Resource_kchhv"]
+[sub_resource type="Resource" id="Resource_lxjrr"]
 script = ExtResource("7_lwtw1")
 kind = 1
-children = Array[Resource]([SubResource("Resource_cevsy"), SubResource("Resource_sel34")])
-
-[sub_resource type="Resource" id="Resource_lxjrr"]
-script = ExtResource("6_sdoes")
-target_phase = &"advancing"
-condition = SubResource("Resource_kchhv")
+children = Array[Resource]([SubResource("Resource_sel34"), SubResource("Resource_kchhv")])
 
 [sub_resource type="Resource" id="Resource_au1m3"]
-script = ExtResource("1_hogdv")
-phase_id = &"forming"
-sustained = Array[ExtResource("4_6ib1w")]([SubResource("Resource_kyg2w")])
-transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_lxjrr")])
-max_duration = 1.5
-timeout_target = &"cancel"
-cues = Array[ExtResource("2_y6dda")]([SubResource("Resource_asiix")])
+script = ExtResource("6_sdoes")
+target_phase = &"advancing"
+condition = SubResource("Resource_lxjrr")
 
 [sub_resource type="Resource" id="Resource_hdlc3"]
+script = ExtResource("1_hogdv")
+phase_id = &"forming"
+sustained = Array[ExtResource("4_6ib1w")]([SubResource("Resource_cevsy")])
+transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_au1m3")])
+max_duration = 1.5
+timeout_target = &"cancel"
+cues = Array[ExtResource("2_y6dda")]([SubResource("Resource_asiix"), SubResource("Resource_kyg2w")])
+
+[sub_resource type="Resource" id="Resource_43w2k"]
 script = ExtResource("8_y6au2")
 effect_id = &"fox_mover"
 
-[sub_resource type="Resource" id="Resource_43w2k"]
+[sub_resource type="Resource" id="Resource_mu1gq"]
 script = ExtResource("9_diqmw")
 value = 0.8
 
-[sub_resource type="Resource" id="Resource_mu1gq"]
+[sub_resource type="Resource" id="Resource_lrbno"]
 script = ExtResource("10_afgbu")
 buff_id = &"tornado_fox_slow"
 group_id = &"move_slow"
-modifiers = Array[ExtResource("9_diqmw")]([SubResource("Resource_43w2k")])
+modifiers = Array[ExtResource("9_diqmw")]([SubResource("Resource_mu1gq")])
 lifetime_mode = 1
 stacking = 3
 tags = Array[StringName]([&"slow", &"debuff"])
 
-[sub_resource type="Resource" id="Resource_lrbno"]
+[sub_resource type="Resource" id="Resource_anl5i"]
 script = ExtResource("12_1q74c")
 
-[sub_resource type="Resource" id="Resource_anl5i"]
-script = ExtResource("11_xsunk")
-on_enter_buff = SubResource("Resource_mu1gq")
-effect_id = &"fox_area"
-targets = SubResource("Resource_lrbno")
-
 [sub_resource type="Resource" id="Resource_m4xaq"]
+script = ExtResource("11_xsunk")
+on_enter_buff = SubResource("Resource_lrbno")
+effect_id = &"fox_area"
+targets = SubResource("Resource_anl5i")
+
+[sub_resource type="Resource" id="Resource_q6dn8"]
 script = ExtResource("7_lwtw1")
 kind = 4
 param_key = &"arrived"
 threshold = 1.0
 
-[sub_resource type="Resource" id="Resource_q6dn8"]
+[sub_resource type="Resource" id="Resource_v7f0v"]
 script = ExtResource("6_sdoes")
 target_phase = &"dissipating"
-condition = SubResource("Resource_m4xaq")
+condition = SubResource("Resource_q6dn8")
 
-[sub_resource type="Resource" id="Resource_v7f0v"]
+[sub_resource type="Resource" id="Resource_l8kqs"]
 script = ExtResource("1_hogdv")
 phase_id = &"advancing"
-sustained = Array[ExtResource("4_6ib1w")]([SubResource("Resource_hdlc3"), SubResource("Resource_anl5i")])
-transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_q6dn8")])
+sustained = Array[ExtResource("4_6ib1w")]([SubResource("Resource_43w2k"), SubResource("Resource_m4xaq")])
+transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_v7f0v")])
 max_duration = 3.0
 timeout_target = &"dissipating"
 transfers_to_world_scope = true
 
-[sub_resource type="Resource" id="Resource_l8kqs"]
+[sub_resource type="Resource" id="Resource_xmf86"]
 script = ExtResource("7_lwtw1")
 kind = 5
 threshold = 0.35
 
-[sub_resource type="Resource" id="Resource_xmf86"]
+[sub_resource type="Resource" id="Resource_wd5tr"]
 script = ExtResource("6_sdoes")
 target_phase = &"end"
-condition = SubResource("Resource_l8kqs")
+condition = SubResource("Resource_xmf86")
 
-[sub_resource type="Resource" id="Resource_wd5tr"]
+[sub_resource type="Resource" id="Resource_ax672"]
 script = ExtResource("1_hogdv")
 phase_id = &"dissipating"
-transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_xmf86")])
+transitions = Array[ExtResource("6_sdoes")]([SubResource("Resource_wd5tr")])
 max_duration = 0.5
 timeout_target = &"end"
 
 [resource]
 script = ExtResource("13_dp8lj")
 ability_id = &"fox_tornado"
-phases = Array[ExtResource("1_hogdv")]([SubResource("Resource_au1m3"), SubResource("Resource_v7f0v"), SubResource("Resource_wd5tr")])
+phases = Array[ExtResource("1_hogdv")]([SubResource("Resource_hdlc3"), SubResource("Resource_l8kqs"), SubResource("Resource_ax672")])
 entry_phase = &"forming"
 wave_interval = 0.3

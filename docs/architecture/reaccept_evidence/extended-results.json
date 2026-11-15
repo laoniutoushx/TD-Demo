@@ -1,0 +1,44 @@
+[
+  {
+    "actual": true,
+    "case": "elapsed_condition_fine_finishes",
+    "expected": true,
+    "met": true
+  },
+  {
+    "actual": false,
+    "case": "elapsed_condition_coarse_finishes",
+    "expected": true,
+    "met": false
+  },
+  {
+    "actual": 10,
+    "case": "periodic_ticks_stop_at_lifetime",
+    "expected": 1,
+    "met": false
+  },
+  {
+    "actual": true,
+    "case": "unrelated_animation_cannot_release_cast",
+    "expected": false,
+    "met": false
+  },
+  {
+    "actual": true,
+    "case": "fox_forming_has_presentation",
+    "expected": true,
+    "met": true
+  },
+  {
+    "actual": "advancing",
+    "case": "fox_reaches_advancing",
+    "expected": "advancing",
+    "met": true
+  },
+  {
+    "actual": false,
+    "case": "fox_advancing_retains_presentation",
+    "expected": true,
+    "met": false
+  }
+]

@@ -19,6 +19,7 @@ var _phase_hops: int = 0
 var _sustained_runtimes: Array[EffectRuntime] = []
 var _gates: Dictionary = {} # gate_name -> CombatGate
 var _cue_handles: Array = []
+var _ability_cue_handles: Array = []
 var _in_world_scope: bool = false
 var _finished: bool = false
 var _disposed: bool = false
@@ -84,8 +85,7 @@ func advance(delta: float) -> void:
 
 	var remaining_delta: float = maxf(0.0, delta)
 	while not _finished and not _disposed and _current_phase != null:
-		var phase_rem: float = maxf(0.0, _current_phase.max_duration - _phase_elapsed)
-		var step_delta: float = minf(remaining_delta, phase_rem) if remaining_delta > 0.0 else 0.0
+		var step_delta: float = _compute_next_step(_current_phase, remaining_delta)
 
 		_phase_elapsed += step_delta
 		remaining_delta -= step_delta
@@ -122,6 +122,52 @@ func advance(delta: float) -> void:
 		break
 
 
+func _compute_next_step(phase: PhaseDefinition, max_step: float) -> float:
+	if max_step <= 0.0:
+		return 0.0
+	var best: float = minf(max_step, maxf(0.0, phase.max_duration - _phase_elapsed))
+	for trans in phase.transitions:
+		if trans != null and trans.condition != null:
+			var t_step := _condition_step_hint(trans.condition, best)
+			if t_step >= 0.0:
+				best = minf(best, t_step)
+	return maxf(0.0, best)
+
+
+func _condition_step_hint(cond: ConditionDefinition, current_best: float) -> float:
+	if cond == null:
+		return -1.0
+	match cond.kind:
+		ConditionDefinition.Kind.ALWAYS:
+			return 0.0
+		ConditionDefinition.Kind.ELAPSED:
+			return maxf(0.0, cond.threshold - _phase_elapsed)
+		ConditionDefinition.Kind.GATE:
+			if _gates.has(cond.gate_name):
+				var g: CombatGate = _gates[cond.gate_name]
+				if g.is_open():
+					return 0.0
+				if g.timeout > 0.0:
+					return maxf(0.0, g.timeout - g.elapsed)
+			return -1.0
+		ConditionDefinition.Kind.ALL:
+			var worst_child: float = 0.0
+			for c in cond.children:
+				var h := _condition_step_hint(c, current_best)
+				if h < 0.0:
+					return -1.0
+				worst_child = maxf(worst_child, h)
+			return worst_child
+		ConditionDefinition.Kind.ANY:
+			var best_child: float = -1.0
+			for c in cond.children:
+				var h := _condition_step_hint(c, current_best)
+				if h >= 0.0:
+					best_child = h if best_child < 0.0 else minf(best_child, h)
+			return best_child
+	return -1.0
+
+
 func cancel(reason: StringName = &"cancel") -> void:
 	if _finished:
 		return
@@ -138,6 +184,7 @@ func dispose() -> void:
 	_disposed = true
 	_cleanup_runtimes()
 	_stop_phase_cues(&"dispose")
+	_stop_ability_cues(&"dispose")
 	caster_scope.release_all()
 	world_scope.release_all()
 
@@ -302,13 +349,18 @@ func _emit_phase_cues(phase: PhaseDefinition) -> void:
 		if cue != null:
 			var handle: Variant = presentation_port.call(&"emit", cue, ctx, self)
 			if handle != null:
-				_cue_handles.append(handle)
+				if cue.persist_across_phases:
+					_ability_cue_handles.append(handle)
+				else:
+					_cue_handles.append(handle)
 
 
 func _update_phase_cues() -> void:
 	if presentation_port == null or not presentation_port.has_method(&"update"):
 		return
 	for h in _cue_handles:
+		presentation_port.call(&"update", h, ctx.params)
+	for h in _ability_cue_handles:
 		presentation_port.call(&"update", h, ctx.params)
 
 
@@ -319,3 +371,12 @@ func _stop_phase_cues(reason: StringName) -> void:
 	for h in _cue_handles:
 		presentation_port.call(&"stop", h, reason)
 	_cue_handles.clear()
+
+
+func _stop_ability_cues(reason: StringName) -> void:
+	if presentation_port == null or not presentation_port.has_method(&"stop"):
+		_ability_cue_handles.clear()
+		return
+	for h in _ability_cue_handles:
+		presentation_port.call(&"stop", h, reason)
+	_ability_cue_handles.clear()
