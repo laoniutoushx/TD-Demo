@@ -1,16 +1,51 @@
-[gd_scene load_steps=11 format=3 uid="uid://cwt3d1c4qxvtt"]
+[gd_scene load_steps=15 format=3 uid="uid://cwt3d1c4qxvtt"]
 
 [ext_resource type="Script" uid="uid://dl4bw0w68nb7y" path="res://Levels/setting/setting.gd" id="1_script"]
 [ext_resource type="Theme" path="res://UI/theme/moss_stone_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://UI/theme/components/title_banner.tscn" id="3_banner"]
 [ext_resource type="PackedScene" path="res://UI/theme/components/moss_frame_accents.tscn" id="4_moss"]
 [ext_resource type="StyleBox" path="res://UI/theme/styles/panel_obsidian.tres" id="5_obsidian"]
-[ext_resource type="StyleBox" path="res://UI/theme/styles/panel_recessed.tres" id="6_recessed"]
 [ext_resource type="StyleBox" path="res://UI/theme/styles/button_primary_normal.tres" id="7_btn_pri_n"]
 [ext_resource type="StyleBox" path="res://UI/theme/styles/button_primary_hover.tres" id="8_btn_pri_h"]
 [ext_resource type="StyleBox" path="res://UI/theme/styles/button_primary_pressed.tres" id="9_btn_pri_p"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/action_divider_v11.png" id="10_div"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/recessed_bar_v12.png" id="11_recessed"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pad"]
+[sub_resource type="StyleBoxTexture" id="StyleBoxFlat_opt_normal"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+texture = ExtResource("11_recessed")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+modulate_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxFlat_opt_hover"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+texture = ExtResource("11_recessed")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+modulate_color = Color(1.12, 1.14, 1.04, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxFlat_opt_disabled"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+texture = ExtResource("11_recessed")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+modulate_color = Color(0.84, 0.85, 0.80, 0.92)
 
 [node name="Setting" type="Control"]
 layout_mode = 3
@@ -43,117 +78,137 @@ theme = ExtResource("2_theme")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 16
 
-[node name="TitleBanner" parent="CanvasLayer/CenterContainer/VBoxContainer" instance=ExtResource("3_banner")]
+[node name="PanelWrap" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
-title_text = "游戏设置"
-title_font_size = 38
-plaque_min_size = Vector2(360, 82)
+theme_override_constants/margin_top = 30
 
-[node name="CardFrame" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer"]
+[node name="CardFrame" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap"]
 layout_mode = 2
 theme_override_constants/margin_left = 0
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 0
 theme_override_constants/margin_bottom = 0
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame"]
-custom_minimum_size = Vector2(540, 0)
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame"]
+custom_minimum_size = Vector2(510, 0)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("5_obsidian")
 
-[node name="ContentMargin" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer"]
+[node name="ContentMargin" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 26
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 26
+theme_override_constants/margin_bottom = 18
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 
-[node name="AudioSection" type="PanelContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
+[node name="AudioHeader" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
 layout_mode = 2
-theme_override_styles/panel = ExtResource("6_recessed")
+theme_override_constants/separation = 12
 
-[node name="AudioMargin" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection"]
+[node name="LineL" type="TextureRect" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioHeader"]
+custom_minimum_size = Vector2(0, 3)
 layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 12
+size_flags_horizontal = 3
+size_flags_vertical = 4
+texture = ExtResource("10_div")
+expand_mode = 1
+stretch_mode = 0
 
-[node name="AudioRows" type="VBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin"]
+[node name="Title" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioHeader"]
 layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="BgRow" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin/AudioRows"]
-layout_mode = 2
-theme_override_constants/separation = 18
-
-[node name="BgLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin/AudioRows/BgRow"]
-custom_minimum_size = Vector2(120, 0)
-layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.71, 1)
 theme_override_font_sizes/font_size = 20
+text = "音频"
+horizontal_alignment = 1
+
+[node name="LineR" type="TextureRect" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioHeader"]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+texture = ExtResource("10_div")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="BgRow" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="BgLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/BgRow"]
+custom_minimum_size = Vector2(110, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 19
 text = "背景音乐"
 
-[node name="BgVolum" type="HSlider" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin/AudioRows/BgRow"]
+[node name="BgVolum" type="HSlider" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/BgRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 value = 50.0
 
-[node name="SoundRow" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin/AudioRows"]
+[node name="SoundRow" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="SoundLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin/AudioRows/SoundRow"]
-custom_minimum_size = Vector2(120, 0)
+[node name="SoundLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/SoundRow"]
+custom_minimum_size = Vector2(110, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 19
 text = "游戏音效"
 
-[node name="SoundVolum" type="HSlider" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin/AudioRows/SoundRow"]
+[node name="SoundVolum" type="HSlider" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/SoundRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 value = 50.0
 
-[node name="OptionSection" type="PanelContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
+[node name="LangHeader" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
 layout_mode = 2
-theme_override_styles/panel = ExtResource("6_recessed")
+theme_override_constants/separation = 12
 
-[node name="OptionMargin" type="MarginContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/OptionSection"]
-layout_mode = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 12
-
-[node name="OptionRows" type="VBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/OptionSection/OptionMargin"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="LangRow" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/OptionSection/OptionMargin/OptionRows"]
-layout_mode = 2
-theme_override_constants/separation = 18
-
-[node name="LangLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/OptionSection/OptionMargin/OptionRows/LangRow"]
-custom_minimum_size = Vector2(120, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "语言"
-
-[node name="LangOpt" type="OptionButton" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/OptionSection/OptionMargin/OptionRows/LangRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
+[node name="LineL" type="TextureRect" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/LangHeader"]
+custom_minimum_size = Vector2(0, 3)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
+texture = ExtResource("10_div")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="LangLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/LangHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.71, 1)
 theme_override_font_sizes/font_size = 20
+text = "语言"
+horizontal_alignment = 1
+
+[node name="LineR" type="TextureRect" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/LangHeader"]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+texture = ExtResource("10_div")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="LangOpt" type="OptionButton" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 19
+theme_override_styles/normal = SubResource("StyleBoxFlat_opt_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_opt_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_opt_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_opt_disabled")
 alignment = 1
 selected = 0
 item_count = 2
@@ -162,22 +217,45 @@ popup/item_0/id = 0
 popup/item_1/text = "English"
 popup/item_1/id = 1
 
-[node name="GraRow" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/OptionSection/OptionMargin/OptionRows"]
+[node name="GraHeader" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 
-[node name="GraLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/OptionSection/OptionMargin/OptionRows/GraRow"]
-custom_minimum_size = Vector2(120, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "画质"
-
-[node name="GraOpt" type="OptionButton" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/OptionSection/OptionMargin/OptionRows/GraRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
+[node name="LineL" type="TextureRect" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/GraHeader"]
+custom_minimum_size = Vector2(0, 3)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
+texture = ExtResource("10_div")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="GraLabel" type="Label" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/GraHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.89, 0.71, 1)
 theme_override_font_sizes/font_size = 20
+text = "图形"
+horizontal_alignment = 1
+
+[node name="LineR" type="TextureRect" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/GraHeader"]
+custom_minimum_size = Vector2(0, 3)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+texture = ExtResource("10_div")
+expand_mode = 1
+stretch_mode = 0
+
+[node name="GraOpt" type="OptionButton" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 19
+theme_override_styles/normal = SubResource("StyleBoxFlat_opt_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_opt_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_opt_hover")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_opt_disabled")
 alignment = 1
 selected = 1
 item_count = 3
@@ -188,33 +266,51 @@ popup/item_1/id = 1
 popup/item_2/text = "高画质"
 popup/item_2/id = 2
 
-[node name="ButtonRow" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer"]
+[node name="MossFrameAccents" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame" instance=ExtResource("4_moss")]
+layout_mode = 2
+
+[node name="TitleAnchor" type="Control" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TitleBanner" parent="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/TitleAnchor" instance=ExtResource("3_banner")]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -110.0
+offset_top = -34.0
+offset_right = 110.0
+offset_bottom = 26.0
+grow_horizontal = 2
+title_text = "设置"
+title_font_size = 34
+plaque_min_size = Vector2(220, 60)
+
+[node name="ButtonRow" type="HBoxContainer" parent="CanvasLayer/CenterContainer/VBoxContainer"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 22
+theme_override_constants/separation = 26
 
-[node name="Apply" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/ButtonRow"]
+[node name="Apply" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer/ButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(190, 56)
+custom_minimum_size = Vector2(180, 54)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.96, 0.90, 0.72, 1)
 theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = ExtResource("7_btn_pri_n")
 theme_override_styles/hover = ExtResource("8_btn_pri_h")
 theme_override_styles/pressed = ExtResource("9_btn_pri_p")
-text = "应用设置"
+text = "应用"
 
-[node name="Return" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/ButtonRow"]
+[node name="Return" type="Button" parent="CanvasLayer/CenterContainer/VBoxContainer/ButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(190, 56)
+custom_minimum_size = Vector2(180, 54)
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "返回"
 
-[node name="MossFrameAccents" parent="CanvasLayer/CenterContainer/VBoxContainer/CardFrame" instance=ExtResource("4_moss")]
-layout_mode = 2
-
-[connection signal="value_changed" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin/AudioRows/BgRow/BgVolum" to="." method="_on_bg_volum_value_changed"]
-[connection signal="value_changed" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/AudioSection/AudioMargin/AudioRows/SoundRow/SoundVolum" to="." method="_on_sound_volum_value_changed"]
-[connection signal="pressed" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/ButtonRow/Apply" to="." method="_on_apply_pressed"]
-[connection signal="pressed" from="CanvasLayer/CenterContainer/VBoxContainer/CardFrame/PanelContainer/ContentMargin/VBoxContainer/ButtonRow/Return" to="." method="_on_return_pressed"]
+[connection signal="value_changed" from="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/BgRow/BgVolum" to="." method="_on_bg_volum_value_changed"]
+[connection signal="value_changed" from="CanvasLayer/CenterContainer/VBoxContainer/PanelWrap/CardFrame/PanelContainer/ContentMargin/VBoxContainer/SoundRow/SoundVolum" to="." method="_on_sound_volum_value_changed"]
+[connection signal="pressed" from="CanvasLayer/CenterContainer/VBoxContainer/ButtonRow/Apply" to="." method="_on_apply_pressed"]
+[connection signal="pressed" from="CanvasLayer/CenterContainer/VBoxContainer/ButtonRow/Return" to="." method="_on_return_pressed"]

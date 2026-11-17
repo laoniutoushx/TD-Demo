@@ -4,6 +4,19 @@ var output_dir := "res://.godot/ui_material_review"
 func rect_values(control: Control) -> Array:
  var r = control.get_global_rect()
  return [r.position.x,r.position.y,r.size.x,r.size.y]
+func assert_slot_edges(frame: Image, slot_control: Control) -> void:
+ var r = slot_control.get_global_rect()
+ var p = Vector2i(r.position.round())
+ var sz = Vector2i(r.size.round())
+ var edges = [[Vector2i(p.x,p.y+sz.y/2),Vector2i.RIGHT],[Vector2i(p.x+sz.x-1,p.y+sz.y/2),Vector2i.LEFT],[Vector2i(p.x+sz.x/2,p.y),Vector2i.DOWN],[Vector2i(p.x+sz.x/2,p.y+sz.y-1),Vector2i.UP]]
+ for edge in edges:
+  var strongest := 0.0
+  for offset in range(2):
+   var point: Vector2i = edge[0] + edge[1]*offset
+   var color = frame.get_pixelv(point)
+   strongest = maxf(strongest,(color.r+color.g+color.b)/3.0)
+  assert(strongest > 0.20,"Slot straight edge hidden behind icon or transparent texture padding")
+
 func _initialize() -> void:
  call_deferred("run")
 func shot(name: String) -> void:
@@ -87,6 +100,7 @@ func run() -> void:
  talent_ref.change_state(talent_ref.TALENT_STATE.Cool_Down)
  await create_timer(0.15).timeout
  assert(card.progress_bar.visible and card.progress_bar.value > 0.0,"Cutout talent must show real cooldown")
+ assert(card.progress_bar.texture_progress == card.icon_texture.texture, "Cutout cooldown must preserve the icon silhouette")
  await shot("1080x768_talent_cooldown")
  await create_timer(1.0).timeout
  assert(not card.progress_bar.visible,"Talent cooldown must recover normally")
@@ -98,7 +112,8 @@ func run() -> void:
   await shot(tag+"_battle")
   var bar: Control = level.action_bar.get_node("CanvasLayer/Container")
   assert(bar.get_global_rect().end.x <= root.size.x + 1, "Bottom bar exceeds viewport")
-  assert(bar.size.y <= 212.0, "Default bottom bar must fit compact reference height")
+  var visible_bar: Control = bar.get_node("MarginContainer/PanelContainer")
+  assert(absf(visible_bar.size.y - 236.0 * 0.874) <= 8.0, "Visible bottom frame height must match uniformly scaled reference within eight pixels")
   var garnish = bar.find_child("MossFrameAccents",true,false)
   for leaf in garnish.get_children():
    assert(leaf.mouse_filter == Control.MOUSE_FILTER_IGNORE,"Foliage must pass mouse input")
@@ -109,6 +124,7 @@ func run() -> void:
   var icon_rect: Rect2 = skill_slot.icon_texture.get_global_rect()
   var slot_rect: Rect2 = skill_slot.get_global_rect()
   metrics.bar_rect = rect_values(bar)
+  metrics.bar_panel_rect = rect_values(bar.get_node("MarginContainer/PanelContainer"))
   metrics.layout = {}
   for n in ["TopC","BottomC","BottomContainer","SkillPanel","ItemABuff","PlayerPanel","PlayerBar"]:
    var ctl = bar.find_child(n,true,false)
@@ -140,6 +156,9 @@ func run() -> void:
    assert(Rect2(Vector2.ZERO,Vector2(root.size)).encloses(leaf.get_global_rect()),"Wave leaf outside viewport")
   metrics.skill_rect = rect_values(skill_slot)
   metrics.item_rect = rect_values(level.action_bar.item_bar.get_child(0))
+  var rendered_frame = root.get_texture().get_image()
+  assert_slot_edges(rendered_frame,skill_slot)
+  assert_slot_edges(rendered_frame,level.action_bar.item_bar.get_child(0))
   metrics.units_rect = rect_values(level.action_bar.selection_bar)
   metrics.slot_rects = {}
   metrics.icon_rects = {}

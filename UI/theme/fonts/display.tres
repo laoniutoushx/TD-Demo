@@ -1,7 +1,9 @@
-[gd_resource type="FontVariation" load_steps=2 format=3]
+[gd_resource type="FontVariation" format=3 uid="uid://bxbeyhpnixv31"]
+
 [sub_resource type="SystemFont" id="Font_serif"]
 font_names = PackedStringArray("Noto Serif CJK SC", "Source Han Serif SC", "SimSun", "serif")
 font_weight = 700
+
 [resource]
 base_font = SubResource("Font_serif")
 variation_embolden = 0.7

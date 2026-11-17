@@ -1,0 +1,232 @@
+{
+  "actual": {
+    "bar": "[P: (103.0, 562.0), S: (874.0, 206.0)]",
+    "bar_rect": [
+      103.0,
+      562.0,
+      874.0,
+      206.0
+    ],
+    "container_frames": {
+      "ItemABuff": {
+        "control": [
+          442.0,
+          618.0,
+          342.0,
+          140.0
+        ],
+        "drawn_frame": [
+          442.0,
+          618.0,
+          342.0,
+          140.0
+        ],
+        "style": "res://UI/theme/styles/action_item_inset.tres"
+      },
+      "PlayerPanel": {
+        "control": [
+          796.0,
+          618.0,
+          154.0,
+          140.0
+        ],
+        "drawn_frame": [
+          796.0,
+          618.0,
+          154.0,
+          140.0
+        ],
+        "style": "res://Components/action_bar/action_bar.tscn::StyleBoxEmpty_talent_mount"
+      },
+      "SkillPanel": {
+        "control": [
+          130.0,
+          618.0,
+          300.0,
+          140.0
+        ],
+        "drawn_frame": [
+          130.0,
+          618.0,
+          300.0,
+          140.0
+        ],
+        "style": "res://UI/theme/styles/action_skill_inset.tres"
+      }
+    },
+    "header_rects": {
+      "avatar": [
+        51.0,
+        32.0,
+        108.0,
+        108.0
+      ],
+      "ledge": [
+        72.0,
+        58.0,
+        956.0,
+        48.0
+      ],
+      "resources": [
+        744.0,
+        58.0,
+        280.0,
+        48.0
+      ]
+    },
+    "icon_ratio": 0.9375,
+    "icon_rects": {
+      "buff": [
+        460.0,
+        723.0,
+        28.0,
+        28.0
+      ],
+      "empty_item": [
+        570.0,
+        624.0,
+        86.0,
+        86.0
+      ],
+      "item": [
+        466.0,
+        624.0,
+        86.0,
+        86.0
+      ],
+      "skill": [
+        142.0,
+        624.0,
+        60.0,
+        60.0
+      ],
+      "talent": [
+        828.200012207031,
+        630.200012207031,
+        89.5999984741211,
+        89.5999984741211
+      ],
+      "unit": [
+        119.0,
+        571.0,
+        42.0,
+        42.0
+      ]
+    },
+    "item_rect": [
+      464.0,
+      622.0,
+      90.0,
+      90.0
+    ],
+    "layout": {
+      "BottomC": {
+        "min": "(836.0, 140.0)",
+        "size": "(858.0, 140.0)"
+      },
+      "BottomContainer": {
+        "min": "(820.0, 140.0)",
+        "size": "(842.0, 140.0)"
+      },
+      "ItemABuff": {
+        "min": "(342.0, 140.0)",
+        "size": "(342.0, 140.0)"
+      },
+      "PlayerBar": {
+        "min": "(150.0, 140.0)",
+        "size": "(150.0, 140.0)"
+      },
+      "PlayerPanel": {
+        "min": "(154.0, 140.0)",
+        "size": "(154.0, 140.0)"
+      },
+      "SkillPanel": {
+        "min": "(300.0, 140.0)",
+        "size": "(300.0, 140.0)"
+      },
+      "TopC": {
+        "min": "(58.0, 47.0)",
+        "size": "(858.0, 47.0)"
+      }
+    },
+    "skill_rect": [
+      140.0,
+      622.0,
+      64.0,
+      64.0
+    ],
+    "slot_gaps": {
+      "buff_horizontal": 6.0,
+      "item_horizontal": 14.0,
+      "skill_horizontal": 8.0,
+      "skill_vertical": 4.0
+    },
+    "slot_rects": {
+      "buff": [
+        458.0,
+        721.0,
+        32.0,
+        32.0
+      ],
+      "empty_item": [
+        568.0,
+        622.0,
+        90.0,
+        90.0
+      ],
+      "item": [
+        464.0,
+        622.0,
+        90.0,
+        90.0
+      ],
+      "skill": [
+        140.0,
+        622.0,
+        64.0,
+        64.0
+      ],
+      "talent": [
+        798.0,
+        618.0,
+        150.0,
+        140.0
+      ],
+      "unit": [
+        117.0,
+        569.0,
+        46.0,
+        46.0
+      ]
+    },
+    "units_rect": [
+      117.0,
+      569.0,
+      46.0,
+      46.0
+    ],
+    "wave_rect": [
+      399.0,
+      58.0,
+      286.0,
+      48.0
+    ]
+  },
+  "reference_frame": [
+    350,
+    444,
+    1000,
+    236
+  ],
+  "reference_scaled_frame": [
+    874,
+    206.264
+  ],
+  "actual_visible_frame": [
+    103.0,
+    562.0,
+    874.0,
+    200.0
+  ],
+  "rule": "uniform scale by frame width, common top-left frame origin"
+}

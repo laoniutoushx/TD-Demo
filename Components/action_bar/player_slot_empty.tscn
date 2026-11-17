@@ -105,7 +105,7 @@ animations = [{
 }]
 
 [node name="PlayerSlotEmpty" type="PanelContainer"]
-custom_minimum_size = Vector2(144, 132)
+custom_minimum_size = Vector2(150, 140)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5

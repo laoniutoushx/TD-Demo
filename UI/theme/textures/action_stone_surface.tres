@@ -2,5 +2,5 @@
 [ext_resource type="Texture2D" path="res://UI/theme/textures/slate_surface_v7.png" id="1_stone"]
 [resource]
 atlas = ExtResource("1_stone")
-region = Rect2(0, 0, 512, 512)
+region = Rect2(0, 0, 512, 208)
 filter_clip = true

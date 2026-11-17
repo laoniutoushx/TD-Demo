@@ -305,7 +305,7 @@ func do(active):
 # 重新设置等级
 func reset_level(level: int) -> void:
 	if is_instance_valid(level_key) and level > -1:
-		level_key.text = "LV" + str(level)
+		level_key.text = "LV " + str(level)
 
 
 func set_buff_snapshot(snapshot: Dictionary, is_friendly: bool) -> void:

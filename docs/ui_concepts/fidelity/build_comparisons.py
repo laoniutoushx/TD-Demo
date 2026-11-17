@@ -29,8 +29,9 @@ def align(image,frame):
  canvas=Image.new('RGB',(934,360),(19,23,19))
  canvas.paste(crop,(0,0))
  return canvas
-frame=metrics['bar_rect'][:]
-frame[3]-=6 # Bottom margin is not part of the visible stone frame.
+frame=metrics.get('bar_panel_rect',metrics['bar_rect'][:])[:]
+if 'bar_panel_rect' not in metrics:
+ frame[3]-=6 # Legacy captures used a six-pixel outer spacer.
 planes=[align(reference,(350,444,1000,236)),align(before,before_frame),align(actual,frame)]
 regions=[('01_frame',(-40,-20,894,320)),('02_left_leaves',(-40,-8,72,176)),('03_top_vine',(-2,-18,265,46)),('04_units',(0,0,175,58)),('05_skills',(18,52,320,210)),('06_items',(335,52,655,160)),('07_buffs',(350,145,650,210)),('08_talent',(690,48,860,210)),('09_bottom_moss',(125,177,315,225)),('10_copper_corner',(834,166,880,212)),('15_bottom_leaf_cluster',(635,180,735,220)),('16_stone_surface',(100,10,250,45)),('17_frame_rail',(180,-3,660,10)),('18_skill_inset',(14,52,330,205)),('19_item_inset',(328,52,690,205)),('20_talent_mount',(685,52,858,205))]
 labels=['REFERENCE','BEFORE','CURRENT']

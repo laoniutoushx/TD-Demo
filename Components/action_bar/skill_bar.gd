@@ -63,17 +63,8 @@ func _create_skill_slot(skill: Skill) -> BaseSlot:
 # 绑定快捷键
 # 按键主动绑定到显示的 slot 上（每次切换 action bar 时动态绑定）
 func _bind_mapping_key(slot: BaseSlot, idx: int):
-	var short_cut_text = ""
-	if idx == 1:
-		short_cut_text = "Q"
-	elif idx == 2:
-		short_cut_text = "W"
-	elif idx == 3:
-		short_cut_text = "E"
-	elif idx == 4:
-		short_cut_text = "R"
-	elif idx == 5:
-		short_cut_text = "T"	
+	var keys = ["Q", "W", "E", "R", "T", "Y", "U", "I"]
+	var short_cut_text: String = keys[idx - 1] if idx >= 1 and idx <= keys.size() else ""
 
 	slot.mapping_key = short_cut_text
 	slot.short_cut.text = short_cut_text

@@ -1,13 +1,11 @@
 [gd_resource type="StyleBoxTexture" load_steps=2 format=3]
-[ext_resource type="Texture2D" path="res://UI/theme/textures/stone_action_fine.png" id="1_frame"]
+
+[ext_resource type="Texture2D" path="res://UI/theme/textures/slate_surface_v7.png" id="1_slate"]
+
 [resource]
-texture = ExtResource("1_frame")
-content_margin_left = 14.0
-content_margin_top = 14.0
-content_margin_right = 14.0
-content_margin_bottom = 14.0
-texture_margin_left = 8.0
-texture_margin_top = 8.0
-texture_margin_right = 8.0
-texture_margin_bottom = 8.0
-modulate_color = Color(1.08, 1.08, 1.01, 1)
+texture = ExtResource("1_slate")
+content_margin_left = 13.0
+content_margin_top = 13.0
+content_margin_right = 13.0
+content_margin_bottom = 13.0
+modulate_color = Color(0.84, 0.90, 0.76, 1)

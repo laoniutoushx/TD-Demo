@@ -1,0 +1,209 @@
+{
+  "reference_scale": 0.874,
+  "annotation_uncertainty_source_pixels": 3,
+  "scope": "Width and height only; excludes position, material, foliage, typography and states.",
+  "overall_visual_similarity": null,
+  "visual_90_percent_certified": false,
+  "measurements": [
+    {
+      "element": "bottom_frame",
+      "reference_source_size": [
+        1000,
+        236
+      ],
+      "target_size": [
+        874.0,
+        206.264
+      ],
+      "actual_size": [
+        874.0,
+        207.0
+      ],
+      "relative_dimension_errors": [
+        0.0,
+        0.003568242640499505
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "skill_container",
+      "reference_source_size": [
+        352,
+        164
+      ],
+      "target_size": [
+        307.648,
+        143.336
+      ],
+      "actual_size": [
+        300.0,
+        140.0
+      ],
+      "relative_dimension_errors": [
+        0.024859579779488324,
+        0.02327398560026799
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "item_container",
+      "reference_source_size": [
+        393,
+        163
+      ],
+      "target_size": [
+        343.482,
+        142.462
+      ],
+      "actual_size": [
+        342.0,
+        140.0
+      ],
+      "relative_dimension_errors": [
+        0.00431463657484243,
+        0.017281801462846157
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "wave",
+      "reference_source_size": [
+        326,
+        56
+      ],
+      "target_size": [
+        284.924,
+        48.944
+      ],
+      "actual_size": [
+        286.0,
+        48.0
+      ],
+      "relative_dimension_errors": [
+        0.0037764456486642822,
+        0.01928734880679966
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "avatar",
+      "reference_source_size": [
+        135,
+        128
+      ],
+      "target_size": [
+        117.99,
+        111.872
+      ],
+      "actual_size": [
+        108.0,
+        108.0
+      ],
+      "relative_dimension_errors": [
+        0.0846681922196796,
+        0.03461098398169336
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "resources",
+      "reference_source_size": [
+        344,
+        56
+      ],
+      "target_size": [
+        300.656,
+        48.944
+      ],
+      "actual_size": [
+        280.0,
+        48.0
+      ],
+      "relative_dimension_errors": [
+        0.06870310254909266,
+        0.01928734880679966
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "unit_slot",
+      "reference_source_size": [
+        67,
+        59
+      ],
+      "target_size": [
+        58.558,
+        51.566
+      ],
+      "actual_size": [
+        54.0,
+        54.0
+      ],
+      "relative_dimension_errors": [
+        0.07783735783325933,
+        0.047201644494434265
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "skill_slot",
+      "reference_source_size": [
+        74,
+        74
+      ],
+      "target_size": [
+        64.676,
+        64.676
+      ],
+      "actual_size": [
+        64.0,
+        64.0
+      ],
+      "relative_dimension_errors": [
+        0.010452099696950986,
+        0.010452099696950986
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "item_slot",
+      "reference_source_size": [
+        106,
+        106
+      ],
+      "target_size": [
+        92.644,
+        92.644
+      ],
+      "actual_size": [
+        90.0,
+        90.0
+      ],
+      "relative_dimension_errors": [
+        0.028539354950131744,
+        0.028539354950131744
+      ],
+      "within_ten_percent": true
+    },
+    {
+      "element": "buff_slot",
+      "reference_source_size": [
+        39,
+        39
+      ],
+      "target_size": [
+        34.086,
+        34.086
+      ],
+      "actual_size": [
+        32.0,
+        32.0
+      ],
+      "relative_dimension_errors": [
+        0.061198145866338045,
+        0.061198145866338045
+      ],
+      "within_ten_percent": true
+    }
+  ]
+}

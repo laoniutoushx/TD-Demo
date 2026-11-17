@@ -57,6 +57,11 @@ func custome_init(ref: Variant, icon_path: String, type: SLOT_TYPE = SLOT_TYPE.D
 	super.custome_init(ref, icon_path, type, active, level)
 	if is_instance_valid(ref) and str(ref.get("code")) == "GREEDY":
 		icon_texture.texture = preload("res://UI/theme/textures/talent_greedy_cutout.png")
+		# Preserve the cutout silhouette while the radial cooldown darkens it.
+		progress_bar.texture_progress = icon_texture.texture
+		progress_bar.tint_progress = Color(0, 0, 0, 0.6)
+		progress_bar.scale = icon_texture.scale
+		progress_bar.pivot_offset = icon_texture.pivot_offset
 		if is_instance_valid(talent_title_label):
 			talent_title_label.text = "GREEDY"
 

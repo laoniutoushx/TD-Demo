@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://UI/theme/components/title_banner.gd" id="1_script"]
 [ext_resource type="StyleBox" path="res://UI/theme/styles/panel_title_plaque.tres" id="2_plaque"]
 [ext_resource type="LabelSettings" path="res://UI/theme/styles/title_label_main.tres" id="3_ls"]
-
 [ext_resource type="Texture2D" path="res://UI/theme/textures/foliage_header_reference_v5.png" id="4_vine"]
 
 [sub_resource type="AtlasTexture" id="Atlas_left_leaf"]
 atlas = ExtResource("4_vine")
 region = Rect2(0, 210, 430, 380)
 filter_clip = true
+
 [sub_resource type="AtlasTexture" id="Atlas_right_leaf"]
 atlas = ExtResource("4_vine")
 region = Rect2(1730, 210, 442, 380)
@@ -45,24 +45,26 @@ vertical_alignment = 1
 [node name="TitleGarnish" type="Control" parent="BannerPanel"]
 layout_mode = 2
 mouse_filter = 2
+
 [node name="LeftLeaf" type="TextureRect" parent="BannerPanel/TitleGarnish"]
 layout_mode = 1
 offset_left = -28.0
-offset_top = -20.0
-offset_right = 0.0
-offset_bottom = 8.0
+offset_top = -10.0
+offset_right = 24.0
+offset_bottom = 42.0
 mouse_filter = 2
 texture = SubResource("Atlas_left_leaf")
 expand_mode = 1
 stretch_mode = 5
+
 [node name="RightLeaf" type="TextureRect" parent="BannerPanel/TitleGarnish"]
 layout_mode = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = 0.0
-offset_top = -20.0
+offset_left = -22.0
+offset_top = -10.0
 offset_right = 28.0
-offset_bottom = 8.0
+offset_bottom = 40.0
 mouse_filter = 2
 texture = SubResource("Atlas_right_leaf")
 expand_mode = 1

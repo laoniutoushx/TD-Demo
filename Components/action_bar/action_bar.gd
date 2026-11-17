@@ -273,7 +273,7 @@ class SelectionBarComponent extends BaseBarComponent:
 						BaseSlot.SLOT_TYPE.SELECT,
 						element.player_group == SOS.main.player_controller.get_player_group_idx()
 					)
-					select_slot_instance.get_node("IconClip").custom_minimum_size = Vector2(52, 52)
+					select_slot_instance.get_node("IconClip").custom_minimum_size = Vector2(36, 36)
 					_slot_num += 1
 
 

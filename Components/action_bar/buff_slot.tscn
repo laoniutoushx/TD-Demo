@@ -103,7 +103,7 @@ script = ExtResource("1_0x0xf")
 
 [node name="IconClip" type="NinePatchRect" parent="."]
 clip_children = 1
-custom_minimum_size = Vector2(26, 26)
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 texture = ExtResource("3_slot_mask")
 patch_margin_left = 6

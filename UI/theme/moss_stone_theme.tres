@@ -8,19 +8,17 @@
 [ext_resource type="StyleBox" uid="uid://drlcqceuflr5j" path="res://UI/theme/styles/progress_bg.tres" id="6_prog_bg"]
 [ext_resource type="StyleBox" uid="uid://odcbfj5s3kgx" path="res://UI/theme/styles/progress_hp_fill.tres" id="7_prog_fill"]
 [ext_resource type="StyleBox" uid="uid://b3vf75kb3m4qj" path="res://UI/theme/styles/panel_tooltip.tres" id="8_popup"]
-[ext_resource type="Font" path="res://UI/theme/fonts/body.tres" id="20_font"]
-
-[ext_resource type="Texture2D" path="res://UI/theme/textures/slider_bronze_knob.tres" id="21_knob"]
-
-[ext_resource type="Font" path="res://UI/theme/fonts/display.tres" id="22_display"]
+[ext_resource type="FontVariation" path="res://UI/theme/fonts/body.tres" id="20_font"]
+[ext_resource type="Texture2D" uid="uid://cvoadcxermuhl" path="res://UI/theme/textures/slider_bronze_knob.tres" id="21_knob"]
+[ext_resource type="FontVariation" uid="uid://bxbeyhpnixv31" path="res://UI/theme/fonts/display.tres" id="22_display"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
 content_margin_left = 14.0
 content_margin_top = 8.0
 content_margin_right = 14.0
 content_margin_bottom = 8.0
-draw_center = false
 bg_color = Color(0.11, 0.165, 0.137, 0.96)
+draw_center = false
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
@@ -32,30 +30,32 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_grabber"]
-bg_color = Color(0.43, 0.55, 0.12, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.72, 0.64, 0.35, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_track"]
-content_margin_top = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.047, 0.067, 0.055, 0.95)
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.56, 0.72, 0.16, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.306, 0.337, 0.298, 0.9)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
+border_color = Color(0.76, 0.86, 0.34, 0.9)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_track"]
+content_margin_top = 6.0
+content_margin_bottom = 6.0
+bg_color = Color(0.06, 0.085, 0.045, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.28, 0.32, 0.18, 0.95)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_popup_hover"]
 bg_color = Color(0.17, 0.21, 0.09, 0.96)
@@ -69,11 +69,10 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
-
 [resource]
 default_font = ExtResource("20_font")
 default_font_size = 16
-Button/colors/font_color = Color(0.94, 0.87, 0.70, 1)
+Button/colors/font_color = Color(0.94, 0.87, 0.7, 1)
 Button/colors/font_disabled_color = Color(0.62, 0.61, 0.52, 0.85)
 Button/colors/font_focus_color = Color(0.98, 0.93, 0.78, 1)
 Button/colors/font_hover_color = Color(0.99, 0.96, 0.84, 1)
@@ -85,8 +84,8 @@ Button/styles/hover = ExtResource("3_btn_hov")
 Button/styles/normal = ExtResource("4_btn_nor")
 Button/styles/pressed = ExtResource("5_btn_pre")
 HSlider/icons/grabber = ExtResource("21_knob")
-HSlider/icons/grabber_highlight = ExtResource("21_knob")
 HSlider/icons/grabber_disabled = ExtResource("21_knob")
+HSlider/icons/grabber_highlight = ExtResource("21_knob")
 HSlider/styles/grabber_area = SubResource("StyleBoxFlat_slider_grabber")
 HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_grabber")
 HSlider/styles/slider = SubResource("StyleBoxFlat_slider_track")
@@ -94,7 +93,7 @@ Label/colors/font_color = Color(0.918, 0.902, 0.847, 1)
 Label/colors/font_shadow_color = Color(0, 0, 0, 0.75)
 Label/constants/shadow_offset_x = 1
 Label/constants/shadow_offset_y = 1
-OptionButton/colors/font_color = Color(0.94, 0.87, 0.70, 1)
+OptionButton/colors/font_color = Color(0.94, 0.87, 0.7, 1)
 OptionButton/colors/font_disabled_color = Color(0.62, 0.61, 0.52, 0.85)
 OptionButton/fonts/font = ExtResource("22_display")
 OptionButton/styles/disabled = ExtResource("2_btn_dis")

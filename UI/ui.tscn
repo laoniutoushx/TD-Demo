@@ -22,6 +22,7 @@
 [ext_resource type="Texture2D" path="res://UI/theme/textures/action_stone_surface.tres" id="22_header_surface"]
 
 [ext_resource type="PackedScene" path="res://UI/theme/components/wave_plaque_garnish.tscn" id="v9_wave_garnish"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/bronze_corner_v12.png" id="v11_bronze_corner"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hat8c"]
 
@@ -56,7 +57,7 @@ content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
-bg_color = Color(0.21, 0.14, 0.25, 1)
+bg_color = Color(0.14, 0.10, 0.18, 1)
 corner_radius_top_left = 64
 corner_radius_top_right = 64
 corner_radius_bottom_right = 64
@@ -162,9 +163,9 @@ vertical_alignment = 1
 [node name="TopVineLedge" type="Panel" parent="CanvasLayer"]
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 60.0
+offset_left = 72.0
 offset_top = 58.0
-offset_right = -60.0
+offset_right = -52.0
 offset_bottom = 106.0
 grow_horizontal = 2
 mouse_filter = 2
@@ -175,14 +176,45 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = 8.0
+offset_top = 7.0
 offset_right = -8.0
-offset_bottom = -8.0
+offset_bottom = -7.0
 mouse_filter = 2
 texture = ExtResource("22_header_surface")
 expand_mode = 1
 stretch_mode = 1
-modulate = Color(0.92, 0.94, 0.88, 1)
+modulate = Color(0.84, 0.87, 0.80, 1)
+
+[node name="RightTopBronze" type="TextureRect" parent="CanvasLayer/TopVineLedge"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -24.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("v11_bronze_corner")
+expand_mode = 1
+stretch_mode = 5
+flip_v = true
+
+[node name="RightBottomBronze" type="TextureRect" parent="CanvasLayer/TopVineLedge"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 0.0
+offset_bottom = 0.0
+mouse_filter = 2
+texture = ExtResource("v11_bronze_corner")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="HeaderContainer" type="PanelContainer" parent="CanvasLayer"]
 anchors_preset = 10
@@ -243,9 +275,9 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -348.0
+offset_left = -336.0
 offset_top = 10.0
-offset_right = -60.0
+offset_right = -56.0
 offset_bottom = 58.0
 grow_horizontal = 0
 mouse_filter = 2
@@ -254,7 +286,7 @@ theme_override_styles/panel = ExtResource("17_res_plaque")
 [node name="GridContainer" type="HBoxContainer" parent="CanvasLayer/HeaderContainer/LayoutCtl/Panel"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 56
+theme_override_constants/separation = 48
 alignment = 1
 
 [node name="HSplitContainer" type="HBoxContainer" parent="CanvasLayer/HeaderContainer/LayoutCtl/Panel/GridContainer"]
@@ -320,10 +352,10 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_medallion")
 [node name="MarginContainer2" type="MarginContainer" parent="CanvasLayer/PanelContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 9
+theme_override_constants/margin_top = 9
+theme_override_constants/margin_right = 9
+theme_override_constants/margin_bottom = 9
 
 [node name="Container" type="PanelContainer" parent="CanvasLayer/PanelContainer/MarginContainer2"]
 layout_mode = 2

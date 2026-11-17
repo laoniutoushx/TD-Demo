@@ -1,0 +1,9 @@
+{
+  "method": "Native Godot AtlasTexture and StyleBoxTexture adjustments; existing bitmap assets reused",
+  "slot_border_normal_v12": {"source": "UI/theme/textures/slot_bevel_v11.png", "region": [2, 2, 124, 124]},
+  "slot_border_active_v12": {"source": "UI/theme/textures/slot_bevel_active_v11.png", "region": [2, 2, 124, 124]},
+  "secondary_container": "UI/theme/textures/action_inset_reference_v10.tres",
+  "captures": "Native Forward+ tests/ui_material_review.gd",
+  "comparison_baseline": "round_11",
+  "new_generated_bitmaps": false
+}

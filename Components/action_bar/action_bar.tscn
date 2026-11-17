@@ -22,13 +22,13 @@
 
 [ext_resource type="StyleBox" path="res://UI/theme/styles/action_skill_inset.tres" id="v9_skill_frame"]
 [ext_resource type="StyleBox" path="res://UI/theme/styles/action_item_inset.tres" id="v9_item_frame"]
-[ext_resource type="Texture2D" path="res://UI/theme/textures/action_divider_v9.tres" id="v9_divider"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/action_divider_v11.png" id="v9_divider"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_talent_mount"]
-content_margin_left = 5.0
-content_margin_right = 5.0
-content_margin_top = 1.0
-content_margin_bottom = 1.0
+content_margin_left = 2.0
+content_margin_right = 2.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_y5he4"]
 
@@ -717,9 +717,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -437.0
-offset_top = -212.0
-offset_right = 437.0
+offset_left = -400.0
+offset_top = -210.0
+offset_right = 400.0
 grow_horizontal = 2
 grow_vertical = 0
 size_flags_horizontal = 3
@@ -730,7 +730,7 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_y5he4")
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Container"]
 layout_mode = 2
 size_flags_vertical = 8
-theme_override_constants/margin_bottom = 6
+theme_override_constants/margin_bottom = 4
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer"]
 layout_mode = 2
@@ -743,12 +743,12 @@ mouse_filter = 2
 texture = ExtResource("34_stone_surface")
 expand_mode = 1
 stretch_mode = 1
-modulate = Color(0.92, 0.94, 0.88, 1)
+modulate = Color(0.84, 0.87, 0.80, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer"]
 layout_mode = 2
 size_flags_vertical = 8
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 
 [node name="TopC" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer"]
 z_index = 1
@@ -759,8 +759,8 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_y5he4")
 [node name="TopMarginC" type="MarginContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC"]
 layout_mode = 2
 theme_override_constants/margin_left = 6
-theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = 8
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 6
 theme_override_constants/margin_bottom = 0
 
 [node name="TopRow" type="HBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/TopC/TopMarginC"]
@@ -814,16 +814,17 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_tnudx")
 
 [node name="BottomInset" type="MarginContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC"]
 layout_mode = 2
-theme_override_constants/margin_left = 11
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
 
 [node name="BottomContainer" type="HBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 12
-alignment = 0
+theme_override_constants/separation = 8
+alignment = 1
 
 [node name="SkillPanel" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer"]
-custom_minimum_size = Vector2(305, 132)
+custom_minimum_size = Vector2(290, 150)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = ExtResource("v9_skill_frame")
@@ -834,10 +835,12 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_7eai8")
 
 [node name="SkillBar" type="GridContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/SkillPanel/Skill"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(282, 132)
+custom_minimum_size = Vector2(274, 132)
 layout_mode = 2
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 4
 columns = 4
 
 [node name="BaseSlot" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/SkillPanel/Skill/SkillBar" instance=ExtResource("2_7x41a")]
@@ -859,25 +862,26 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="ItemABuff" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer"]
-custom_minimum_size = Vector2(343, 132)
+custom_minimum_size = Vector2(306, 150)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = ExtResource("v9_item_frame")
 
 [node name="ItemBuffBox" type="VBoxContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/ItemABuff"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 3
 alignment = 1
 
 [node name="Item" type="MarginContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/ItemABuff/ItemBuffBox"]
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_constants/margin_left = 11
+size_flags_horizontal = 4
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
 
 [node name="ItemBar" type="GridContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/ItemABuff/ItemBuffBox/Item"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/h_separation = 16
+theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 0
 columns = 3
 
@@ -891,7 +895,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="ItemBuffDivider" type="TextureRect" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/ItemABuff/ItemBuffBox"]
-custom_minimum_size = Vector2(0, 2)
+custom_minimum_size = Vector2(0, 3)
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("v9_divider")
@@ -902,8 +906,7 @@ stretch_mode = 0
 custom_minimum_size = Vector2(296, 32)
 layout_mode = 2
 mouse_filter = 2
-
-theme_override_constants/margin_left = 11
+theme_override_constants/margin_left = 0
 
 [node name="BuffBar" type="GridContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/ItemABuff/ItemBuffBox/BuffHolder"]
 unique_name_in_owner = true
@@ -916,16 +919,15 @@ columns = 8
 [node name="BuffSlot" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/ItemABuff/ItemBuffBox/BuffHolder/BuffBar" instance=ExtResource("3_v252o")]
 layout_mode = 2
 
-
 [node name="PlayerPanel" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer"]
-custom_minimum_size = Vector2(156, 132)
+custom_minimum_size = Vector2(154, 150)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleBoxEmpty_talent_mount")
 
 [node name="PlayerBar" type="PanelContainer" parent="CanvasLayer/Container/MarginContainer/PanelContainer/VBoxContainer/BottomC/BottomInset/BottomContainer/PlayerPanel"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(144, 132)
+custom_minimum_size = Vector2(150, 150)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
