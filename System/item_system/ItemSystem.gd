@@ -1,12 +1,78 @@
 class_name ItemSystem extends Node3D
 
 
+const TerrainSampler = preload("res://render_v10/terrain.gd")
+
 var _chest: PackedScene = preload("res://System/item_system/resources/treasure_chest.tscn")
 
 func _ready() -> void:
 	SystemUtil.item_system = self
 	# 在系统启动时，初始化所有 item template resource，将起保存在 container 当中
 	CommonUtil.load_resources_to_container_from_directory("res://System/item_system/resources/", ItemManager.container())
+
+
+func _sample_ground_y(pos: Vector3) -> float:
+	if pos.y != 0.0:
+		return pos.y
+	return TerrainSampler.sample_ground_height(pos.x, pos.z)
+
+
+func _compute_ejection_position(chest_pos: Vector3, blocker_center: Vector3, clearance_radius: float, seed_idx: int = 0) -> Vector3:
+	var offset := chest_pos - blocker_center
+	offset.y = 0.0
+	if offset.length_squared() < 0.04:
+		var angle := float(seed_idx) * 1.15 + 0.65
+		offset = Vector3(cos(angle), 0.0, sin(angle))
+	var target := blocker_center + offset.normalized() * clearance_radius
+	target.y = _sample_ground_y(target)
+	return target
+
+
+## 当建造防御塔压住地面宝箱时，将范围内的宝箱自动挤出至建筑占地外缘
+func eject_chests_from_footprint(center: Vector3, clearance_radius: float = 2.8, tree: SceneTree = null) -> void:
+	var active_tree := tree if tree != null else get_tree()
+	if active_tree == null:
+		return
+	var chests := active_tree.get_nodes_in_group("treasure_chests")
+	var inner_radius_sq := (clearance_radius * 0.85) * (clearance_radius * 0.85)
+	var idx := 0
+	for node in chests:
+		if not is_instance_valid(node) or node.is_queued_for_deletion():
+			continue
+		if not (node is Node3D):
+			continue
+		var chest := node as Node3D
+		var delta := chest.global_position - center
+		delta.y = 0.0
+		if delta.length_squared() < inner_radius_sq:
+			var target := _compute_ejection_position(chest.global_position, center, clearance_radius, idx)
+			if chest.has_method("eject_to"):
+				chest.call("eject_to", target)
+			else:
+				chest.global_position = target
+			idx += 1
+
+
+## 掉落装备时若落在已有防御塔占地内部，自动偏移到建筑外缘避免模型掩埋
+func resolve_drop_position(origin: Vector3, tree: SceneTree = null) -> Vector3:
+	var active_tree := tree if tree != null else get_tree()
+	if active_tree == null:
+		return origin
+	var resolved := origin
+	var idx := 0
+	for node in active_tree.get_nodes_in_group("selectable_units"):
+		if not is_instance_valid(node) or not (node is Turret) or not (node is Node3D):
+			continue
+		var turret := node as Turret
+		if not turret.is_alive() or not turret.is_inside_tree():
+			continue
+		var turret_pos: Vector3 = (node as Node3D).global_position
+		var delta: Vector3 = resolved - turret_pos
+		delta.y = 0.0
+		if delta.length_squared() < 2.2 * 2.2:
+			resolved = _compute_ejection_position(resolved, turret_pos, 2.75, idx)
+			idx += 1
+	return resolved
 
 
 # drop_item 
@@ -21,7 +87,7 @@ func drop_item(unit: BaseUnit) -> void:
 				var chest_model: Node3D = drop_item.scene.instantiate()
 				chest_model.steup(drop_item)
 				SOS.main.item_system.add_child(chest_model)
-				chest_model.global_position = unit.global_position
+				chest_model.global_position = resolve_drop_position(unit.global_position, get_tree())
 
 
 # generate chest

@@ -47,7 +47,7 @@ func run() -> void:
  var timings := {}
  RenderingServer.viewport_set_measure_render_time(root.get_viewport_rid(),true)
  timings["empty"] = await measure_gpu()
- var paths := ["res://VFX/tornado/vfx_tornado_running.tscn","res://VFX/funnel_tornado/vfx_funnel_tornado_running.tscn"]
+ var paths := ["res://VFX/tornado/vfx_tornado_running.tscn","res://VFX/funnel_tornado/vfx_funnel_tornado_volume_running.tscn"]
  DirAccess.make_dir_recursive_absolute("res://.godot/tornado_review")
  for index in paths.size():
   var effect: Node3D = load(paths[index]).instantiate()

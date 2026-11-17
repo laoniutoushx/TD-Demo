@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://VFX/tornado/tornado.gd" id="1"]
+[ext_resource type="AudioStream" path="res://Asserts/waves/skill/怪物攻击技能音效boss_skill18_爱给网_aigei_com.mp3" id="2"]
+
+[node name="FunnelTornadoVolume" type="Node3D"]
+script = ExtResource("1")
+funnel_height = 4.2
+funnel_radius = 1.2
+optical_density = 5.6
+
+[node name="WindAudio" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2")
+volume_db = -12.0
+unit_size = 8.0
+max_distance = 48.0
+autoplay = true

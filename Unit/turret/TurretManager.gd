@@ -113,7 +113,7 @@ func _apply_hologram(is_valid: bool) -> void:
 	for node in turret.find_children("*", "MeshInstance3D"):
 		var mesh: MeshInstance3D = node as MeshInstance3D
 		if mesh == null: continue
-		if mesh.name == "mesh_standing": continue
+		if mesh.name == "mesh_standing" or mesh.name == "ProjectionVolume" or mesh.is_in_group("range_indicator"): continue
 		if not _turret_original_materials.has(mesh):
 			_turret_original_materials[mesh] = mesh.material_override
 		mesh.material_override = target_mat
@@ -132,12 +132,20 @@ func _update_range_indicator(show: bool) -> void:
 		var indicator = turret.get_node_or_null("RangeIndicator")
 		if is_instance_valid(indicator):
 			_active_range_indicator = indicator
-			if indicator.has_method("show"):
+			if "attack_range" in turret and indicator.has_method("set_radius"):
+				indicator.call("set_radius", float(turret.attack_range))
+			if indicator.has_method("set_preview_valid"):
+				indicator.call("set_preview_valid", preview_valid)
+			if indicator.has_method("show_indicator"):
+				indicator.call("show_indicator")
+			elif indicator.has_method("show"):
 				indicator.show()
 			elif "visible" in indicator:
 				indicator.visible = true
 	elif is_instance_valid(_active_range_indicator):
-		if _active_range_indicator.has_method("hide"):
+		if _active_range_indicator.has_method("hide_indicator"):
+			_active_range_indicator.call("hide_indicator")
+		elif _active_range_indicator.has_method("hide"):
 			_active_range_indicator.hide()
 		elif "visible" in _active_range_indicator:
 			_active_range_indicator.visible = false
@@ -160,6 +168,8 @@ func callable_build_turret(ray: RayCast3D, _grid: GridMap) -> void:
 	var point := placement_position(preview_cell)
 	turret.global_position = point + Vector3.UP * 0.001
 	_apply_hologram(preview_valid)
+	if is_instance_valid(_active_range_indicator) and _active_range_indicator.has_method("set_preview_valid"):
+		_active_range_indicator.call("set_preview_valid", preview_valid)
 
 	# 联动战术网格、焦点吸附框与周围可建地块全息热力图
 	if is_instance_valid(tactical_grid):
@@ -241,6 +251,10 @@ func confirm_build(cell: Vector3i) -> bool:
 	building.logical_death.connect(_on_building_left.bind(cells, building.get_instance_id()), CONNECT_ONE_SHOT)
 	_restore_turret_materials()
 	_update_range_indicator(false)
+	var fp := get_effective_footprint()
+	var clearance := maxf(float(fp.x), float(fp.y)) * SUBCELL_SIZE * 0.72
+	if is_instance_valid(SystemUtil.item_system):
+		SystemUtil.item_system.eject_chests_from_footprint(point, clearance, get_tree())
 	skill_context.building = building
 	skill_context.callback = _finish_building.bind(building, point)
 	building.global_position = point

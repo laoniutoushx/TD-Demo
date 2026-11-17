@@ -76,53 +76,88 @@ static func get_unit_screen_rect(camera: Camera3D, node: Node) -> Rect2:
 		rect = rect.grow_individual(0.0, 6.0, 0.0, 6.0)
 	return rect
 
-## 4. 单选拾取（模型 3D AABB 穿透检测 + 屏幕空间磁吸容差）
-## 无论是点击头部、炮管还是脚底，均能直接射中
-static func pick_unit(camera: Camera3D, screen_pos: Vector2, filter: Callable = Callable(), tolerance_px: float = 20.0) -> Variant:
-	if not is_instance_valid(camera): return null
+## 4. 枚举光标下所有候选目标（3D AABB 射线命中 + 屏幕空间磁吸容差）
+## 解决物体/模型重叠时，外框较大的单位遮挡内部或近中心单位/宝箱的问题
+static func pick_all_units(camera: Camera3D, screen_pos: Vector2, filter: Callable = Callable(), tolerance_px: float = 20.0) -> Array:
+	var results: Array = []
+	if not is_instance_valid(camera): return results
 	var ray_origin := camera.project_ray_origin(screen_pos)
 	var ray_dir := camera.project_ray_normal(screen_pos)
-	
-	var best_unit: Variant = null
-	var min_depth := INF
-	
+
 	var tree = camera.get_tree()
-	if tree == null: return null
+	if tree == null: return results
 	var candidates = tree.get_nodes_in_group("selectable_units")
-	
-	# 第一阶段：3D 模型包围盒直接求交（纳秒级原生 C++ AABB.intersects_ray）
+
+	# 第一阶段：3D 模型包围盒直接求交（按射线命中深度 + 射线到包围盒中心距离加权排序）
+	var aabb_hits: Array[Dictionary] = []
+	var seen_ids: Dictionary = {}
 	for node in candidates:
 		if not is_selectable(node): continue
 		if filter.is_valid() and not filter.call(node): continue
-		
+
 		var aabb := get_unit_world_aabb(node)
 		var hit_pos = aabb.intersects_ray(ray_origin, ray_dir)
 		if hit_pos != null:
 			var hit_dist: float = ray_origin.distance_to(hit_pos as Vector3)
-			if hit_dist < min_depth:
-				min_depth = hit_dist
-				best_unit = node
-			
-	if best_unit != null:
-		return best_unit
+			var center := aabb.get_center()
+			var ray_center_dist: float = ((center - ray_origin).cross(ray_dir)).length()
+			# 当较大包围盒与较小单位/宝箱重叠时，优先命中射线更贴近其核心的目标
+			var score: float = hit_dist + ray_center_dist * 1.5
+			aabb_hits.append({
+				"node": node,
+				"score": score,
+				"dist": hit_dist,
+				"id": node.get_instance_id()
+			})
+			seen_ids[node.get_instance_id()] = true
 
-	# 第二阶段：屏幕空间磁吸容差（Sticky Click，当玩家点在模型边缘几个像素之外时依然舒适选中）
-	var closest_dist_sq := tolerance_px * tolerance_px
+	if not aabb_hits.is_empty():
+		aabb_hits.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+			if not is_equal_approx(a.score, b.score):
+				return a.score < b.score
+			if not is_equal_approx(a.dist, b.dist):
+				return a.dist < b.dist
+			return int(a.id) < int(b.id)
+		)
+		for entry in aabb_hits:
+			results.append(entry.node)
+
+	# 第二阶段：屏幕空间磁吸容差（Sticky Click，补充未被 3D 射线直接穿过但处于边缘容差内的目标）
+	var sticky_hits: Array[Dictionary] = []
 	for node in candidates:
+		var nid: int = node.get_instance_id()
+		if seen_ids.has(nid): continue
 		if not is_selectable(node): continue
 		if filter.is_valid() and not filter.call(node): continue
-		
+
 		var s_rect := get_unit_screen_rect(camera, node)
 		if s_rect.size == Vector2.ZERO: continue
-		
+
 		if s_rect.grow(tolerance_px).has_point(screen_pos):
 			var center := s_rect.get_center()
 			var dist_sq := center.distance_squared_to(screen_pos)
-			if dist_sq < closest_dist_sq:
-				closest_dist_sq = dist_sq
-				best_unit = node
-				
-	return best_unit
+			if dist_sq < tolerance_px * tolerance_px or s_rect.has_point(screen_pos):
+				sticky_hits.append({
+					"node": node,
+					"dist_sq": dist_sq,
+					"id": nid
+				})
+
+	if not sticky_hits.is_empty():
+		sticky_hits.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+			if not is_equal_approx(a.dist_sq, b.dist_sq):
+				return a.dist_sq < b.dist_sq
+			return int(a.id) < int(b.id)
+		)
+		for entry in sticky_hits:
+			results.append(entry.node)
+
+	return results
+
+## 4b. 单选拾取（返回优先级最高的目标）
+static func pick_unit(camera: Camera3D, screen_pos: Vector2, filter: Callable = Callable(), tolerance_px: float = 20.0) -> Variant:
+	var hits := pick_all_units(camera, screen_pos, filter, tolerance_px)
+	return hits[0] if not hits.is_empty() else null
 
 ## 5. 框选重叠拾取（2D 屏幕包围盒重叠相交，支持友好过滤偏好，过滤宝箱）
 static func pick_units_in_rect(camera: Camera3D, screen_rect: Rect2, filter: Callable = Callable(), prefer_friendly := true, player_group := 0) -> Array[BaseUnit]:
@@ -186,11 +221,18 @@ static func pick_ground(camera: Camera3D, screen_pos: Vector2, ground_layer_mask
 	return Vector3.ZERO
 
 ## 7. 全局上下文拾取（悬停、光标反馈、智能右键）
-static func pick_context(camera: Camera3D, screen_pos: Vector2, player_group: int = 0) -> PickResult:
+static func pick_context(camera: Camera3D, screen_pos: Vector2, player_group: int = 0, ignore_friendly: bool = false) -> PickResult:
 	var result := PickResult.new()
 	if not is_instance_valid(camera): return result
 	
-	var picked = pick_unit(camera, screen_pos)
+	var picked = pick_unit(
+		camera,
+		screen_pos,
+		func(node: Variant) -> bool:
+			if ignore_friendly and node is BaseUnit and (node as BaseUnit).player_group == player_group:
+				return false
+			return true
+	)
 	if picked != null:
 		if picked is TreasureChest:
 			result.item = picked
@@ -209,3 +251,7 @@ static func pick_context(camera: Camera3D, screen_pos: Vector2, player_group: in
 		result.target_type = PickResult.TargetType.GROUND
 		
 	return result
+
+## 8. 右键指令专用上下文拾取（自动穿透己方防御塔等阻挡物，直取装备宝箱或敌军）
+static func pick_action_context(camera: Camera3D, screen_pos: Vector2, player_group: int = 0) -> PickResult:
+	return pick_context(camera, screen_pos, player_group, true)

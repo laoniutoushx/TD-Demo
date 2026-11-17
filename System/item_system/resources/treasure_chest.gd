@@ -9,10 +9,31 @@ var _height: float = 2.5
 var _selection_local_aabb: AABB = AABB()
 
 
+var _eject_tween: Tween = null
+
 func _ready() -> void:
     add_to_group("selectable_units")
+    add_to_group("treasure_chests")
     $AnimationPlayer.play("burning")
     refresh_selection_bounds()
+    if not $AnimationPlayer.animation_finished.is_connected(_on_spawn_anim_finished):
+        $AnimationPlayer.animation_finished.connect(_on_spawn_anim_finished, CONNECT_ONE_SHOT)
+
+func _on_spawn_anim_finished(_anim_name: StringName) -> void:
+    refresh_selection_bounds()
+
+## 当建筑建造在宝箱上或掉落位置被建筑占满时，平滑滑移到建筑外缘
+func eject_to(target_pos: Vector3, duration: float = 0.24) -> void:
+    if not is_inside_tree():
+        global_position = target_pos
+        return
+    if _eject_tween != null and _eject_tween.is_valid():
+        _eject_tween.kill()
+    _eject_tween = create_tween()
+    _eject_tween.set_trans(Tween.TRANS_QUAD)
+    _eject_tween.set_ease(Tween.EASE_OUT)
+    _eject_tween.tween_property(self, "global_position", target_pos, duration)
+    _eject_tween.finished.connect(refresh_selection_bounds, CONNECT_ONE_SHOT)
 
 
 func refresh_selection_bounds() -> void:

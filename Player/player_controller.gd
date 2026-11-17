@@ -305,7 +305,8 @@ func _unhandled_input(event):
 		if target_unit == null:
 			var camera = get_viewport().get_camera_3d()
 			if camera != null:
-				var context = RTSPicker.pick_context(camera, event.position, player_group_idx)
+				# 右键交互自动穿透己方单位（防御塔等），直达下方宝箱或重叠敌军
+				var context = RTSPicker.pick_action_context(camera, event.position, player_group_idx)
 				if context.target_type == RTSPicker.PickResult.TargetType.ENEMY:
 					target_unit = context.unit
 				elif context.target_type == RTSPicker.PickResult.TargetType.ITEM:
@@ -315,8 +316,9 @@ func _unhandled_input(event):
 			if target_unit is TreasureChest:
 				for turret in PlayerSelect.units():
 					if is_instance_valid(turret) and turret is Turret:
-						SOS.main.item_system.pick_up(turret, target_unit)
-						break
+						var picked_item = SOS.main.item_system.pick_up(turret, target_unit)
+						if picked_item != null:
+							break
 			else:
 				for turret in PlayerSelect.units():
 					if is_instance_valid(turret) and turret is Turret:
@@ -330,6 +332,25 @@ func _unhandled_input(event):
 
 
 var _last_hover_mouse_pos: Vector2 = Vector2(-9999.0, -9999.0)
+
+func _resolve_hover_target(hits: Array) -> Node:
+	if hits.is_empty():
+		return null
+	var selected_units := PlayerSelect.units()
+	var has_selected_turret := false
+	for u in selected_units:
+		if is_instance_valid(u) and u is Turret:
+			has_selected_turret = true
+			break
+	if has_selected_turret:
+		var top: Variant = hits[0]
+		if top is BaseUnit and (top as BaseUnit).player_group == player_group_idx and PlayerSelect.contains_unit(top):
+			for candidate in hits:
+				if candidate is TreasureChest:
+					return candidate
+				if candidate is BaseUnit and (candidate as BaseUnit).player_group != player_group_idx:
+					return candidate
+	return hits[0]
 
 func update_hover_state(screen_pos: Vector2) -> void:
 	if PlayerSelect.is_selecting() or not BattleInput.pointer_available(get_viewport(), screen_pos):
@@ -347,7 +368,8 @@ func update_hover_state(screen_pos: Vector2) -> void:
 	var camera := get_viewport().get_camera_3d()
 	if camera == null: return
 	
-	var picked = RTSPicker.pick_unit(camera, screen_pos)
+	var hits := RTSPicker.pick_all_units(camera, screen_pos)
+	var picked := _resolve_hover_target(hits)
 	if picked == _current_hovered_target:
 		return
 		

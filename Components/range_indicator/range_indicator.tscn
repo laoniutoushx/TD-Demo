@@ -1,12 +1,27 @@
-[gd_scene load_steps=3 format=3 uid="uid://rv8l5sjnuaty"]
+[gd_scene load_steps=5 format=3 uid="uid://rv8l5sjnuaty"]
 
-[ext_resource type="PackedScene" uid="uid://djg6ewxcqfyp7" path="res://generic-scenes-and-nodes/3d/FadedCircle3D.tscn" id="1_h31e5"]
 [ext_resource type="Script" uid="uid://da4y1jeufwpxd" path="res://Components/range_indicator/range_indicator.gd" id="1_jdetk"]
+[ext_resource type="Shader" path="res://Components/range_indicator/range_indicator.gdshader" id="2_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_range"]
+render_priority = 10
+shader = ExtResource("2_shader")
+shader_parameter/box_extents = Vector3(12, 5, 12)
+shader_parameter/radius = 10.0
+shader_parameter/color = Color(0.22, 0.95, 0.65, 1)
+shader_parameter/alpha_mult = 1.0
+shader_parameter/hdr_intensity = 1.45
+shader_parameter/pulse_speed = 0.45
+shader_parameter/tick_speed = 0.08
+
+[sub_resource type="BoxMesh" id="BoxMesh_range"]
+size = Vector3(24, 10, 24)
 
 [node name="RangeIndicator" type="Node3D"]
+visible = false
 script = ExtResource("1_jdetk")
 
-[node name="FadedCircle3D" parent="." instance=ExtResource("1_h31e5")]
-width = 20.0
-outer_edge_width = 20.0
-color = Color(0.366667, 1, 0, 1)
+[node name="ProjectionVolume" type="MeshInstance3D" parent="." groups=["range_indicator"]]
+material_override = SubResource("ShaderMaterial_range")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_range")
