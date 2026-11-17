@@ -113,7 +113,7 @@ func _apply_hologram(is_valid: bool) -> void:
 	for node in turret.find_children("*", "MeshInstance3D"):
 		var mesh: MeshInstance3D = node as MeshInstance3D
 		if mesh == null: continue
-		if mesh.name == "mesh_standing" or mesh.name == "ProjectionVolume" or mesh.is_in_group("range_indicator"): continue
+		if mesh.name == "mesh_standing" or mesh.name == "ProjectionVolume" or mesh.is_in_group("range_indicator") or mesh.is_in_group("no_hologram"): continue
 		if not _turret_original_materials.has(mesh):
 			_turret_original_materials[mesh] = mesh.material_override
 		mesh.material_override = target_mat

@@ -53,6 +53,7 @@ func _ready() -> void:
 
 	# HUD 初始化
 	hud.init_hud_bar(self)
+	call_deferred("_register_screen_hud")
 	
 
 
@@ -251,3 +252,11 @@ func _on_control_state_changed(_capability: StringName, _allowed: bool) -> void:
 	elif current_state == TurretState.FREEZEING:
 		set_physics_process(true)
 		change_state(TurretState.IDLE)
+
+
+func _register_screen_hud() -> void:
+	if not is_inside_tree():
+		return
+	var screen_hud := get_tree().get_first_node_in_group("screen_health_bars")
+	if is_instance_valid(screen_hud) and screen_hud.has_method("register_unit"):
+		screen_hud.register_unit(self)

@@ -134,15 +134,25 @@ func run() -> void:
 	check(ri.visible, "RangeIndicator visible when single turret selected")
 	var vol := ri.get_node_or_null("ProjectionVolume") as MeshInstance3D
 	check(vol != null and vol.mesh is BoxMesh and vol.material_override is ShaderMaterial, "RangeIndicator uses depth-projected BoxMesh + ShaderMaterial")
-	if vol != null and vol.material_override is ShaderMaterial:
-		var rmat := vol.material_override as ShaderMaterial
-		check(is_equal_approx(float(rmat.get_shader_parameter("radius")), cannon.attack_range), "RangeIndicator shader radius matches cannon.attack_range")
-		check(float(rmat.get_shader_parameter("alpha_mult")) > 0.85, "RangeIndicator fades in cleanly")
+	if vol != null:
+		check(is_equal_approx(float(vol.get_instance_shader_parameter(&"radius")), cannon.attack_range), "RangeIndicator shader radius matches cannon.attack_range")
+		check(float(vol.get_instance_shader_parameter(&"alpha_mult")) > 0.85, "RangeIndicator fades in cleanly")
 	if ri.has_method("set_preview_valid"):
 		ri.set_preview_valid(false)
-		var col: Color = vol.material_override.get_shader_parameter("color")
+		var col: Color = vol.get_instance_shader_parameter(&"color")
 		check(col.r > col.g, "RangeIndicator invalid preview switches to red warning color")
 		ri.set_preview_valid(true)
+
+	# --- 5. Minimalist Next-Gen Foot Selection Circle (FadedCircle3D) ---
+	var fc = cannon.get_node_or_null("FadedCircle3D")
+	check(fc != null and fc.visible, "FadedCircle3D visible on selected cannon")
+	var fc_vol = fc.get_node_or_null("SelectionCircleVolume") if fc != null else null
+	check(fc_vol is MeshInstance3D and fc_vol.mesh is BoxMesh and fc_vol.material_override is ShaderMaterial, "FadedCircle3D uses depth-projected SelectionCircleVolume")
+	# Also show chest2 and gdbot selected circle in screenshot for visual inspection
+	chest2.show_selected_circle()
+	if is_instance_valid(level.gdbot):
+		level.gdbot.show_selected_circle()
+	await create_timer(0.15).timeout
 
 	# Capture visual verification screenshot
 	await RenderingServer.frame_post_draw

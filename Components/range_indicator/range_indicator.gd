@@ -5,6 +5,9 @@ const COLOR_PREVIEW_VALID := Color(0.22, 0.95, 0.65, 1.0)
 const COLOR_PREVIEW_INVALID := Color(1.0, 0.32, 0.22, 1.0)
 const COLOR_ENEMY := Color(1.0, 0.35, 0.25, 1.0)
 
+static var _shared_box: BoxMesh = null
+static var _shared_mat: ShaderMaterial = null
+
 @export var volume_height: float = 10.0
 
 @onready var _volume: MeshInstance3D = $ProjectionVolume
@@ -15,33 +18,27 @@ var _current_radius: float = 10.0
 var _alpha_mult: float = 0.0
 var _target_alpha: float = 0.0
 var _active_color: Color = COLOR_FRIENDLY
-var _mat: ShaderMaterial = null
-var _box: BoxMesh = null
 
 
 func _ready() -> void:
 	set_process(false)
-	_ensure_material()
+	_ensure_shared_resources()
 	hide()
 	SignalBus.player_selected_units.connect(_on_player_selected_units)
 
 
-func _ensure_material() -> void:
+func _ensure_shared_resources() -> void:
 	if not is_instance_valid(_volume):
 		return
-	if _mat == null:
-		if _volume.material_override is ShaderMaterial:
-			_mat = _volume.material_override.duplicate() as ShaderMaterial
-		else:
-			_mat = ShaderMaterial.new()
-			_mat.shader = preload("res://Components/range_indicator/range_indicator.gdshader")
-		_volume.material_override = _mat
-	if _box == null:
-		if _volume.mesh is BoxMesh:
-			_box = _volume.mesh.duplicate() as BoxMesh
-		else:
-			_box = BoxMesh.new()
-		_volume.mesh = _box
+	if _shared_box == null:
+		_shared_box = BoxMesh.new()
+		_shared_box.size = Vector3.ONE
+	if _shared_mat == null:
+		_shared_mat = ShaderMaterial.new()
+		_shared_mat.shader = preload("res://Components/range_indicator/range_indicator.gdshader")
+		_shared_mat.render_priority = 10
+	_volume.mesh = _shared_box
+	_volume.material_override = _shared_mat
 	_volume.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 
@@ -60,7 +57,7 @@ func set_preview_valid(is_valid: bool) -> void:
 
 
 func show_indicator() -> void:
-	_ensure_material()
+	_ensure_shared_resources()
 	if owner is BaseUnit:
 		var unit := owner as BaseUnit
 		if "attack_range" in unit and float(unit.attack_range) > 0.1:
@@ -97,7 +94,7 @@ func _notification(what: int) -> void:
 			if _target_alpha <= 0.0:
 				_target_alpha = 1.0
 				_alpha_mult = 1.0
-			_ensure_material()
+			_ensure_shared_resources()
 			set_process(true)
 			_sync_shader()
 		else:
@@ -131,17 +128,14 @@ func _process(delta: float) -> void:
 
 
 func _sync_shader() -> void:
-	if _mat == null or _box == null:
+	if not is_instance_valid(_volume):
 		return
 	var margin := 1.5
 	var extent_xz := maxf(_current_radius, _target_radius) + margin
-	var size_vec := Vector3(extent_xz * 2.0, volume_height, extent_xz * 2.0)
-	if not _box.size.is_equal_approx(size_vec):
-		_box.size = size_vec
-	_mat.set_shader_parameter("box_extents", size_vec * 0.5)
-	_mat.set_shader_parameter("radius", _current_radius)
-	_mat.set_shader_parameter("color", _active_color)
-	_mat.set_shader_parameter("alpha_mult", _alpha_mult)
+	_volume.scale = Vector3(extent_xz * 2.0, volume_height, extent_xz * 2.0)
+	_volume.set_instance_shader_parameter(&"radius", _current_radius)
+	_volume.set_instance_shader_parameter(&"color", _active_color)
+	_volume.set_instance_shader_parameter(&"alpha_mult", _alpha_mult)
 
 
 # player select event
