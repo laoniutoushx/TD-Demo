@@ -6,6 +6,7 @@ class_name LevelComp extends Node3D
 
 # 信号
 signal level_up_event(level_up_unit: BaseUnit, level: int)	# scene code
+signal level_changed(new_level: int)
 
 
 # 引用对象
@@ -14,7 +15,13 @@ var reference: Variant
 
 
 @export var relife : int = 1    # 转生次数
-@export var level : int = 1		# 当前等级
+@export var level : int = 1:		# 当前等级
+	set(value):
+		var next_level := clampi(value, 1, maxi(1, int(max_level)))
+		if level == next_level:
+			return
+		level = next_level
+		level_changed.emit(level)
 
 @export var exp_growth_factor: float = 1.1     # 经验成长率
 

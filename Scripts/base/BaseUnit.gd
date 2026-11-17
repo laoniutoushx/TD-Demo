@@ -14,6 +14,8 @@ signal health_changed(unit: BaseUnit, left_health: float)	# 生命值变化单�
 signal mana_changed(unit: BaseUnit, left_mana: float)	# 魔法变化单位，剩余魔法值
 signal attack_unit(unit: BaseUnit, target: BaseUnit)	# 攻击单位，目标单位
 signal level_up(unit: BaseUnit, unit_level: int)	# 单位升级
+signal level_changed(unit: BaseUnit, new_level: int)
+signal hud_state_changed(unit: BaseUnit)
 
 # signal physic_death(unit: BaseUnit)
 
@@ -51,37 +53,44 @@ enum ARMOR_TYPE_ENUM  {
 
 
 # unit status
-var health : float : 
+var health : float :
 	set(value):
-		var change_health_val = health - value
-		if health != value:
-			health_changed.emit(self, change_health_val)
-		health = value
-		if health < 0:
-			health = 0
-		elif health > max_health:
-			health = max_health
+		var prev := health
+		var clamped := clampf(value, 0.0, max_health)
+		if prev != value:
+			health_changed.emit(self, prev - value)
+		health = clamped
+		if not is_equal_approx(prev, health):
+			hud_state_changed.emit(self)
 
 var max_health : float :
 	set(value):
+		var prev := max_health
 		max_health = maxf(0.0, value)
+		var prev_hp := health
 		if health > max_health:
 			health = max_health
+		if not is_equal_approx(prev, max_health) or not is_equal_approx(prev_hp, health):
+			hud_state_changed.emit(self)
 		
-var mana : float : 
+var mana : float :
 	set(value):
-		mana = value
+		var prev := mana
+		var clamped := clampf(value, 0.0, max_mana)
+		mana = clamped
 		mana_changed.emit(self, mana)
-		if mana < 0:
-			mana = 0
-		elif mana > max_mana:
-			mana = max_mana
+		if not is_equal_approx(prev, mana):
+			hud_state_changed.emit(self)
 
 @export var max_mana : float :
 	set(value):
+		var prev := max_mana
 		max_mana = maxf(0.0, value)
+		var prev_mp := mana
 		if mana > max_mana:
 			mana = max_mana
+		if not is_equal_approx(prev, max_mana) or not is_equal_approx(prev_mp, mana):
+			hud_state_changed.emit(self)
 
 
 var _is_logic_alive := true
@@ -195,7 +204,12 @@ var _mesh_standing: MeshInstance3D
 @export var player_owner_idx: int
 
 # player group => 0 & 1
-@export var player_group: int
+@export var player_group: int:
+	set(value):
+		if player_group == value:
+			return
+		player_group = value
+		hud_state_changed.emit(self)
 
 
 
@@ -234,7 +248,25 @@ var _anim_speed: float	# 动画播放速率
 # Component - 组件系统预定义
 @export_group("System Component")
 @export_flags("LEVEL", "VFX", "ITEM", "DAMAGABLE", "BARRAGE") var component_systems = 0
-@export var level_component: LevelComp
+@export var level_component: LevelComp:
+	set(value):
+		if level_component == value:
+			return
+		if is_instance_valid(level_component) and level_component.level_changed.is_connected(_on_level_component_changed):
+			level_component.level_changed.disconnect(_on_level_component_changed)
+		level_component = value
+		if is_instance_valid(level_component) and not level_component.level_changed.is_connected(_on_level_component_changed):
+			level_component.level_changed.connect(_on_level_component_changed)
+		_on_level_component_changed(get_unit_level())
+
+
+func _on_level_component_changed(new_level: int) -> void:
+	level_changed.emit(self, new_level)
+	hud_state_changed.emit(self)
+
+
+func get_unit_level() -> int:
+	return level_component.level if is_instance_valid(level_component) else 1
 
 
 # AUDIO
@@ -363,9 +395,11 @@ func _ready() -> void:
 	# system component load（skill）
 	skill_map = SystemUtil.skill_system.initialize_skills(self, skill_metas)
 
-	# level_up
-	if CommonUtil.is_flag_set(BaseUnitResource.COMPONENT_SYSTEM.LEVEL, component_systems):
-		pass
+	# level_up：自动装配场景中预设的 LevelComp 节点（即便未在检查器手动绑定）
+	if not is_instance_valid(level_component):
+		var resolved_lvl := CommonUtil.get_first_node_by_node_name(self, "LevelComp") as LevelComp
+		if is_instance_valid(resolved_lvl):
+			level_component = resolved_lvl
 
 	# signal register
 	logical_death.connect(_on_logic_dead, CONNECT_ONE_SHOT)

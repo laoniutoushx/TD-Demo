@@ -79,6 +79,10 @@ func run() -> void:
 
 	await create_timer(0.35).timeout
 
+	# Verify auto-binding of child LevelComp in BaseUnit._ready() BEFORE showcase overrides
+	check(is_instance_valid(cannon.level_component), "BaseUnit._ready() auto-binds child LevelComp on Cannon1")
+	check(is_instance_valid(enemy.level_component), "BaseUnit._ready() auto-binds child LevelComp on Enemy")
+
 	# Freeze combat AI during showcase screenshot setup so projectiles/knockback don't disturb units
 	for u in [gdbot, cannon, bomber, enemy]:
 		if is_instance_valid(u):
@@ -131,30 +135,56 @@ func run() -> void:
 		for vp in sub_vps:
 			check(vp.render_target_update_mode == SubViewport.UPDATE_DISABLED, "Legacy HUD SubViewport disabled for zero per-unit GPU cost")
 
+	# Verify layout constants: friendly 2:1 HP/MP ratio & compact sizing
+	check(is_equal_approx(screen_hud.F_HP_H, screen_hud.F_MP_H * 2.0), "Friendly HP/MP height ratio is strictly 2:1 (%.1f / %.1f)" % [screen_hud.F_HP_H, screen_hud.F_MP_H])
+	check(screen_hud.F_LOGICAL_SIZE == Vector2(100.0, 24.0) and screen_hud.E_LOGICAL_SIZE == Vector2(96.0, 20.0), "HUD logical dimensions scaled down to compact 100x24 / 96x20")
+
 	# Verify enemy filtering: undamaged unselected enemy should NOT trigger display condition, damaged enemy DOES
 	var ally_group: int = pc.player_group_idx
+	var c_state = screen_hud.states[cannon.get_instance_id()]
+	var e_state = screen_hud.states[enemy.get_instance_id()]
+	check(c_state.is_friendly and c_state.has_mp_bar and c_state.visible_in_hud, "Friendly tower shows dual HP+MP HUD")
 	check(enemy.player_group != ally_group and enemy.health >= enemy.max_health, "Enemy starts undamaged on opposing team")
+	check(not e_state.visible_in_hud, "Undamaged unselected enemy HUD stays hidden")
 
-	# Damage enemy so crimson HP bar also appears in crowd shot
+	# Verify event-driven declarative sync (level, health, max_health, mana) with zero manual refresh calls
+	cannon.level_component.level = 15
+	cannon.health = 500.0
+	cannon.mana = 75.0
+	check(c_state.level == 15 and c_state.level_text == "15", "Event-driven HUD level updates immediately on LevelComp.level change (15)")
+	check(is_equal_approx(c_state.hp_ratio, 0.5) and c_state.hp_text == "500 / 1000", "Event-driven HUD HP updates immediately on BaseUnit.health change")
+	check(c_state.mp_text == "75 / 300", "Event-driven HUD MP updates immediately on BaseUnit.mana change")
+	# Restore showcase numbers
+	_set_showcase_stats(cannon, 12, 720.0, 1000.0, 145.0, 300.0)
+
+	# Damage enemy so crimson single-bar HP appears with internal numbers
 	enemy.health = 620.0
+	check(e_state.visible_in_hud, "Damaged enemy HUD activates declaratively on health drop")
+	check(not e_state.has_mp_bar, "Enemy HUD removes MP bar and keeps HP only")
+	check(e_state.show_numbers and e_state.hp_text == "620 / 1000", "Enemy HUD displays internal HP readout whenever shown")
+
 	# Fast-forward trail smoothing cleanly
 	await create_timer(0.8).timeout
 
-	# Clear selection for clean In-Game (Crowd Readability) shot without numbers
+	# Clear selection for clean In-Game (Crowd Readability) shot without friendly numbers
 	var signal_bus = root.get_node("SignalBus")
 	signal_bus.player_selected_units.emit({}, Vector3.ZERO, ally_group)
 	pc._current_hovered_target = null
+	check(not c_state.show_numbers, "Friendly HUD hides internal numbers when unselected and unhovered")
+	check(e_state.show_numbers, "Enemy HUD keeps internal HP numbers visible when unselected and unhovered")
 	await create_timer(0.25).timeout
-	await _capture_png(root, "res://.godot/unit_hud_review/in_game_crowd.png")
+	await _capture_png(root, "res://.godot/unit_hud_review/in_game_crowd_v3.png")
 
-	# Now hover & select Gdbot to verify Option 1A numeric readout & close-up fidelity
+	# Now hover & select Gdbot to verify friendly hovered/selected numeric readout & close-up fidelity
 	if is_instance_valid(gdbot):
 		pc._current_hovered_target = gdbot
 		signal_bus.player_selected_units.emit({gdbot.get_instance_id(): gdbot}, gdbot.global_position, ally_group)
+		var g_state = screen_hud.states[gdbot.get_instance_id()]
+		check(g_state.is_hovered and g_state.is_selected and g_state.show_numbers, "Hovered/single-selected friendly UnitHudState enables numbers via event")
 		cam.global_position = gdbot.global_position + Vector3(0.0, 8.2, 9.2)
 		cam.look_at(gdbot.global_position + Vector3(0.0, 1.8, 0.0), Vector3.UP)
 		await create_timer(0.25).timeout
-		await _capture_png(root, "res://.godot/unit_hud_review/hovered_numeric_zoom.png")
+		await _capture_png(root, "res://.godot/unit_hud_review/hovered_numeric_zoom_v3.png")
 		check(screen_hud.selected_ids.has(gdbot.get_instance_id()), "Single-selected unit tracked for Option 1A numeric display")
 
 	print("[UNIT_HUD_REVIEW] Completed %d assertions (%d failures)" % [assertions, failures])

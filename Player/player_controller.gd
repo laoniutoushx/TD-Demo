@@ -1,7 +1,14 @@
 class_name PlayerController extends Node3D
 const BattleInput = preload("res://Scripts/utils/BattleInput.gd")
 const RTSPicker = preload("res://Scripts/utils/RTSPicker.gd")
-var _current_hovered_target: Node = null
+signal hovered_target_changed(target: Node)
+
+var _current_hovered_target: Node = null:
+	set(value):
+		if _current_hovered_target == value:
+			return
+		_current_hovered_target = value
+		hovered_target_changed.emit(_current_hovered_target)
 
 @onready var item_hud: PackedScene = preload("res://Components/item_indicator/item_hud.tscn")
 @onready var selection_box: SelectionBox = %SelectionBox
