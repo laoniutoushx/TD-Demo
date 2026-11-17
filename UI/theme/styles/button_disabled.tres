@@ -1,6 +1,6 @@
-[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
+[gd_resource type="StyleBoxTexture" format=3 uid="uid://ui3x5xksuycw"]
 
-[ext_resource type="Texture2D" path="res://UI/theme/textures/btn_disabled.png" id="1_tex"]
+[ext_resource type="Texture2D" uid="uid://b8hkloklvu0v8" path="res://UI/theme/textures/btn_disabled.png" id="1_tex"]
 
 [resource]
 content_margin_left = 22.0

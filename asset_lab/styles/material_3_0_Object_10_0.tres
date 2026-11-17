@@ -1,7 +1,7 @@
-[gd_resource type="StandardMaterial3D" format=3]
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://2r62k7ld6ken"]
 
-[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Tree_leaf_baseColor.png" id="1_0ok8f"]
-[ext_resource type="Texture2D" path="res://fab_candidates/08/textures/Tree_leaf_normal.png" id="2_fdp6b"]
+[ext_resource type="Texture2D" uid="uid://oxsngx14i22d" path="res://fab_candidates/08/textures/Tree_leaf_baseColor.png" id="1_0ok8f"]
+[ext_resource type="Texture2D" uid="uid://ct0gidx3lnrcx" path="res://fab_candidates/08/textures/Tree_leaf_normal.png" id="2_fdp6b"]
 
 [resource]
 resource_name = "Tree_leaf"
@@ -15,6 +15,7 @@ albedo_texture = ExtResource("1_0ok8f")
 roughness = 0.56
 normal_enabled = true
 normal_texture = ExtResource("2_fdp6b")
+clearcoat_enabled = true
 backlight_enabled = true
 backlight = Color(0.38, 0.5, 0.2, 1)
 texture_filter = 5

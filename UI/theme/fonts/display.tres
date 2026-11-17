@@ -1,7 +1,7 @@
 [gd_resource type="FontVariation" load_steps=2 format=3]
-
-[ext_resource type="FontFile" path="res://Asserts/resources/demo_ui/Font/江城圆体 700W.ttf" id="1_font"]
-
+[sub_resource type="SystemFont" id="Font_serif"]
+font_names = PackedStringArray("Noto Serif CJK SC", "Source Han Serif SC", "SimSun", "serif")
+font_weight = 700
 [resource]
-base_font = ExtResource("1_font")
-spacing_glyph = 1
+base_font = SubResource("Font_serif")
+variation_embolden = 0.7

@@ -1,6 +1,6 @@
-[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
+[gd_resource type="StyleBoxTexture" format=3 uid="uid://c6goa5mqgj3dq"]
 
-[ext_resource type="Texture2D" path="res://UI/theme/textures/stone_panel_9slice.png" id="1_tex"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/obsidian_panel_v8.png" id="1_tex"]
 
 [resource]
 content_margin_left = 20.0
@@ -8,7 +8,10 @@ content_margin_top = 18.0
 content_margin_right = 20.0
 content_margin_bottom = 18.0
 texture = ExtResource("1_tex")
-texture_margin_left = 44.0
-texture_margin_top = 44.0
-texture_margin_right = 44.0
-texture_margin_bottom = 44.0
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2

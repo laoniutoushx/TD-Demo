@@ -152,7 +152,7 @@ script = ExtResource("1_7fv8p")
 talent_text = "[font_size=28][b]贪婪[/b][/font_size]
 [font_size=18]每回合开始，获得当前波次 [b]X 100[/b] 的金钱奖励[/font_size]
 
-[font_size=20]► 金钱奖励：[color=green]+100%[/color][/font_size]"
+[font_size=20]► 金钱奖励：[color=#B8CE68]+100%[/color][/font_size]"
 
 [node name="ChooseTalentBarContainer" type="PanelContainer" parent="."]
 unique_name_in_owner = true
@@ -185,10 +185,14 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_jfjjs")
 layout_mode = 2
 
 [node name="TextureRect" type="TextureRect" parent="ChooseTalentBarContainer/HBoxContainer/PanelContainer/CenterContainer"]
+custom_minimum_size = Vector2(96, 96)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 texture = ExtResource("1_jfjjs")
+
+expand_mode = 1
+stretch_mode = 5
 
 [node name="RightPanel" type="PanelContainer" parent="ChooseTalentBarContainer/HBoxContainer"]
 layout_mode = 2
@@ -206,7 +210,7 @@ bbcode_enabled = true
 text = "[font_size=28][b]贪婪[/b][/font_size]
 [font_size=18]每回合开始，获得当前波次 [b]X 100[/b] 的金钱奖励[/font_size]
 
-[font_size=20]► 金钱奖励：[color=green]+100%[/color][/font_size]"
+[font_size=20]► 金钱奖励：[color=#B8CE68]+100%[/color][/font_size]"
 vertical_alignment = 1
 
 [node name="ColorRect" type="ColorRect" parent="."]

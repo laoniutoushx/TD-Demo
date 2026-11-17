@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" path="res://UI/theme/components/moss_frame_accents.tscn" id="6_moss"]
 [ext_resource type="StyleBox" path="res://UI/theme/styles/panel_obsidian.tres" id="7_obsidian"]
 [ext_resource type="StyleBox" path="res://UI/theme/styles/panel_recessed.tres" id="8_recessed"]
-[ext_resource type="FontFile" path="res://UI/theme/fonts/display.tres" id="9_display"]
+[ext_resource type="Font" path="res://UI/theme/fonts/display.tres" id="9_display"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_hero_name"]
 font = ExtResource("9_display")

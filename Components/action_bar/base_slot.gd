@@ -26,6 +26,7 @@ signal slot_right_clicked(s: BaseSlot)
 @onready var icon_texture: TextureRect = %IconTexture
 @onready var short_cut: Label = get_node_or_null("%ShortKey")
 @onready var level_key: Label = get_node_or_null("%LevelKey")
+@onready var talent_title_label: Label = get_node_or_null("%TalentTitleLabel")
 @onready var progress_bar: TextureProgressBar = %TextureProgressBar
 @onready var boarder_effect: AnimatedSprite2D = %BoardEffect
 
@@ -41,6 +42,7 @@ static var slot_panel_container_unactive_theme: Theme = preload("res://Component
 static var _slot_material = preload("res://Components/action_bar/corner_boder_color.tres")
 static var _slot_normal_style: StyleBox = preload("res://UI/theme/styles/slot_normal.tres")
 static var _slot_active_style: StyleBox = preload("res://UI/theme/styles/slot_active.tres")
+static var _slot_empty_item_style: StyleBox = preload("res://UI/theme/styles/slot_empty_item.tres")
 # static var _slot_shader = preload("res://Components/action_bar/corner_boder_color.gdshader")
 
 # 槽位引用的实体对象
@@ -63,7 +65,7 @@ func _ready() -> void:
 	for child in find_children("*", "Control", true, false):
 		child.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_process(false)
-	add_theme_stylebox_override("panel", _slot_normal_style)
+	add_theme_stylebox_override("panel", _get_normal_panel_style())
 	# set_process_input(false)
 	slot_material = _slot_material.duplicate(true)
 	progress_bar.value = 0.0
@@ -74,11 +76,17 @@ func _ready() -> void:
 
 	# Assuming slot is a Control node or subclass like Button, Label, etc.
 	# 设置 slot 轴心位置（防止缩放时，图标位置偏移）
-	self.pivot_offset = self.size / 2  # Set the pivot to the center of the node
-
+	_sync_slot_geometry()
+	resized.connect(_sync_slot_geometry)
 
 	slot_left_clicked.connect(_on_slot_left_clicked)
 	slot_right_clicked.connect(_on_slot_right_clicked)
+
+
+func _sync_slot_geometry() -> void:
+	self.pivot_offset = self.size * 0.5
+	if is_instance_valid(boarder_effect):
+		boarder_effect.position = self.size * 0.5
 
 
 	
@@ -270,9 +278,12 @@ func custome_init(ref: Variant, icon_path: String, type: SLOT_TYPE = SLOT_TYPE.D
 	
 
 	reset_level(level)
+	if is_instance_valid(talent_title_label) and is_instance_valid(ref) and ref.get("title") != null:
+		talent_title_label.text = str(ref.get("title"))
 
 	
 	slot_type = type
+	add_theme_stylebox_override("panel", _get_normal_panel_style())
 	is_active = active
 	
 	
@@ -284,20 +295,17 @@ func custome_init(ref: Variant, icon_path: String, type: SLOT_TYPE = SLOT_TYPE.D
 		
 		
 func do(active):
-	if active:
-		icon_texture.material.set_shader_parameter("modulate_color", Color.WHITE)
+	is_active = bool(active)
+	if icon_texture and icon_texture.material:
+		icon_texture.material.set_shader_parameter("modulate_color", Color.WHITE if is_active else Color.DIM_GRAY)
 		icon_texture.material.set_shader_parameter("show_border", false)
-		self.theme = null
-	else:
-		icon_texture.material.set_shader_parameter("modulate_color", Color.DIM_GRAY)
-		icon_texture.material.set_shader_parameter("show_border", false)
-		self.theme = null # slot_panel_container_unactive_theme
+	self.theme = null
 
 
 # 重新设置等级
 func reset_level(level: int) -> void:
 	if is_instance_valid(level_key) and level > -1:
-		level_key.text = "LV " + str(level)
+		level_key.text = "LV" + str(level)
 
 
 func set_buff_snapshot(snapshot: Dictionary, is_friendly: bool) -> void:
@@ -337,7 +345,7 @@ func update_buff_snapshot(snapshot: Dictionary) -> void:
 		progress_bar.value = 0.0
 		progress_bar.visible = false
 		set_process(false)
-	add_theme_stylebox_override("panel", _slot_normal_style)
+	add_theme_stylebox_override("panel", _get_normal_panel_style())
 
 
 
@@ -353,10 +361,13 @@ func extend_cooldown(cooldown: float) -> void:
 
 func _on_mouse_entered() -> void:
 	is_mouse_hover = true
-	add_theme_stylebox_override("panel", _slot_active_style)
+	var hover_style = preload("res://UI/theme/styles/slot_buff_active.tres") if slot_type == SLOT_TYPE.BUFF else _slot_active_style
+	add_theme_stylebox_override("panel", hover_style)
 
-	if icon_texture and icon_texture.material:
-		icon_texture.material.set_shader_parameter("show_border", true)
+	if icon_texture:
+		icon_texture.modulate = Color(1.08, 1.07, 1.02, 1.0)
+		if icon_texture.material:
+			icon_texture.material.set_shader_parameter("show_border", false)
 	
 
 	# 显示 slot_indicator 
@@ -369,12 +380,20 @@ func _on_mouse_entered() -> void:
 	
 
 
+func _get_normal_panel_style() -> StyleBox:
+	if slot_type == SLOT_TYPE.BUFF:
+		return preload("res://UI/theme/styles/slot_buff.tres")
+	return _slot_normal_style
+
+
 func _on_mouse_exited() -> void:
 	is_mouse_hover = false
-	add_theme_stylebox_override("panel", _slot_normal_style)
+	add_theme_stylebox_override("panel", _get_normal_panel_style())
 
-	if icon_texture and icon_texture.material:
-		icon_texture.material.set_shader_parameter("show_border", false)
+	if icon_texture:
+		icon_texture.modulate = Color.WHITE
+		if icon_texture.material:
+			icon_texture.material.set_shader_parameter("show_border", false)
 
 	# 关闭 slot_indicator 
 	if is_instance_valid(reference) and reference is Skill:

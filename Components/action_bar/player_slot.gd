@@ -50,3 +50,15 @@ func _on_mouse_exited() -> void:
 
 func _on_mouse_entered() -> void:
 	super._on_mouse_entered()
+	add_theme_stylebox_override("panel", preload("res://UI/theme/styles/slot_talent_hover.tres"))
+
+
+func custome_init(ref: Variant, icon_path: String, type: SLOT_TYPE = SLOT_TYPE.DEFAULT, active: bool = true, level: int = -1) -> void:
+	super.custome_init(ref, icon_path, type, active, level)
+	if is_instance_valid(ref) and str(ref.get("code")) == "GREEDY":
+		icon_texture.texture = preload("res://UI/theme/textures/talent_greedy_cutout.png")
+		if is_instance_valid(talent_title_label):
+			talent_title_label.text = "GREEDY"
+
+func _get_normal_panel_style() -> StyleBox:
+	return preload("res://UI/theme/styles/slot_talent.tres")

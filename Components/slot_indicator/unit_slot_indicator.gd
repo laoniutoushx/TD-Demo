@@ -21,6 +21,11 @@ class_name UnitSlotIndicator extends BaseSlotIndicator
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	super._ready()
+	_detail_timer = Timer.new()
+	_detail_timer.wait_time = 0.15
+	add_child(_detail_timer)
+	_detail_timer.timeout.connect(_refresh_visible_details)
+	visibility_changed.connect(_sync_detail_timer)
 	if SystemUtil.buff_system != null and SystemUtil.buff_system.attribute_service != null:
 		if not SystemUtil.buff_system.attribute_service.attribute_changed.is_connected(_on_attribute_changed):
 			SystemUtil.buff_system.attribute_service.attribute_changed.connect(_on_attribute_changed)
@@ -68,13 +73,13 @@ func _slot_info(_slot: BaseSlot) -> void:
 
 	# Cost
 	if unit.health > -1:
-		health.text = "生命值： %s" % str(unit.health)
+		health.text = "生命值： %.0f / %.0f" % [unit.health, unit.max_health]
 		health.visible = true
 	else:
 		health.visible = false
 
 	if unit.mana > -1:
-		mana.text = "魔法值： %s" % str(unit.mana)
+		mana.text = "魔法值： %.0f / %.0f" % [unit.mana, unit.max_mana]
 		mana.visible = true
 	else:
 		mana.visible = false
@@ -100,7 +105,7 @@ func _slot_info(_slot: BaseSlot) -> void:
 		element_phase.visible = false
 
 	if unit.attack_value:
-		damage.text = "伤害： %s" % str(unit.attack_value)
+		damage.text = "攻击： %.0f · 移速： %.0f" % [unit.attack_value, unit.move_speed]
 		damage.visible = true
 	else:
 		damage.visible = false
@@ -124,3 +129,13 @@ func _slot_info(_slot: BaseSlot) -> void:
 	# else:
 	# 	target_type.visible = false
 
+
+var _detail_timer: Timer
+func _refresh_visible_details() -> void:
+	if visible and is_instance_valid(cur_slot):
+		refresh_slot_indicator_info(cur_slot)
+func _sync_detail_timer() -> void:
+	if visible:
+		_detail_timer.start()
+	else:
+		_detail_timer.stop()

@@ -1,0 +1,19 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "id": "obsidian_panel_v8",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-9e5085f2-1d98-4e98-a5b3-48e77e2892fc.png",
+      "prompt": "Edit this square game UI panel into a reusable dark obsidian slate panel texture for the approved jungle ruins aesthetic. Preserve exactly the outer thin straight double stone/aged bronze rails, square/chamfered geometry, narrow edge thickness, upper-left light, weathered muted bronze. Change ONLY the center stone: darken to average #1b201c with subtle fine slate grain and shallow chisel marks; low contrast and flat even illumination for readable UI text. No large cracks, no stone blocks, no vignette. Do not add foliage, moss, ornaments, corner braces, text or symbols. Keep edge middle sections continuous for nine-slice tiling. The center must be opaque dark stone, exterior transparency preserved. The frame should remain visibly warm bronze against the dark center, not turn grey.",
+      "asset": "UI/theme/textures/obsidian_panel_v8.png"
+    },
+    {
+      "id": "slot_bevel_v8",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-4c834392-061d-45b2-871a-c9ec32a07a15.png",
+      "prompt": "Production transparent square game UI SLOT BORDER ONLY, dark olive antique brass for realistic jungle ruins RTS interface. Perfect front view. Outer rounded square occupies entire canvas with 1% transparent exterior margin. Corner radius 8% of width. Border VERY THIN: 2.5% of canvas width each side; huge fully transparent central opening 93% width. A fine pale olive-gold upper/left bevel highlight, darker bronze lower/right rail and tiny uneven patina/scratches along edge. Restrained realistic worn metal, not flat vector line. No corner ornaments, no foliage, no rivets, no thick stone, no symbols, no glow, no shadows spreading into center. Interior completely transparent. Must remain a thin crisp approximately 2px border when scaled to 66px. Empty game equipment/skill frame asset only. All four edges continuous and perfectly aligned.",
+      "asset": "UI/theme/textures/slot_bevel_v8.png"
+    }
+  ],
+  "runtime_import_size": 256,
+  "notes": "Slot border uses native AtlasTexture to remove exterior transparent padding; slate and copper corners reuse project resources. Slider knob is native GradientTexture2D, not a generated bitmap."
+}

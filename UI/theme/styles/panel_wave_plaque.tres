@@ -1,0 +1,9 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/wave_plaque_matched_v10.tres" id="1_frame"]
+[resource]
+texture = ExtResource("1_frame")
+content_margin_left = 12.0
+content_margin_right = 24.0
+content_margin_top = 5.0
+content_margin_bottom = 5.0
+modulate_color = Color(1, 1, 1, 1)

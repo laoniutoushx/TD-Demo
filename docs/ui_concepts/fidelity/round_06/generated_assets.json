@@ -1,0 +1,19 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "id": "bronze_brace_reference_v6",
+      "input": "H:/Godot/Projects/TD-Demo/.godot/ref_corner_v6.png",
+      "prompt": "Extract and restore ONLY the aged bronze bottom-right UI corner brace from this reference crop. Keep EXACT bottom-right orientation: rounded L-shaped thin double rails along bottom and right, with a broad DIAGONAL triangular chamfered bronze gusset inset between rails at the elbow. Remove leaves, black stone, grass and all background; transparent interior and exterior. Faithfully preserve the muted brown bronze, dark patina recess, thin pale upper-left edge highlight, rounded corner and diagonal brace silhouette. Reconstruct the small obscured upper section naturally, no added rivets or motifs. Asset occupies 92% of a square transparent canvas, rails terminate cleanly near left and top edges. Front orthographic view, no perspective change, no text, no complete rectangular frame. The diagonal gusset must be clearly visible at 26px game size. Refine material detail without redesigning the shape.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-a0a644a3-4baa-47cf-85d9-0bed456e8cf0.png",
+      "asset": "UI/theme/textures/bronze_brace_reference_v6.png"
+    },
+    {
+      "id": "bottom_foliage_reference_v6",
+      "input": "H:/Godot/Projects/TD-Demo/.godot/ref_bottom_leaf_v6.png",
+      "prompt": "Extract ONLY the small bright olive-green leaves and fine creeping vine from this reference bottom-edge UI crop. Preserve the horizontal arrangement, clusters and gaps: little leaves at left, two pointed hanging leaves just left of center, one larger leaf pointing up near center-right, a small cluster at far right. Remove ALL black stone, metal rails, grass background and blur halos. Transparent RGBA background with transparent gaps. Same wide horizontal composition. Restore leaf veins and pointed natural edges while preserving positions, leaf size relationships, reference yellow-green highlights and shaded undersides. Do not add thick moss carpet, do not connect everything with a dense green strip. Isolated realistic painted game UI foliage, no panel or text.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-e8bf8e64-0d54-4d75-9639-451f7ac0f2fb.png",
+      "asset": "UI/theme/textures/bottom_foliage_reference_v6.png"
+    }
+  ]
+}

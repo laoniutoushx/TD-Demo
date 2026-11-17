@@ -2,6 +2,7 @@ extends Control
 
 
 @export_enum("GREEDY", "COOLDOWN", "SHUTDOWN") var talent_code: String
+@export var talent_icon: Texture2D
 @export_multiline var talent_text: String = "No talents available."
 
 
@@ -16,6 +17,8 @@ func _ready() -> void:
     set_process_input(false)  # 关闭输入处理
 
     talent_label.text = talent_text
+    if talent_icon != null:
+        $ChooseTalentBarContainer/HBoxContainer/PanelContainer/CenterContainer/TextureRect.texture = talent_icon
 
     self.pivot_offset = self.size / 2  # Set the pivot to the center of the node
 

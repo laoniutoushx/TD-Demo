@@ -1,0 +1,212 @@
+{
+  "actual": {
+    "bar": "[P: (103.0, 556.0), S: (874.0, 212.0)]",
+    "bar_rect": [
+      103.0,
+      556.0,
+      874.0,
+      212.0
+    ],
+    "container_frames": {
+      "ItemABuff": {
+        "control": [
+          439.0,
+          618.0,
+          343.0,
+          136.0
+        ],
+        "drawn_frame": [
+          439.0,
+          611.0,
+          343.0,
+          146.0
+        ],
+        "style": "res://UI/theme/styles/action_item_inset.tres"
+      },
+      "PlayerPanel": {
+        "control": [
+          794.0,
+          618.0,
+          156.0,
+          136.0
+        ],
+        "drawn_frame": [
+          794.0,
+          618.0,
+          156.0,
+          136.0
+        ],
+        "style": "res://Components/action_bar/action_bar.tscn::StyleBoxEmpty_talent_mount"
+      },
+      "SkillPanel": {
+        "control": [
+          122.0,
+          618.0,
+          305.0,
+          136.0
+        ],
+        "drawn_frame": [
+          122.0,
+          611.0,
+          305.0,
+          146.0
+        ],
+        "style": "res://UI/theme/styles/action_skill_inset.tres"
+      }
+    },
+    "icon_ratio": 0.939393939393939,
+    "icon_rects": {
+      "buff": [
+        457.0,
+        723.0,
+        26.0,
+        26.0
+      ],
+      "empty_item": [
+        565.0,
+        621.0,
+        88.0,
+        88.0
+      ],
+      "item": [
+        457.0,
+        621.0,
+        88.0,
+        88.0
+      ],
+      "skill": [
+        129.0,
+        621.0,
+        62.0,
+        62.0
+      ],
+      "talent": [
+        827.200012207031,
+        628.200012207031,
+        89.5999984741211,
+        89.5999984741211
+      ],
+      "unit": [
+        119.0,
+        560.0,
+        52.0,
+        52.0
+      ]
+    },
+    "item_rect": [
+      455.0,
+      619.0,
+      92.0,
+      92.0
+    ],
+    "layout": {
+      "BottomC": {
+        "min": "(839.0, 136.0)",
+        "size": "(858.0, 136.0)"
+      },
+      "BottomContainer": {
+        "min": "(828.0, 136.0)",
+        "size": "(847.0, 136.0)"
+      },
+      "ItemABuff": {
+        "min": "(343.0, 136.0)",
+        "size": "(343.0, 136.0)"
+      },
+      "PlayerBar": {
+        "min": "(144.0, 134.0)",
+        "size": "(144.0, 134.0)"
+      },
+      "PlayerPanel": {
+        "min": "(156.0, 136.0)",
+        "size": "(156.0, 136.0)"
+      },
+      "SkillPanel": {
+        "min": "(305.0, 136.0)",
+        "size": "(305.0, 136.0)"
+      },
+      "TopC": {
+        "min": "(70.0, 56.0)",
+        "size": "(858.0, 56.0)"
+      }
+    },
+    "skill_rect": [
+      127.0,
+      619.0,
+      66.0,
+      66.0
+    ],
+    "slot_gaps": {
+      "buff_horizontal": 6.0,
+      "item_horizontal": 16.0,
+      "skill_horizontal": 10.0,
+      "skill_vertical": 2.0
+    },
+    "slot_rects": {
+      "buff": [
+        455.0,
+        721.0,
+        30.0,
+        30.0
+      ],
+      "empty_item": [
+        563.0,
+        619.0,
+        92.0,
+        92.0
+      ],
+      "item": [
+        455.0,
+        619.0,
+        92.0,
+        92.0
+      ],
+      "skill": [
+        127.0,
+        619.0,
+        66.0,
+        66.0
+      ],
+      "talent": [
+        800.0,
+        619.0,
+        144.0,
+        134.0
+      ],
+      "unit": [
+        117.0,
+        558.0,
+        56.0,
+        56.0
+      ]
+    },
+    "units_rect": [
+      117.0,
+      558.0,
+      56.0,
+      56.0
+    ],
+    "wave_rect": [
+      380.0,
+      56.0,
+      320.0,
+      52.0
+    ]
+  },
+  "reference_frame": [
+    350,
+    444,
+    1000,
+    236
+  ],
+  "reference_scaled_frame": [
+    874,
+    206.264
+  ],
+  "actual_visible_frame": [
+    103.0,
+    556.0,
+    874.0,
+    206.0
+  ],
+  "rule": "uniform scale by frame width, common top-left frame origin"
+}

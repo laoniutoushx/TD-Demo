@@ -1,0 +1,41 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "id": "foliage_drape_v5",
+      "prompt": "Create a production transparent game UI decoration matching the LEFT edge of the BOTTOM action panel in the supplied reference board. ONLY the isolated hanging vine, no panel or character. Tall narrow canvas aspect 1:3. Thin crooked dark woody stem running from upper right toward lower left then back right, with 14 small pointed oval jungle leaves in irregular pairs, 3 clusters separated by visible gaps. Leaves olive/chartreuse green, dark shaded undersides, warm upper-left highlights, realistic painted veins. Leaf size varies strongly; bottom tapers to tiny leaves and fine twig. Vine extends the full height and 80% width; no enormous broad leaves, no fern, no ivy lobes, no luminous green. Premium weathered jungle ruins RTS UI painted photoreal material. Transparent background, no shadow rectangle, no text. Reference is the existing approved board; copy its understated asymmetrical pointed foliage silhouette.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-1dfca869-3ca9-4216-8163-448ad7b58736.png",
+      "asset": "UI/theme/textures/foliage_drape_v5.png",
+      "status": "rejected: too sparse at game size; not referenced"
+    },
+    {
+      "id": "hero_ring_v5",
+      "prompt": "Production game UI transparent portrait RING only, matching the top-left circular gold portrait ring of the supplied approved jungle UI board. Perfect front circular ring centered in square. Outer diameter 96% canvas, inner transparent opening 78% canvas. TWO concentric aged gold bronze raised rails with dark recessed groove and a subtle black stone backing between. Moderate substantial thickness, not hairline, not chunky rock wheel. Warm pale gold highlight upper left, dark bronze lower right, small scratches and restrained patina. Circular center completely transparent; exterior transparent. No foliage, no face, no text, no symbols, no pendant. Exact reference material and restrained realistic relief.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-2ccd5df5-3cf3-4813-af96-8358d59fcdc6.png",
+      "asset": "UI/theme/textures/hero_ring_v5.png"
+    },
+    {
+      "id": "talent_frame_v5",
+      "prompt": "Production transparent square game UI CARD BORDER, reproducing the rightmost GREEDY card frame in the bottom action bar of the supplied reference. ONLY empty border: transparent center and transparent exterior. Rounded/chamfered square corners, thin double antique gold rails, black recessed stone rim. Four corners have smoothly curved angular bronze corner braces, upper left and lower right slightly stronger. Outer border occupies 5% canvas thickness each side, inner opening 88% canvas; no giant ornaments. Pale gold upper-left highlights, dark patinated bronze lower-right, subtle fine scratches. No leaves, no icon, no coin, no text, no background fill. Exact front view, precisely centered, square. Premium realistic moss stone UI reference style.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-0427d8f5-2257-45df-b408-2fd981350cf8.png",
+      "asset": "UI/theme/textures/talent_frame_v5.png"
+    },
+    {
+      "id": "foliage_reference_v5",
+      "prompt": "Use case: background-extraction. Edit target is this enlarged crop of the approved game UI. Extract ONLY the climbing green vine and ALL its leaves; remove every pixel of the grass, pavement, gold metal corner, stone UI frame, black panel and any character. Preserve the exact positions, relative leaf sizes, shapes, branching, bright olive-green highlights and dark veins from the input. Restore natural fine leaf edge detail consistent with the reference, without changing silhouette or adding new leaves. The two broad lower leaves and the clustered upper leaves are essential. Keep the same tall narrow aspect ratio and exact placement in canvas. Output a transparent RGBA reusable game decoration. Background fully transparent, including gaps between leaves. No panel, no frame, no text, no new objects. This is precise extraction of the foliage from the reference, not a redesign.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-90a826cd-040b-48ab-b879-e7cd9febcede.png",
+      "asset": "UI/theme/textures/foliage_reference_v5.png",
+      "input": ".godot/reference_leaf_detail.png; deterministic enlarged reference crop (322,440,373,610)",
+      "status": "adopted"
+    },
+    {
+      "id": "foliage_header_reference_v5",
+      "prompt": "Use case: background-extraction. Extract only the green foliage, thin brown-green vine stems, moss and small hanging tendrils from this approved jungle game UI crop. Preserve the EXACT composition: a cluster of pointed bright olive-green leaves at the far LEFT with 2 leaves hanging down, very thin horizontal moss and vine across the upper third with long sparse gaps, and a cluster at the far RIGHT with a short descending tendril. Remove ALL stone, silver/gold metal horizontal rail, forest background and panel. Transparent everywhere between the plant elements. Same very wide aspect ratio, front view, no text, no added foliage in center, do not draw a UI border or metal bar. Faithful material and silhouette extraction, not redesign. Clean transparent RGBA game UI asset.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-3cd067ff-67fe-4f47-8d7c-a54d6b664da1.png",
+      "asset": "UI/theme/textures/foliage_header_reference_v5.png",
+      "input": ".godot/reference_header_vine.png; reference crop (416,42,704,92)",
+      "atlas": "UI/theme/textures/foliage_header_reference_v5.tres",
+      "status": "adopted"
+    }
+  ]
+}

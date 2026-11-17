@@ -1,15 +1,13 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://mig1yovl80g4"]
 
-[ext_resource type="Script" path="res://VFX/lab/vfx_lab.gd" id="1"]
+[ext_resource type="Script" uid="uid://dwiqmaomxeb8i" path="res://VFX/lab/vfx_lab.gd" id="1"]
 
-[node name="VFXLab" type="Node3D"]
+[node name="VFXLab" type="Node3D" unique_id=1945026786]
 script = ExtResource("1")
 
+[node name="Interface" type="CanvasLayer" parent="." unique_id=1532642662]
 
-[node name="Interface" type="CanvasLayer" parent="."]
-
-
-[node name="Root" type="PanelContainer" parent="Interface"]
+[node name="Root" type="PanelContainer" parent="Interface" unique_id=895486962]
 unique_name_in_owner = true
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,70 +15,59 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-
-[node name="Margin" type="MarginContainer" parent="Interface/Root"]
+[node name="Margin" type="MarginContainer" parent="Interface/Root" unique_id=932648487]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_right = 12
 theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 8
 
-
-[node name="Layout" type="VBoxContainer" parent="Interface/Root/Margin"]
+[node name="Layout" type="VBoxContainer" parent="Interface/Root/Margin" unique_id=971396030]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-
-[node name="HeaderPanel" type="PanelContainer" parent="Interface/Root/Margin/Layout"]
+[node name="HeaderPanel" type="PanelContainer" parent="Interface/Root/Margin/Layout" unique_id=949843453]
 unique_name_in_owner = true
 layout_mode = 2
 
-
-[node name="Header" type="HBoxContainer" parent="Interface/Root/Margin/Layout/HeaderPanel"]
+[node name="Header" type="HBoxContainer" parent="Interface/Root/Margin/Layout/HeaderPanel" unique_id=317234048]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-
-[node name="Body" type="HBoxContainer" parent="Interface/Root/Margin/Layout"]
+[node name="Body" type="HBoxContainer" parent="Interface/Root/Margin/Layout" unique_id=2046482886]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 10
 
-
-[node name="LibraryPanel" type="PanelContainer" parent="Interface/Root/Margin/Layout/Body"]
+[node name="LibraryPanel" type="PanelContainer" parent="Interface/Root/Margin/Layout/Body" unique_id=289422036]
 unique_name_in_owner = true
-layout_mode = 2
 custom_minimum_size = Vector2(210, 0)
+layout_mode = 2
 
-
-[node name="Library" type="VBoxContainer" parent="Interface/Root/Margin/Layout/Body/LibraryPanel"]
+[node name="Library" type="VBoxContainer" parent="Interface/Root/Margin/Layout/Body/LibraryPanel" unique_id=1169787136]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
-
-[node name="StagePanel" type="PanelContainer" parent="Interface/Root/Margin/Layout/Body"]
+[node name="StagePanel" type="PanelContainer" parent="Interface/Root/Margin/Layout/Body" unique_id=1788575568]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-
-[node name="Stage" type="VBoxContainer" parent="Interface/Root/Margin/Layout/Body/StagePanel"]
+[node name="Stage" type="VBoxContainer" parent="Interface/Root/Margin/Layout/Body/StagePanel" unique_id=1854879508]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
 
-
-[node name="StageHeader" type="HBoxContainer" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage"]
+[node name="StageHeader" type="HBoxContainer" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage" unique_id=56542960]
 unique_name_in_owner = true
 layout_mode = 2
 
-
-[node name="StageContainer" type="SubViewportContainer" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage"]
+[node name="StageContainer" type="SubViewportContainer" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage" unique_id=745589314]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -88,64 +75,57 @@ size_flags_vertical = 3
 stretch = true
 mouse_target = true
 
-
-[node name="StageViewport" type="SubViewport" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage/StageContainer"]
+[node name="StageViewport" type="SubViewport" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage/StageContainer" unique_id=225157112]
 unique_name_in_owner = true
-handle_input_locally = false
 own_world_3d = true
-size = Vector2i(640, 600)
-render_target_update_mode = 4
+handle_input_locally = false
 msaa_3d = 1
+size = Vector2i(521, 686)
+render_target_update_mode = 4
 
-
-[node name="StageWorld" type="Node3D" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage/StageContainer/StageViewport"]
+[node name="StageWorld" type="Node3D" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage/StageContainer/StageViewport" unique_id=1519885929]
 unique_name_in_owner = true
 
-
-[node name="StageFooter" type="HBoxContainer" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage"]
-unique_name_in_owner = true
-layout_mode = 2
-
-
-[node name="InspectorPanel" type="PanelContainer" parent="Interface/Root/Margin/Layout/Body"]
+[node name="StageFooter" type="HBoxContainer" parent="Interface/Root/Margin/Layout/Body/StagePanel/Stage" unique_id=802559987]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="InspectorPanel" type="PanelContainer" parent="Interface/Root/Margin/Layout/Body" unique_id=1899987562]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(285, 0)
+layout_mode = 2
 
-
-[node name="Tabs" type="TabContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel"]
+[node name="Tabs" type="TabContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel" unique_id=36568841]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+current_tab = 0
 
-
-[node name="Effect" type="ScrollContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel/Tabs"]
+[node name="Effect" type="ScrollContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel/Tabs" unique_id=85943459]
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_scroll_mode = 0
+metadata/_tab_index = 0
 
-
-[node name="EffectTab" type="VBoxContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel/Tabs/Effect"]
+[node name="EffectTab" type="VBoxContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel/Tabs/Effect" unique_id=499182948]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 9
 
-
-[node name="Environment" type="ScrollContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel/Tabs"]
+[node name="Environment" type="ScrollContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel/Tabs" unique_id=916209956]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 horizontal_scroll_mode = 0
+metadata/_tab_index = 1
 
-
-[node name="StageTab" type="VBoxContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel/Tabs/Environment"]
+[node name="StageTab" type="VBoxContainer" parent="Interface/Root/Margin/Layout/Body/InspectorPanel/Tabs/Environment" unique_id=2013347629]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 9
 
-
-[node name="Footer" type="HBoxContainer" parent="Interface/Root/Margin/Layout"]
+[node name="Footer" type="HBoxContainer" parent="Interface/Root/Margin/Layout" unique_id=1308562462]
 unique_name_in_owner = true
 layout_mode = 2
-

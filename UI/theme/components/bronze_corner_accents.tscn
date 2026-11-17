@@ -1,0 +1,80 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/bronze_brace_reference_v6.png" id="1_fillet"]
+[sub_resource type="AtlasTexture" id="Corner"]
+atlas = ExtResource("1_fillet")
+region = Rect2(12, 16, 228, 228)
+filter_clip = true
+[node name="BronzeCornerAccents" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="TopLeft" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_right = 0.0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = -1.0
+offset_right = 31.0
+offset_top = -1.0
+offset_bottom = 31.0
+mouse_filter = 2
+texture = SubResource("Corner")
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+flip_v = true
+
+[node name="TopRight" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = -31.0
+offset_right = 1.0
+offset_top = -1.0
+offset_bottom = 31.0
+mouse_filter = 2
+texture = SubResource("Corner")
+expand_mode = 1
+stretch_mode = 5
+flip_h = false
+flip_v = true
+
+[node name="BottomLeft" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_right = 0.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_right = 31.0
+offset_top = -31.0
+offset_bottom = 1.0
+mouse_filter = 2
+texture = SubResource("Corner")
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+flip_v = false
+
+[node name="BottomRight" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -31.0
+offset_right = 1.0
+offset_top = -31.0
+offset_bottom = 1.0
+mouse_filter = 2
+texture = SubResource("Corner")
+expand_mode = 1
+stretch_mode = 5
+flip_h = false
+flip_v = false

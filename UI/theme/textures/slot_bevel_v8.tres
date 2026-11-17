@@ -1,0 +1,6 @@
+[gd_resource type="AtlasTexture" load_steps=2 format=3]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/slot_bevel_v8.png" id="1_ring"]
+[resource]
+atlas = ExtResource("1_ring")
+region = Rect2(4, 4, 248, 248)
+filter_clip = true

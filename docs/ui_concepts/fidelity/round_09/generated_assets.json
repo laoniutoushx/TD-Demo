@@ -1,0 +1,21 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "id": "action_inset_reference_v9",
+      "input": "H:/Godot/Projects/TD-Demo/.godot/ref_secondary_v9.png",
+      "prompt": "Edit this reference crop into ONE empty reusable secondary game UI panel. Preserve ONLY the OUTERMOST rounded rectangular inset stone-and-muted-bronze perimeter frame and dark slate interior from the crop. REMOVE all three item slots, the axe, all buff icons, the inner horizontal divider, all inner frames, letters and numbers. Reconstruct plain dark fine-grained slate across the entire interior, average #171c17, low contrast, subtle shallow diagonal chisel wear. The outer frame must faithfully match this reference: thin double aged grey-bronze rails, inset dark groove, occasional pale worn highlights, rounded corners radius about 8% of panel height, no ornate gold corners. Wide aspect ratio about 2.45:1. Frame goes near canvas edges, fully opaque stone center, transparent exterior rounded corners. No foliage, no rivets, no text, no decorative symbols, no icon sockets. This is an understated inset tray border for an RTS action bar, not a big primary frame. Continuous straight rails safe for nine-slice tiling, no repeating large scratches or motifs.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-3f604190-4a2f-41c1-9b70-af3a4b164f01.png",
+      "asset": "UI/theme/textures/action_inset_reference_v9.png"
+    },
+    {
+      "id": "wave_plaque_reference_v9",
+      "input": "H:/Godot/Projects/TD-Demo/.godot/ref_wave_v9.png",
+      "prompt": "Edit this approved reference Wave plaque into an empty reusable UI plaque. Remove the ENTIRE Wave: 3/31 text, all leaves, vines and moss. Preserve exactly the plaque's long horizontal rounded/chamfered stone body and thin worn grey-bronze double perimeter edge, darker inner groove, tiny pale metal highlights and subtle weathered notches at the corners. Reconstruct charcoal stone center average #2b2e27 with very subtle stone grain and faint shallow scratches, suitable for a large native text label over it. Long plaque aspect about 5.5:1, front orthographic view, transparent exterior beyond rounded plaque corners, opaque stone inside. Remove any parts of the neighboring horizontal header bar extending past this plaque. No text at all, no icons, no green glowing outline, no ornamental gold gussets, no foliage. Match the understated worn metal and stone relief in the reference. Edge detail must remain visible at 320x50 game size. Leave no leftover lettering shadows.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-85a6001b-9013-45f5-b9a1-51f0fb0cfa30.png",
+      "asset": "UI/theme/textures/wave_plaque_reference_v9.png"
+    }
+  ],
+  "import_size_limit": 512,
+  "notes": "Reference crops are diagnostic inputs. Runtime uses generated opaque stone panels with transparent exterior and native AtlasTexture trimming; leaf clusters reuse existing resources. Text remains native."
+}

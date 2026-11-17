@@ -1,6 +1,6 @@
-[gd_resource type="StyleBoxTexture" load_steps=2 format=3]
+[gd_resource type="StyleBoxTexture" format=3 uid="uid://dwqnc2qghoes"]
 
-[ext_resource type="Texture2D" path="res://UI/theme/textures/stone_pill_9slice.png" id="1_tex"]
+[ext_resource type="Texture2D" uid="uid://bd04tmffhuvqr" path="res://UI/theme/textures/stone_pill_9slice.png" id="1_tex"]
 
 [resource]
 content_margin_left = 14.0

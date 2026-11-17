@@ -1,0 +1,23 @@
+{
+  "tool": "built-in imagegen",
+  "records": [
+    {
+      "id": "left",
+      "file": "UI/theme/textures/foliage_left.png",
+      "prompt": "Reconstruct ONLY the hanging leaf branch seen on the LEFT EDGE OF THE BOTTOM ACTION PANEL in the supplied game UI reference. Return isolated plant sprite on transparent background, no game scene no UI frame no text. Vertical loose asymmetric young jungle vine with 9 smooth simple OVATE LANCEOLATE pointed leaves, each has a single central vein and smooth edge, absolutely NO lobed ivy/maple leaves and NO fern. Bright fresh yellow-olive green, small deep green shaded undersides, realistic matte natural leaves like reference, thin flexible green stem. Main cluster topthird, alternating larger drooping leaves down left and right then one thin tail. Air gaps visible, natural width aboutone-third height, taper downward. Flat frontal diffuse forest light, compact clean alpha silhouette, intended to hang outside a stone UI panel at50x140px. Match the reference bottom-left branch leaf shape and vividness, no berries no mossball no woody thick stem.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-a81642c3-0e1a-466f-8b36-496e8942ed9e.png"
+    },
+    {
+      "id": "vine",
+      "file": "UI/theme/textures/foliage_vine.png",
+      "prompt": "One isolated HORIZONTAL very fine ivy vine sprite on transparent background. Long narrow organic asymmetric branch, 8 small pointed leaves clustered at left, thinning toward right, graceful natural slight sag. Muted olive greens subtle botanical veins, realistic game UI garnish. No frame no stones no text no whole panel. Occupies wide shallow silhouette 5:1. Not dense foliage, not repeated pattern, no identical leaves. Intended along top rim of charcoal stone game HUD.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-7c7262cd-9b6b-40f8-8b5b-e646bd7201af.png"
+    },
+    {
+      "id": "moss_strip",
+      "file": "UI/theme/textures/foliage_moss_strip.png",
+      "prompt": "One isolated tiny shallow horizontal moss cluster UI ornament transparent background, 4:1 asymmetric silhouette. Fine dark green and olive moss cushions with three tiny pointed ivy leaves at right. Natural irregular edge, delicate realistic texture. Sparse compact bottom-edge accent for stone game UI, not carpet not fern not frame no lettering no background. Soft ambient lighting, no glow.",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-1343715c-0c14-4481-bf96-a50ed8dc0bd8.png"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/foliage_reference_v5.png" id="1_left"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/foliage_header_reference_v5.tres" id="2_vine"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/bottom_foliage_reference_v6.png" id="3_moss"]
+[node name="ActionFoliage" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="LeftDrape" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_right = 0.0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = -25.0
+offset_top = -4.0
+offset_right = 20.0
+offset_bottom = 145.0
+mouse_filter = 2
+texture = ExtResource("1_left")
+expand_mode = 1
+stretch_mode = 5
+flip_h = false
+
+[node name="TopVine" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_right = 0.0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = -12.0
+offset_right = 196.0
+offset_bottom = 30.0
+mouse_filter = 2
+texture = ExtResource("2_vine")
+expand_mode = 1
+stretch_mode = 5
+flip_h = false
+
+[node name="RightSprig" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 0.0
+anchor_bottom = 0.0
+offset_left = -122.0
+offset_top = -10.0
+offset_right = -4.0
+offset_bottom = 24.0
+mouse_filter = 2
+texture = ExtResource("2_vine")
+expand_mode = 1
+stretch_mode = 5
+flip_h = true
+
+[node name="BottomMoss" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_right = 0.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 146.0
+offset_top = -10.0
+offset_right = 214.0
+offset_bottom = 4.0
+mouse_filter = 2
+texture = ExtResource("3_moss")
+expand_mode = 1
+stretch_mode = 0
+flip_h = false
+
+[node name="RightMoss" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -228.0
+offset_top = -18.0
+offset_right = -150.0
+offset_bottom = 6.0
+mouse_filter = 2
+texture = ExtResource("3_moss")
+expand_mode = 1
+stretch_mode = 0
+flip_h = true
+
+
+[node name="RightDrape" type="TextureRect" parent="."]
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -14.0
+offset_top = 112.0
+offset_right = 18.0
+offset_bottom = 206.0
+mouse_filter = 2
+texture = ExtResource("1_left")
+expand_mode = 1
+stretch_mode = 5
+flip_h = true

@@ -1,0 +1,18 @@
+{
+  "tool": "built-in imagegen",
+  "assets": [
+    {
+      "asset": "UI/theme/textures/slate_surface_v7.png",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-776f0993-4801-4056-b550-10c0e6a9556a.png",
+      "prompt": "Seamless tileable realistic dark charcoal slate stone material for an approved jungle ruins game UI. Square orthographic flat surface only, edge-to-edge. Match weathered black stone panel interior: warm neutral charcoal average #20241f, subtle fine mineral grain, a few very shallow diagonally worn chisel strokes and barely visible fine hairline fissures. Extremely restrained contrast and even lighting for readable UI text. No giant cracks, no bricks, no masonry joints, no borders, no gold, no leaves, no moss, no symbols, no lettering, no vignette, no directional cast shadows. Texture must tile seamlessly on all four edges with no prominent recurring spots. Photoreal material detail, fine stone not sandpaper noise. Opaque background.",
+      "import_size_limit": 512
+    },
+    {
+      "asset": "UI/theme/textures/stone_frame_clean_v7.png",
+      "source": "C:\\Users\\SuzumiyaHaruhi\\.codex\\generated_images\\01a1d4b6-0af9-7942-a12a-20fd115bbf0a\\exec-325537f1-f8f4-4f28-a91f-dee3462abca1.png",
+      "prompt": "Edit this square game UI panel texture. Preserve EXACT canvas composition, outer straight thin weathered stone and bronze perimeter rails, edge thickness, lighting, dark charcoal slate center and material palette. REMOVE ALL foliage, moss, vines, roots and green marks everywhere. REMOVE all four triangular bronze corner braces/gussets; reconstruct simple clean square/chamfered rail joins at corners instead. The upper and lower horizontal rails must be continuous straight evenly thin rails with no triangular decorations, no ornaments, no notches or breaks anywhere along their length. Same for vertical rails. Keep fine realistic stone weathering and muted bronze highlights, no large cracks or strong spots at edges. This texture will be nine-sliced and its edges tiled; middle edge sections must contain only continuous straight rails. No text, no symbols. Opaque panel center; preserve exterior transparency if present. Do not add new decorations or redesign materials.",
+      "input": "UI/theme/textures/stone_action_fine.png",
+      "import_size_limit": 256
+    }
+  ]
+}

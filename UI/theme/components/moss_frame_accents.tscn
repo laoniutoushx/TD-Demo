@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=6 format=3]
 
-[ext_resource type="Texture2D" path="res://UI/theme/textures/moss_corner.png" id="1_moss"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/foliage_reference_v5.png" id="1_tl"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/foliage_header_reference_v5.tres" id="2_tr"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/bottom_foliage_reference_v6.png" id="3_bl"]
+[ext_resource type="Texture2D" path="res://UI/theme/textures/bottom_foliage_reference_v6.png" id="4_br"]
+
+[ext_resource type="PackedScene" path="res://UI/theme/components/bronze_corner_accents.tscn" id="5_corners"]
 
 [node name="MossFrameAccents" type="Control"]
 layout_mode = 3
@@ -12,34 +17,67 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="TopLeft" type="TextureRect" parent="."]
-modulate = Color(0.92, 0.96, 0.88, 0.9)
+modulate = Color(0.95, 0.98, 0.92, 0.85)
 layout_mode = 0
-offset_left = -10.0
-offset_top = -10.0
-offset_right = 78.0
-offset_bottom = 78.0
+offset_left = -14.0
+offset_top = -6.0
+offset_right = 22.0
+offset_bottom = 104.0
 mouse_filter = 2
-texture = ExtResource("1_moss")
+texture = ExtResource("1_tl")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TopRight" type="TextureRect" parent="."]
+modulate = Color(0.95, 0.98, 0.92, 0.85)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -138.0
+offset_top = -8.0
+offset_right = -4.0
+offset_bottom = 20.0
+grow_horizontal = 0
+mouse_filter = 2
+texture = ExtResource("2_tr")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BottomLeft" type="TextureRect" parent="."]
+modulate = Color(0.95, 0.98, 0.92, 0.82)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -12.0
+offset_right = 80.0
+offset_bottom = 5.0
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("3_bl")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="BottomRight" type="TextureRect" parent="."]
-modulate = Color(0.92, 0.96, 0.88, 0.88)
+modulate = Color(0.95, 0.98, 0.92, 0.85)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -66.0
-offset_top = -66.0
-offset_right = 8.0
-offset_bottom = 8.0
+offset_left = -94.0
+offset_top = -13.0
+offset_right = -12.0
+offset_bottom = 7.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
-texture = ExtResource("1_moss")
+texture = ExtResource("4_br")
 expand_mode = 1
 stretch_mode = 5
-flip_h = true
-flip_v = true
+
+[node name="CopperCorners" parent="." instance=ExtResource("5_corners")]
+layout_mode = 1
