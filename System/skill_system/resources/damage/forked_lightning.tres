@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="SkillMetaResource" load_steps=4 format=3]
+
+[ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="1_meta"]
+[ext_resource type="Script" path="res://System/skill_system/resources/damage/forked_lightning.gd" id="2_script"]
+[ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="3_buff"]
+
+[resource]
+script = ExtResource("1_meta")
+code = "forked_lightning"
+title = "叉状闪电"
+desc = "向目标及前方扇形区域的多个敌人同时释放分叉闪电，造成群体雷电伤害"
+icon_path = "light_chain"
+level = 0
+level_up_gap = 1
+max_level = 3
+level_limit = -1
+init_release = false
+auto_release = false
+cooldown = 6.0
+mana_cost = 15.0
+damage_range = 6.0
+match_range = 20.0
+range = 12.0
+release_distance = 18.0
+stock = 1
+value = 65.0
+value_ext = {
+"cone_angle_deg": 120.0,
+"lightning_preset": "res://VFX/lightning_arc/presets/forked_lightning_storm.tres",
+"max_targets": 4,
+"vfx_name": "forked_lightning"
+}
+run_distance = 10.0
+epoch = 1
+init_num = 1
+cast_duration = -1.0
+internal_time = 0.0
+start_time = 0.1
+end_time = 0.1
+wave = 1
+projection_speed = 1.0
+probability = 0.25
+disable_check = 1
+release_type = 33
+target_type = 34
+effect_type = 1
+building_level_up_time = -1.0
+wood_cost = 10.0
+money_cost = 10.0
+skill_script = ExtResource("2_script")
+skill_level_config = Array[ExtResource("1_meta")]([])
+skill_buff_config = Array[ExtResource("3_buff")]([])

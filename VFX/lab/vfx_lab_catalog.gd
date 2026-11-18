@@ -15,7 +15,7 @@ const LABELS = {
  "vfx_tornado_anime_running":"龙卷风 · 动漫白风",
  "vfx_tornado_green_running":"龙卷风 · 青绿风系",
  "vfx_blood_burning":"流血 · 原始粒子样例", "vfx_building_impact":"建造落地冲击", "vfx_build_located_running":"建造定位圈", "vfx_construction_circle":"施工法阵", "vfx_construction_dust":"施工扬尘",
- "vfx_energy_shield_running":"能量护盾", "vfx_force_field_running":"力场护盾", "vfx_funnel_tornado_running":"白风 · 白色丝带旋风", "vfx_funnel_tornado_volume_running":"漏斗龙卷风 · 体积烟尘", "vfx_laser_running":"闪电连线 / 激光",
+ "vfx_energy_shield_running":"能量护盾", "vfx_force_field_running":"力场护盾", "vfx_funnel_tornado_running":"白风 · 白色丝带旋风", "vfx_funnel_tornado_volume_running":"漏斗龙卷风 · 体积烟尘", "vfx_laser_running":"闪电连线 / 激光（经典修复）", "vfx_chain_lightning_running":"闪电链 · 清晰主弧", "vfx_forked_lightning_running":"叉状闪电 · 多目标分叉",
  "vfx_leveling_up_arrow_running":"升级箭头", "vfx_leveling_up_circle_running":"升级圆环", "vfx_level_up_skill_burning":"技能升级光效", "vfx_level_up_tower_burning":"防御塔升级光效", "vfx_level_up_tower_no_ani_burning":"防御塔升级 · 粒子版",
  "vfx_lv_up_style_a_burning":"升级光效 A", "vfx_lv_up_style_b_burning":"升级光效 B", "vfx_lv_up_style_c_burning":"升级光效 C", "vfx_lv_up_style_d_burning":"升级光效 D", "vfx_lv_up_style_e_burning":"升级光效 E",
  "vfx_loot_drop_b_green":"绿色掉落光效", "vfx_healing_running":"治疗光柱", "vfx_peaceful_burning":"宁静恢复光环",
@@ -85,7 +85,7 @@ static func describe(path: String) -> Dictionary:
  if "level_up_tower" in base: span = 12.0
  if folder == "peaceful": span = 8.0
  var cycle := 6.5 if folder == "scorch" else (3.0 if ground else (1.2 if category == "命中" else 2.0))
- var beam := folder == "laser"
+ var beam := folder in ["laser","lightning_arc"]
  var empty := false
  if path.ends_with(".tscn"):
   var source := FileAccess.get_file_as_string(path)

@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://yerxss0el3ef" path="res://System/skill_system/domain/SkillMetaResource.gd" id="4_l051c"]
 [ext_resource type="Resource" uid="uid://bs6w3mufvu6f1" path="res://System/skill_system/resources/damage/ice_strom.tres" id="5_s7gaa"]
 [ext_resource type="Resource" uid="uid://dpnj33orc37b" path="res://System/skill_system/resources/damage/thunder_chain.tres" id="6_ghd3t"]
+[ext_resource type="Resource" path="res://System/skill_system/resources/damage/forked_lightning.tres" id="11_fork"]
 [ext_resource type="Script" uid="uid://it5p3x5runhq" path="res://System/buff_system/domain/buff_resource.gd" id="7_l051c"]
 [ext_resource type="Script" uid="uid://caib52nmgh5qd" path="res://System/buff_system/resources/rate_buff.gd" id="8_unpxs"]
 [ext_resource type="Script" uid="uid://cya1pifwbgjdk" path="res://addons/script_property_selector/property_selector_resource.gd" id="9_n5lnq"]
@@ -81,4 +82,4 @@ anim_walk = null
 anim_idle = null
 anim_death = "death"
 anim_release = null
-skill_metas = Array[ExtResource("4_l051c")]([ExtResource("5_s7gaa"), ExtResource("6_ghd3t"), SubResource("Resource_v4q60")])
+skill_metas = Array[ExtResource("4_l051c")]([ExtResource("5_s7gaa"), ExtResource("6_ghd3t"), ExtResource("11_fork"), SubResource("Resource_v4q60")])

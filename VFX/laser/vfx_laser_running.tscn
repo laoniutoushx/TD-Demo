@@ -8,5 +8,6 @@ material = ExtResource("2_mat")
 size = Vector2(10, 1.2)
 
 [node name="LaserMesh" type="MeshInstance3D"]
+cast_shadow = 0
 mesh = SubResource("PlaneMesh_tbxjq")
 script = ExtResource("1_cfngw")

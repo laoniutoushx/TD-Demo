@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="LightningArcPreset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://VFX/lightning_arc/LightningArcPreset.gd" id="1_preset"]
+
+[resource]
+script = ExtResource("1_preset")
+core_color = Color(4.4, 5.4, 6.8, 1)
+glow_color = Color(0.22, 0.78, 4.0, 1)
+branch_color = Color(0.55, 0.95, 3.6, 1)
+emission_energy = 3.4
+bolt_width = 0.32
+taper_power = 0.35
+jitter_amplitude = 0.34
+segment_density = 3.4
+fractal_roughness = 0.6
+endpoint_lock = 0.8
+arc_lift = 0.18
+branch_count = 0
+branch_probability = 0.0
+branch_length_ratio = 0.3
+branch_width_ratio = 0.45
+max_branch_depth = 1
+sub_arc_count = 0
+sub_arc_spread = 1.0
+multi_target_mode = false
+fork_split_ratio = 0.0
+stray_fork_count = 0
+fork_width_scale = 1.0
+propagation_speed = 110.0
+flicker_fps = 26.0
+uv_scroll_speed = 7.5
+hold_duration = 0.08
+fade_duration = 0.22
+restrike_count = 1
+dynamic_light = true
+light_color = Color(0.42, 0.78, 1, 1)
+light_energy = 2.6

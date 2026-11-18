@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://VFX/lightning_arc/LightningArcVFX.gd" id="1_script"]
+[ext_resource type="Resource" path="res://VFX/lightning_arc/presets/forked_lightning_storm.tres" id="2_preset"]
+
+[node name="ForkedLightningVfx" type="Node3D"]
+script = ExtResource("1_script")
+preset = ExtResource("2_preset")

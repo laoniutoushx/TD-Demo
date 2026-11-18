@@ -24,7 +24,10 @@ range = 10.0
 release_distance = 18.0
 stock = 1
 value = 50.0
-value_ext = {}
+value_ext = {
+"lightning_preset": "res://VFX/lightning_arc/presets/chain_lightning_clear.tres",
+"vfx_name": "chain_lightning"
+}
 run_distance = 10.0
 epoch = 1
 init_num = 1

@@ -542,10 +542,20 @@ func replay() -> void:
   if preset.effect_parameters.has(binding.key):
    PARAMETER_CATALOG.assign(binding,PARAMETER_CATALOG.sanitize(binding,preset.effect_parameters[binding.key]))
  _effect_mount.add_child(effect)
- if _entries[preset.effect_index].beam and effect.has_method("set_line"):
-  # The production script follows BaseUnit endpoints; preview a standalone segment instead.
-  effect.set_process(false)
-  effect.set_line(Vector3(-2,1.2,0),Vector3(2,1.2,0))
+ if _entries[preset.effect_index].beam:
+  # Preview standalone endpoints while keeping animation and procedural updates running.
+  if effect.get("multi_target_mode") == true and effect.has_method("set_preview_multi_targets"):
+   var preview_ends: Array[Vector3] = [
+    Vector3(2.1,1.2,-1.8),
+    Vector3(2.6,1.2,-0.5),
+    Vector3(2.6,1.2,0.7),
+    Vector3(2.0,1.2,1.9)
+   ]
+   effect.set_preview_multi_targets(Vector3(-2.8,1.2,0),preview_ends)
+  elif effect.has_method("set_preview_endpoints"):
+   effect.set_preview_endpoints(Vector3(-2.5,1.2,0),Vector3(2.5,1.2,0))
+  elif effect.has_method("set_line"):
+   effect.set_line(Vector3(-2.5,1.2,0),Vector3(2.5,1.2,0))
  if effect is VFXInstance: effect.play()
  for player in effect.find_children("*","AnimationPlayer",true,false):
   if not player.is_playing():
@@ -636,9 +646,13 @@ func _set_native(key: String,value: Variant) -> void:
  if binding.shader:
   for entry in materials:
    if entry[0]==binding.target and entry[1]==binding.property: entry[2]=value
- elif effect.has_method("seek_preview"):
-  var time: float=effect.get("age") if "age" in effect else (effect.get("_age") if "_age" in effect else 0.0)
-  effect.call("seek_preview",time)
+ else:
+  if int(binding.type)==TYPE_COLOR:
+   for entry in materials:
+    if entry[1]==binding.property: entry[2]=value
+  if effect.has_method("seek_preview"):
+   var time: float=effect.get("age") if "age" in effect else (effect.get("_age") if "_age" in effect else 0.0)
+   effect.call("seek_preview",time)
  apply_parameters()
 
 func _replay_parameter_change() -> void:
