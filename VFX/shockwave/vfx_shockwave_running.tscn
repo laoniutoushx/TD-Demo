@@ -1,125 +1,223 @@
-[gd_scene load_steps=11 format=3 uid="uid://clemenxbxem6b"]
+[gd_scene load_steps=28 format=3 uid="uid://clemenxbxem6b"]
 
 [ext_resource type="Script" uid="uid://b2ka03jkndpuy" path="res://VFX/shockwave/vfx_shockwave_running.gd" id="1_3fvof"]
-[ext_resource type="Shader" uid="uid://dw5l7u7wlie28" path="res://VFX/shockwave/distortion_ring.gdshader" id="1_avyuv"]
-[ext_resource type="Texture2D" uid="uid://b0sxtqtnp28gp" path="res://addons/kenney_particle_pack/T_PerlinNoise_Tiled.png" id="2_uke1c"]
+[ext_resource type="Shader" uid="uid://dw5l7u7wlie28" path="res://VFX/shockwave/distortion_ring.gdshader" id="2_ring_sh"]
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_distortion.gdshader" id="3_sphere_sh"]
+[ext_resource type="Texture2D" uid="uid://b0sxtqtnp28gp" path="res://addons/kenney_particle_pack/T_PerlinNoise_Tiled.png" id="4_noise"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/circle_04.png" id="5_circle"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/flare_01.png" id="6_flare"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/spark_05.png" id="7_spark"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/smoke_06.png" id="8_smoke"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_jq42w"]
-render_priority = 0
-shader = ExtResource("1_avyuv")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sphere"]
+render_priority = 2
+shader = ExtResource("3_sphere_sh")
+shader_parameter/distortion_strength = 0.036
+shader_parameter/rim_power = 4.2
+shader_parameter/rim_color = Color(1.15, 0.16, 0.36, 1)
+shader_parameter/noise_texture = ExtResource("4_noise")
+
+[sub_resource type="SphereMesh" id="SphereMesh_dome"]
+material = SubResource("ShaderMaterial_sphere")
+radial_segments = 32
+rings = 16
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ring"]
+render_priority = 1
+shader = ExtResource("2_ring_sh")
 shader_parameter/distortionView = 0.03
-shader_parameter/speedView = 0.5
-shader_parameter/tintColor = Color(0, 0, 0, 1)
-shader_parameter/fesnelAmount = 0.0
-shader_parameter/distortionVertex = 0.03
-shader_parameter/speedVertex = 0.1
-shader_parameter/outerRadius = 1.0
-shader_parameter/innerRadius = 0.39
-shader_parameter/ringCenter = Vector2(0.5, 0.5)
-shader_parameter/aspect = 1.0
-
-[sub_resource type="SphereMesh" id="SphereMesh_jq42w"]
-material = SubResource("ShaderMaterial_jq42w")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ri85v"]
-render_priority = 0
-shader = ExtResource("1_avyuv")
-shader_parameter/distortionView = 0.03
-shader_parameter/speedView = 0.135
-shader_parameter/noiseViewX = ExtResource("2_uke1c")
-shader_parameter/noiseViewY = ExtResource("2_uke1c")
-shader_parameter/tintColor = Color(0, 0, 0, 1)
-shader_parameter/fesnelAmount = 0.0
-shader_parameter/distortionVertex = 0.03
-shader_parameter/speedVertex = 0.1
-shader_parameter/noiseVertex = ExtResource("2_uke1c")
+shader_parameter/speedView = 0.24
+shader_parameter/noiseViewX = ExtResource("4_noise")
+shader_parameter/noiseViewY = ExtResource("4_noise")
+shader_parameter/tintColor = Color(0.45, 0.06, 0.16, 1)
+shader_parameter/fesnelAmount = 1.6
+shader_parameter/distortionVertex = 0.02
+shader_parameter/speedVertex = 0.16
+shader_parameter/noiseVertex = ExtResource("4_noise")
 shader_parameter/outerRadius = 0.5
-shader_parameter/innerRadius = 0.3
+shader_parameter/innerRadius = 0.41
 shader_parameter/ringCenter = Vector2(0.5, 0.5)
 shader_parameter/aspect = 1.0
 
-[sub_resource type="QuadMesh" id="QuadMesh_gaevn"]
-material = SubResource("ShaderMaterial_ri85v")
+[sub_resource type="QuadMesh" id="QuadMesh_ring"]
+material = SubResource("ShaderMaterial_ring")
 orientation = 1
 
-[sub_resource type="Animation" id="Animation_avyuv"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("ShockRing:mesh:size")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("ShockRing:mesh:material:shader_parameter/distortionView")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [0.03]
-}
+[sub_resource type="Gradient" id="Gradient_core"]
+offsets = PackedFloat32Array(0, 0.25, 1)
+colors = PackedColorArray(3, 2.1, 2.3, 1, 2.1, 0.28, 0.58, 0.85, 0.35, 0.03, 0.15, 0)
 
-[sub_resource type="Animation" id="Animation_ri85v"]
-resource_name = "running"
-length = 0.7
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("ShockRing:mesh:size")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.6),
-"transitions": PackedFloat32Array(0.5, 1),
-"update": 0,
-"values": [Vector2(1, 1), Vector2(10, 10)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("ShockRing:mesh:material:shader_parameter/distortionView")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [0.03, 0.0]
-}
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_core"]
+gradient = SubResource("Gradient_core")
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_gaevn"]
-_data = {
-&"RESET": SubResource("Animation_avyuv"),
-&"running": SubResource("Animation_ri85v")
-}
+[sub_resource type="Curve" id="Curve_core_scale"]
+_data = [Vector2(0, 0.4), 0.0, 6.0, 0, 0, Vector2(0.35, 1.5), 0.0, 0.0, 0, 0, Vector2(1, 0.2), -2.2, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_core_scale"]
+curve = SubResource("Curve_core_scale")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_core"]
+direction = Vector3(0, 1, 0)
+spread = 180.0
+initial_velocity_min = 0.2
+initial_velocity_max = 1.2
+gravity = Vector3(0, 0, 0)
+scale_min = 2.6
+scale_max = 3.8
+scale_curve = SubResource("CurveTexture_core_scale")
+color_ramp = SubResource("GradientTexture1D_core")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_core"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+disable_fog = true
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("6_flare")
+billboard_mode = 3
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_core"]
+material = SubResource("StandardMaterial3D_core")
+size = Vector2(1.4, 1.4)
+
+[sub_resource type="Gradient" id="Gradient_sparks"]
+offsets = PackedFloat32Array(0, 0.2, 0.72, 1)
+colors = PackedColorArray(3, 1.9, 2.1, 1, 2.5, 0.35, 0.52, 0.95, 0.95, 0.12, 0.36, 0.6, 0.2, 0.02, 0.12, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_sparks"]
+gradient = SubResource("Gradient_sparks")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparks"]
+particle_flag_align_y = true
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.25
+emission_ring_radius = 0.9
+emission_ring_inner_radius = 0.4
+direction = Vector3(0, 0.12, 0)
+spread = 180.0
+flatness = 0.85
+initial_velocity_min = 14.0
+initial_velocity_max = 22.0
+gravity = Vector3(0, -3.5, 0)
+damping_min = 10.0
+damping_max = 14.0
+scale_min = 0.7
+scale_max = 1.4
+color_ramp = SubResource("GradientTexture1D_sparks")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sparks"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+disable_fog = true
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("7_spark")
+
+[sub_resource type="QuadMesh" id="QuadMesh_sparks"]
+material = SubResource("StandardMaterial3D_sparks")
+size = Vector2(0.18, 0.95)
+
+[sub_resource type="Gradient" id="Gradient_dust"]
+offsets = PackedFloat32Array(0, 0.18, 0.72, 1)
+colors = PackedColorArray(0.36, 0.28, 0.28, 0, 0.44, 0.35, 0.34, 0.45, 0.28, 0.24, 0.25, 0.22, 0.15, 0.12, 0.14, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_dust"]
+gradient = SubResource("Gradient_dust")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dust"]
+emission_shape = 6
+emission_ring_axis = Vector3(0, 1, 0)
+emission_ring_height = 0.15
+emission_ring_radius = 1.2
+emission_ring_inner_radius = 0.8
+direction = Vector3(0, 0.18, 0)
+spread = 180.0
+flatness = 0.88
+initial_velocity_min = 8.0
+initial_velocity_max = 13.5
+gravity = Vector3(0, -1.2, 0)
+damping_min = 7.5
+damping_max = 10.5
+scale_min = 1.1
+scale_max = 2.1
+color_ramp = SubResource("GradientTexture1D_dust")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dust"]
+transparency = 1
+cull_mode = 2
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("8_smoke")
+billboard_mode = 3
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_dust"]
+material = SubResource("StandardMaterial3D_dust")
+size = Vector2(1.2, 1.2)
 
 [node name="Shockwave" type="Node3D"]
 script = ExtResource("1_3fvof")
 
 [node name="ShockSphere" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.105, 0, 0, 0, 0.01, 0, 0, 0, 1, 0, 0, 0)
-visible = false
-mesh = SubResource("SphereMesh_jq42w")
+cast_shadow = 0
+mesh = SubResource("SphereMesh_dome")
 
 [node name="ShockRing" type="MeshInstance3D" parent="."]
-mesh = SubResource("QuadMesh_gaevn")
+cast_shadow = 0
+mesh = SubResource("QuadMesh_ring")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_gaevn")
-}
+[node name="GroundPulseDecal" type="Decal" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, 0)
+size = Vector3(3.2, 2.4, 3.2)
+texture_albedo = ExtResource("5_circle")
+emission_energy = 1.1
+upper_fade = 0.25
+lower_fade = 0.25
+cull_mask = 1
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.90509, -2, -0.476598)
-visible = false
-size = Vector3(6.69983, 1, 5.79395)
+[node name="OriginCoreFlash" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 6
+lifetime = 0.32
+one_shot = true
+explosiveness = 0.95
+fixed_fps = 60
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_core")
+draw_pass_1 = SubResource("QuadMesh_core")
+
+[node name="BurstSparks" type="GPUParticles3D" parent="."]
+cast_shadow = 0
+emitting = false
+amount = 36
+lifetime = 0.55
+one_shot = true
+explosiveness = 0.94
+fixed_fps = 60
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_sparks")
+draw_pass_1 = SubResource("QuadMesh_sparks")
+
+[node name="RingDust" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.55, 0)
+cast_shadow = 0
+emitting = false
+amount = 28
+lifetime = 0.68
+one_shot = true
+explosiveness = 0.9
+fixed_fps = 60
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_dust")
+draw_pass_1 = SubResource("QuadMesh_dust")
+
+[node name="FlashLight" type="OmniLight3D" parent="."]
+light_color = Color(0.95, 0.14, 0.36, 1)
+light_energy = 5.0
+omni_range = 10.0

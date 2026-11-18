@@ -43,4 +43,4 @@ func _physics_process(delta: float) -> void:
 	if not global_position.is_equal_approx(destination):
 		look_at(destination, Vector3.UP)
 	if is_instance_valid(_visual):
-		_visual.rotate_object_local(Vector3.RIGHT, 16.0 * delta)
+		_visual.rotate_object_local(Vector3.FORWARD, 8.0 * delta)

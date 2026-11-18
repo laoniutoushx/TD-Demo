@@ -1,27 +1,46 @@
-[gd_scene load_steps=17 format=3 uid="uid://bk8vfftb04h05"]
+[gd_scene load_steps=26 format=3 uid="uid://bk8vfftb04h05"]
 
 [ext_resource type="Texture2D" uid="uid://dh38hnj0w10k4" path="res://Asserts/textures/vfx/T_VFX_Ellipse.png" id="1_vvrlf"]
 [ext_resource type="Texture2D" uid="uid://da1iqi53byvde" path="res://Asserts/textures/vfx/T_VFX_Trail_Square.png" id="2_1cxc0"]
 [ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_ribbon.gdshader" id="3_ribbon"]
-
+[ext_resource type="Shader" path="res://VFX/shaders/vfx_uber_distortion.gdshader" id="4_distort"]
+[ext_resource type="Texture2D" uid="uid://b0sxtqtnp28gp" path="res://addons/kenney_particle_pack/T_PerlinNoise_Tiled.png" id="5_noise"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/flare_01.png" id="6_flare"]
+[ext_resource type="Texture2D" path="res://addons/kenney_particle_pack/spark_05.png" id="7_spark"]
 [ext_resource type="Shader" path="res://VFX/shaders/vfx_ribbon_follow.gdshader" id="99_follow"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_shell"]
+render_priority = 1
+shader = ExtResource("4_distort")
+shader_parameter/distortion_strength = 0.038
+shader_parameter/rim_power = 2.2
+shader_parameter/rim_color = Color(2.4, 0.35, 0.72, 1)
+shader_parameter/noise_texture = ExtResource("5_noise")
+
+[sub_resource type="SphereMesh" id="SphereMesh_shell"]
+material = SubResource("ShaderMaterial_shell")
+radius = 0.28
+height = 0.56
+radial_segments = 20
+rings = 10
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wmse1"]
 transparency = 1
 blend_mode = 1
 cull_mode = 2
 shading_mode = 0
+disable_fog = true
 vertex_color_use_as_albedo = true
-albedo_color = Color(1, 0.77, 0.77, 1)
-albedo_texture = ExtResource("1_vvrlf")
+albedo_color = Color(2.8, 1.9, 2.0, 1)
+albedo_texture = ExtResource("6_flare")
 billboard_mode = 3
 particles_anim_h_frames = 1
 particles_anim_v_frames = 1
 particles_anim_loop = false
 
 [sub_resource type="Curve" id="Curve_1cxc0"]
-_limits = [0.0, 5.0, 0.0, 1.0]
-_data = [Vector2(0, 1.98214), 0.0, 0.0, 0, 0]
+_limits = [0.0, 3.0, 0.0, 1.0]
+_data = [Vector2(0, 1.35), 0.0, 0.0, 0, 0]
 point_count = 1
 
 [sub_resource type="CurveTexture" id="CurveTexture_vn7do"]
@@ -29,7 +48,7 @@ curve = SubResource("Curve_1cxc0")
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_cd30p"]
 gravity = Vector3(0, 0, 0)
-emission_curve = SubResource("CurveTexture_vn7do")
+scale_curve = SubResource("CurveTexture_vn7do")
 
 [sub_resource type="QuadMesh" id="QuadMesh_vvrlf"]
 
@@ -38,8 +57,9 @@ transparency = 1
 blend_mode = 1
 cull_mode = 2
 shading_mode = 0
+disable_fog = true
 vertex_color_use_as_albedo = true
-albedo_color = Color(1, 0.23, 0.307, 1)
+albedo_color = Color(1.8, 0.18, 0.42, 0.9)
 albedo_texture = ExtResource("1_vvrlf")
 billboard_mode = 3
 billboard_keep_scale = true
@@ -49,38 +69,94 @@ particles_anim_loop = false
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vmjb1"]
 gravity = Vector3(0, 0, 0)
-scale_min = 2.0
-scale_max = 2.0
+scale_min = 0.95
+scale_max = 0.95
 
 [sub_resource type="QuadMesh" id="QuadMesh_k7drv"]
 
 [sub_resource type="Curve" id="Curve_trail"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 2
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0.6), -1.0, -1.0, 0, 0, Vector2(1, 0), -1.2, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon"]
 shader = ExtResource("3_ribbon")
-shader_parameter/trail_color = Color(2.5, 0.5, 0.5, 0.8)
-shader_parameter/emission_energy = 2.5
+shader_parameter/trail_color = Color(2.4, 0.28, 0.52, 0.92)
+shader_parameter/emission_energy = 3.0
 shader_parameter/trail_texture = ExtResource("2_1cxc0")
-shader_parameter/uv_scroll = Vector2(0, -2.5)
+shader_parameter/uv_scroll = Vector2(0, -3.2)
 shader_parameter/length_along_y = true
-shader_parameter/head_fade = 0.05
+shader_parameter/head_fade = 0.04
 shader_parameter/tail_fade = 0.85
-shader_parameter/depth_fade_distance = 0.3
+shader_parameter/depth_fade_distance = 0.25
 
 [sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_scream"]
 material = SubResource("ShaderMaterial_ribbon")
 shape = 1
-size = 0.35
-sections = 6
-section_length = 0.1
+size = 0.48
+sections = 8
+section_length = 0.12
+curve = SubResource("Curve_trail")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ribbon_violet"]
+shader = ExtResource("3_ribbon")
+shader_parameter/trail_color = Color(0.95, 0.16, 0.9, 0.78)
+shader_parameter/emission_energy = 2.4
+shader_parameter/trail_texture = ExtResource("2_1cxc0")
+shader_parameter/uv_scroll = Vector2(0, -2.6)
+shader_parameter/length_along_y = true
+shader_parameter/head_fade = 0.04
+shader_parameter/tail_fade = 0.85
+shader_parameter/depth_fade_distance = 0.25
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_violet"]
+material = SubResource("ShaderMaterial_ribbon_violet")
+shape = 1
+size = 0.36
+sections = 8
+section_length = 0.12
 curve = SubResource("Curve_trail")
 
 [sub_resource type="ShaderMaterial" id="ParticleProcessMaterial_trail"]
 shader = ExtResource("99_follow")
 
+[sub_resource type="Gradient" id="Gradient_wake"]
+offsets = PackedFloat32Array(0, 0.3, 1)
+colors = PackedColorArray(2.6, 1.5, 1.8, 1, 1.8, 0.22, 0.45, 0.8, 0.3, 0.04, 0.2, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_wake"]
+gradient = SubResource("Gradient_wake")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wake"]
+particle_flag_align_y = true
+emission_shape = 1
+emission_sphere_radius = 0.25
+direction = Vector3(0, 0, 1)
+spread = 32.0
+initial_velocity_min = 1.5
+initial_velocity_max = 3.5
+gravity = Vector3(0, -1.2, 0)
+scale_min = 0.45
+scale_max = 0.9
+color_ramp = SubResource("GradientTexture1D_wake")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wake"]
+transparency = 1
+blend_mode = 1
+cull_mode = 2
+shading_mode = 0
+disable_fog = true
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("7_spark")
+
+[sub_resource type="QuadMesh" id="QuadMesh_wake"]
+material = SubResource("StandardMaterial3D_wake")
+size = Vector2(0.09, 0.42)
+
 [node name="ScreamBall" type="Node3D"]
+
+[node name="RefractionShell" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+mesh = SubResource("SphereMesh_shell")
 
 [node name="ScreamCore" type="GPUParticles3D" parent="."]
 material_override = SubResource("StandardMaterial3D_wmse1")
@@ -99,11 +175,31 @@ process_material = SubResource("ParticleProcessMaterial_vmjb1")
 draw_pass_1 = SubResource("QuadMesh_k7drv")
 
 [node name="RibbonTrail" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, 0, 0)
 amount = 1
 lifetime = 30.0
 local_coords = false
+fixed_fps = 60
 trail_enabled = true
-trail_lifetime = 0.2
+trail_lifetime = 0.26
 process_material = SubResource("ParticleProcessMaterial_trail")
 draw_pass_1 = SubResource("RibbonTrailMesh_scream")
+
+[node name="RibbonTrailViolet" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 0.08, 0)
+amount = 1
+lifetime = 30.0
+local_coords = false
 fixed_fps = 60
+trail_enabled = true
+trail_lifetime = 0.24
+process_material = SubResource("ParticleProcessMaterial_trail")
+draw_pass_1 = SubResource("RibbonTrailMesh_violet")
+
+[node name="EmberWake" type="GPUParticles3D" parent="."]
+amount = 16
+lifetime = 0.28
+local_coords = false
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_wake")
+draw_pass_1 = SubResource("QuadMesh_wake")

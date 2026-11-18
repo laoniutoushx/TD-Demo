@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode unshaded;
+render_mode blend_mix, depth_draw_never, cull_disabled, unshaded, shadows_disabled;
 
 // 原有的 fragment uniforms
 uniform float distortionView : hint_range(0.0, 0.3, 0.005) = 0.03;
@@ -55,8 +55,14 @@ void fragment() {
     vec2 noiseDistort = vec2(noiseValueX, noiseValueY) * distortionView * ringFactor;
     vec3 distortedScreenTexture = texture(screenTexture, SCREEN_UV + noiseDistort).rgb;
 
-    vec3 fesnelTint = tintColor * fresnel(fesnelAmount, NORMAL, VIEW) * ringFactor;
+    float fres = fresnel(max(fesnelAmount, 0.5), NORMAL, VIEW);
+    vec3 fesnelTint = tintColor * (0.35 + 0.65 * fres) * ringFactor;
 
-    vec3 screenColor = texture(screenTexture, SCREEN_UV).rgb;
-    ALBEDO = mix(screenColor, distortedScreenTexture + fesnelTint, ringFactor);
+    float out_alpha = clamp(ringFactor * (0.55 + 0.45 * abs(noiseValueX)), 0.0, 1.0);
+    if (out_alpha < 0.005) {
+        discard;
+    }
+
+    ALBEDO = distortedScreenTexture + fesnelTint;
+    ALPHA = out_alpha;
 }
