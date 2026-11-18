@@ -93,6 +93,22 @@ enum ELEMENT_PHASE_STR{
 @export var anim_release = Constants.ANIM_RELEASE
 
 @export var anim_speed_factor: float = 1.0
+## Authored world speed (m/s) when anim_walk plays at speed_scale = 1.0. <= 0 falls back to derived speed.
+@export var walk_ref_speed: float = 0.0
+## Authored world speed (m/s) when anim_run plays at speed_scale = 1.0. <= 0 falls back to base_move_speed / 5.0.
+@export var run_ref_speed: float = 0.0
+## World speed threshold (m/s) to switch between anim_walk and anim_run. <= 0 derives automatically.
+@export var run_switch_speed: float = 0.0
+## Minimum locomotion playback speed_scale while moving (below stop threshold switches to idle).
+@export var min_loco_speed_scale: float = 0.15
+## Maximum locomotion playback speed_scale; <= 0 means uncapped for extreme speed buffs.
+@export var max_loco_speed_scale: float = 0.0
+## Crossfade duration (seconds) for idle/walk/run transitions on AnimationPlayer.
+@export var locomotion_blend_time: float = 0.15
+## Compensate stride speed by visual node scale so scaled units do not foot-slide.
+@export var locomotion_scale_compensate: bool = true
+## Maximum attack animation playback speed_scale; <= 0 means uncapped for ultra-high attack speed.
+@export var max_attack_anim_speed_scale: float = 0.0
 @export var anim_ack_point = 0.03	# 攻击动画回复点
 ## -1 preserves legacy seconds; otherwise use a fraction of the attack clip.
 @export_range(-1.0, 1.0, 0.01) var anim_ack_normalized := -1.0

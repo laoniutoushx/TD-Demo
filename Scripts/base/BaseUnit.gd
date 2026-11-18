@@ -2,6 +2,7 @@
 class_name BaseUnit extends Node
 
 const BloodDecalSystem = preload("res://Scripts/manager/BloodDecalSystem.gd")
+const UnitAnimationControllerScript = preload("res://System/animation/unit_animation_controller.gd")
 
 
 @export_group("Unit Steup")
@@ -97,39 +98,40 @@ var _is_logic_alive := true
 var exit_reason := "killed"
 var unit_uid := ""
 var wave_index := -1
-var action_animation_generation := 0
-var resume_animation_tree := false
-var action_animation_name: StringName
+var _anim_controller: UnitAnimationControllerScript = UnitAnimationControllerScript.new()
 
-func play_action_animation(animation: StringName) -> void:
-	if not is_instance_valid(_ap) or animation == "" or not _ap.has_animation(animation): return
-	action_animation_generation += 1
-	action_animation_name = animation
-	if is_instance_valid(_at) and _at.active:
-		resume_animation_tree = true
-		_at.active = false
-	if is_instance_valid(_at) and not _ap.animation_finished.is_connected(_finish_action_animation):
-		_ap.animation_finished.connect(_finish_action_animation)
-	_ap.speed_scale = 1.0
-	_ap.play(animation)
+func get_animation_controller() -> UnitAnimationControllerScript:
+	if _anim_controller == null:
+		_anim_controller = UnitAnimationControllerScript.new()
+	if _anim_controller._ap != _ap or _anim_controller._at != _at:
+		_anim_controller.bind_unit(self, _ap, _at)
+	return _anim_controller
 
-func play_attack_animation(animation: StringName, attack_interval: float, max_speed_scale: float = 4.0) -> float:
-	if not is_instance_valid(_ap) or animation == &"" or not _ap.has_animation(animation):
-		return 1.0
-	action_animation_generation += 1
-	action_animation_name = animation
-	if is_instance_valid(_at) and _at.active:
-		resume_animation_tree = true
-		_at.active = false
-	if is_instance_valid(_at) and not _ap.animation_finished.is_connected(_finish_action_animation):
-		_ap.animation_finished.connect(_finish_action_animation)
-	return PresentationPort.play_attack_synced(_ap, animation, attack_interval, max_speed_scale)
+func anim_event(marker_name: StringName) -> void:
+	get_animation_controller().emit_marker(marker_name)
 
-func _finish_action_animation(finished: StringName) -> void:
-	if finished != action_animation_name or not is_alive(): return
-	if resume_animation_tree and is_instance_valid(_at): _at.active = true
-	resume_animation_tree = false
-	action_animation_name = &""
+func play_action_animation(animation: StringName, speed_scale: float = 1.0) -> Dictionary:
+	var ctrl := get_animation_controller()
+	var params: Dictionary = {
+		"auto_release_on_finish": true,
+		"speed_scale": speed_scale,
+	}
+	if animation != &"":
+		params["anim_name"] = animation
+	return ctrl.acquire_action(&"cast", params)
+
+func play_attack_animation(animation: StringName, attack_interval: float, max_speed_scale: float = -1.0) -> float:
+	var ctrl := get_animation_controller()
+	var cap := max_speed_scale if max_speed_scale >= 0.0 else max_attack_anim_speed_scale
+	var params: Dictionary = {
+		"attack_interval": attack_interval,
+		"max_speed_scale": cap,
+		"auto_release_on_finish": true,
+	}
+	if animation != &"":
+		params["anim_name"] = animation
+	var handle := ctrl.acquire_action(&"attack", params)
+	return float(handle.get("speed_scale", 1.0))
 
 
 var base_move_speed : float = 0.0
@@ -143,10 +145,8 @@ var base_max_mana : float = 0.0
 var move_speed : float :
 	set(value):
 		move_speed = value
-		_anim_speed = move_speed * anim_speed_factor / 5
-
-		if _ap and self is Enemy and get("current_state") == Enemy.EnemyState.WALKING:
-			_ap.speed_scale = _anim_speed
+		if _anim_controller != null:
+			_anim_controller.refresh_locomotion()
 
 
 var turn_speed : float
@@ -231,15 +231,20 @@ var _at: AnimationTree
 @export var anim_release = Constants.ANIM_RELEASE
 
 
-var _anim_speed: float	# 动画播放速率
 @export var anim_speed_factor: float = 1.0:
 	set(value):
 		anim_speed_factor = value
-		_anim_speed = move_speed * anim_speed_factor / 5
+		if _anim_controller != null:
+			_anim_controller.refresh_locomotion()
 
-		if _ap and self is Enemy and get("current_state") == Enemy.EnemyState.WALKING:
-			_ap.speed_scale = _anim_speed
-
+@export var walk_ref_speed: float = 0.0
+@export var run_ref_speed: float = 0.0
+@export var run_switch_speed: float = 0.0
+@export var min_loco_speed_scale: float = 0.15
+@export var max_loco_speed_scale: float = 0.0
+@export var locomotion_blend_time: float = 0.15
+@export var locomotion_scale_compensate: bool = true
+@export var max_attack_anim_speed_scale: float = 0.0
 
 @export var anim_ack_point = 0.03	# 攻击动画回复点
 @export var anim_ack_normalized := -1.0
@@ -419,6 +424,7 @@ func _ready() -> void:
 	# animation init
 	_ap = get_node_or_null(animation_player_path) as AnimationPlayer if not animation_player_path.is_empty() else CommonUtil.get_first_node_by_node_type(self, Constants.AnimationPlayer_CLZ)
 	_at = get_node_or_null(animation_tree_path) as AnimationTree if not animation_tree_path.is_empty() else CommonUtil.get_first_node_by_node_type(self, Constants.AnimationTree_CLZ)
+	get_animation_controller().bind_unit(self, _ap, _at)
 
 	# 魔法值设置
 	mana = max_mana
@@ -488,27 +494,20 @@ func death_effect():
 	add_user_signal(signal_name, [{"name": "unit", "type": TYPE_OBJECT}])
 	var signal_physic_dead = Signal(self, signal_name)
 	signal_physic_dead.connect(_on_physic_dead, CONNECT_ONE_SHOT)
-	
-	# logic animation player
+
+	var ctrl := get_animation_controller()
 	var ap: AnimationPlayer = _ap
-	if is_instance_valid(_at): _at.active = false
-	if ap != null and ap.has_animation(anim_death):
-		ap.speed_scale = 1.0
-		ap.play(anim_death)
-		ap.animation_finished.connect(_on_animation_player_animation_finished.bind(self, signal_physic_dead), CONNECT_ONE_SHOT)
-	else:	
+	var death_clip: StringName = StringName(anim_death) if anim_death != null else &""
+	if ap != null and death_clip != &"" and ap.has_animation(death_clip):
+		ctrl.acquire_action(&"death", {
+			"anim_name": death_clip,
+			"auto_release_on_finish": false,
+			"on_finished": func(_h: Dictionary) -> void:
+				signal_physic_dead.emit(self),
+		})
+	else:
+		ctrl.acquire_action(&"death", {"auto_release_on_finish": false})
 		signal_physic_dead.emit(self)
-
-
-func _on_animation_player_animation_finished(anim_name: String, unit:BaseUnit, signal_physic_dead:Signal) -> void:
-	signal_physic_dead.emit(unit)
-	pass # Replace with function body.
-	
-#func _on_animation_finished(anim_name: String, target_animation: String):
-	## 判断是否是指定的动画播放完毕
-	#if anim_name == target_animation:
-		#print("Animation finished: ", anim_name)
-		#signal_physic_dead.emit(self)  # 发射自定义信号
 
 
 # 物理死亡
@@ -767,6 +766,8 @@ func refresh_selection_bounds() -> void:
 	if _height <= 0.0:
 		_height = 2.0
 	_transformed_aabb = _selection_local_aabb.grow(aabb_scale)
+	if _anim_controller != null:
+		_anim_controller.refresh_visual_scale()
 
 ## 获取用于精确选框拾取的世界空间 AABB
 func get_selection_aabb() -> AABB:

@@ -656,8 +656,7 @@ _data = {
 &"death": SubResource("Animation_420hi")
 }
 
-[node name="Enemy" type="PathFollow3D" groups=["enemy"]]
-use_model_front = true
+[node name="Enemy" type="Node3D" groups=["enemy"]]
 script = ExtResource("1_uk2u6")
 
 [node name="Pig" type="Node3D" parent="."]

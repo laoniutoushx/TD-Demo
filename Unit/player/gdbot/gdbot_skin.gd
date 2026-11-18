@@ -41,19 +41,19 @@ func _set_walk_run_blending(value : float):
 
 ## Sets the model to a neutral, action-free state.
 func idle():
-	_main_state_machine.travel("Idle")
+	get_animation_controller().set_locomotion_intent(0.0, move_speed, false, true, &"")
 
 ## Sets the model to a walking or running animation or forward movement.
 func walk():
-	_main_state_machine.travel("Walk")
+	get_animation_controller().set_locomotion_intent(move_speed, move_speed, true, true, &"")
 
 ## Sets the model to an upward-leaping animation, simulating a jump.
 func jump():
-	_main_state_machine.travel("Jump")
+	get_animation_controller().set_locomotion_intent(move_speed, move_speed, true, true, &"jump")
 
 ## Sets the model to a downward animation, imitating a fall.
 func fall():
-	_main_state_machine.travel("Fall")
+	get_animation_controller().set_locomotion_intent(move_speed, move_speed, true, true, &"fall")
 
 ## Changes the model's facial expression based on the provided input string values. Possible expressions include "default" (for default blinking), "happy" (for a joyful expression), "dizzy" (for spiraling eyes), and "sleepy" (for a drowsy countenance).
 ##[br][b]Note:[/b] To add new expressions, you can edit gdbot_face.tscn, which is a 2D scene utilized by a viewport node to display on Gdbot's face.

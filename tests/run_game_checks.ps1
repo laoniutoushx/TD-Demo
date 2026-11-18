@@ -1,7 +1,7 @@
 param(
     [string]$GodotExecutable = 'H:\Godot\Godot_v4.7.2-stable_mono_win64\Godot_v4.7.2-stable_mono_win64_console.exe',
     [ValidateSet('forward', 'headless')][string]$Renderer = 'forward',
-    [ValidateSet('tornado-fox', 'vfx-parameters', 'tornado-reference', 'tornado-review', 'vfx-catalog', 'vfx-lab', 'reference-projectiles', 'reference-review', 'projectile-trails', 'full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'skill-vfx-buff', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click', 'building-vfx', 'foundation-blend', 'tactical-grid', 'tactical-subgrid')][string]$Scenario = 'full',
+    [ValidateSet('tornado-fox', 'vfx-parameters', 'tornado-reference', 'tornado-review', 'vfx-catalog', 'vfx-lab', 'reference-projectiles', 'reference-review', 'projectile-trails', 'full', 'menu-exit', 'combat-exit', 'rts-quality', 'selection-input', 'cursor-policy', 'skill-vfx-buff', 'edge-scroll', 'scene-review', 'battle-review', 'bank-review', 'visual-benchmark', 'tree-review', 'skill-click', 'building-vfx', 'foundation-blend', 'tactical-grid', 'tactical-subgrid', 'anim-collab', 'path-locomotion')][string]$Scenario = 'full',
     [int]$TimeoutSeconds = 180
 )
 
@@ -55,9 +55,9 @@ if ($Scenario -eq 'skill-vfx-buff') {
 }
 $marker = 'FLOW_TEST_OK'
 if ($Scenario -eq 'tornado-fox') {
-    if ($Renderer -eq 'headless') { throw 'tornado-fox requires native rendering and physics' }
-    $arguments = @('--path', $projectRoot, '--script', 'res://tests/tornado_fox_smoke.gd', '--log-file', $logPath)
-    $marker = 'TORNADO_FOX_OK'
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/combat_declarative_fox_smoke.gd', '--log-file', $logPath)
+    if ($Renderer -eq 'headless') { $arguments += '--headless' }
+    $marker = 'DECLARATIVE_FOX_OK'
 }
 if ($Scenario -eq 'vfx-parameters') {
     if ($Renderer -eq 'headless') { throw 'vfx-parameters requires native rendering for its focused viewport checks' }
@@ -129,6 +129,16 @@ if ($Scenario -eq 'building-vfx') { $marker = 'BUILDING_VFX_OK' }
 if ($Scenario -eq 'foundation-blend') { $marker = 'FOUNDATION_BLEND_OK' }
 if ($Scenario -eq 'tactical-grid') { $marker = 'TACTICAL_GRID_OK' }
 if ($Scenario -eq 'tactical-subgrid') { $marker = 'TACTICAL_SUBGRID_OK' }
+if ($Scenario -eq 'anim-collab') {
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/animation_collaboration_smoke.gd', '--log-file', $logPath)
+    if ($Renderer -eq 'headless') { $arguments += '--headless' }
+    $marker = 'ANIMATION_COLLABORATION_OK'
+}
+if ($Scenario -eq 'path-locomotion') {
+    $arguments = @('--path', $projectRoot, '--script', 'res://tests/path_locomotion_smoke.gd', '--log-file', $logPath)
+    if ($Renderer -eq 'headless') { $arguments += '--headless' }
+    $marker = 'PATH_LOCOMOTION_OK'
+}
 if ($Scenario -eq 'menu-exit') {
     $arguments += @('--', '--exit-from-menu')
     $marker = 'MENU_EXIT_OK'

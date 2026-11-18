@@ -43,6 +43,7 @@ anim_idle = "Idle"
 anim_death = "Death"
 anim_release = ""
 anim_speed_factor = 1.0
+run_ref_speed = 5.074
 anim_ack_point = 0.03
 is_selected_circle = true
 component_systems = 0

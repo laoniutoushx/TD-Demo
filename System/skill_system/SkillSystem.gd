@@ -158,16 +158,6 @@ func release(skill_context: SkillContext) -> void:
 	if skill.skill_meta_res != null and skill.skill_meta_res.ability_definition != null:
 		_release_declarative(skill_context, skill.skill_meta_res.ability_definition, generation)
 		return
-	if source_unit is Gdbot:
-		source_unit.jump()
-		await CommonUtil.await_timer(0.1)
-		if not _session_valid(generation, source_unit):
-			return
-		source_unit.fall()
-		await CommonUtil.await_timer(0.1)
-		if not _session_valid(generation, source_unit):
-			return
-		source_unit.idle()
 	source_unit.play_action_animation(source_unit.anim_release)
 	await CommonUtil.await_timer(skill.start_time)
 	if not _session_valid(generation, source_unit) or not is_instance_valid(skill):

@@ -25,6 +25,7 @@ enum TurretState {
 var pre_state: TurretState
 var current_state: TurretState
 var ap: AnimationPlayer
+var _freeze_anim_handle: Dictionary = {}
 
 
 # Called when the node enters the scene tree for the first time.
@@ -54,6 +55,7 @@ func _ready() -> void:
 	# HUD 初始化
 	hud.init_hud_bar(self)
 	call_deferred("_register_screen_hud")
+	get_animation_controller().set_locomotion_intent(0.0, 0.0, false, true)
 	
 
 
@@ -71,10 +73,6 @@ func _physics_process(delta: float) -> void:
 
 
 		TurretState.IDLE:
-			# animation play
-			if ap != null and ap.has_animation(anim_idle) and not (is_instance_valid(_at) and _at.active):
-				ap.play(anim_idle)
-
 			if enemies.size() > 0:
 				if current_enemy == null:
 					current_enemy = enemies.values()[0]
@@ -232,6 +230,18 @@ func _on_enemy_logic_death(enemy: BaseUnit) -> void:
 func change_state(new_state: TurretState) -> void:
 	pre_state = current_state
 	current_state = new_state
+
+	var ctrl := get_animation_controller()
+	if new_state != TurretState.FREEZEING and not _freeze_anim_handle.is_empty():
+		ctrl.release_action(_freeze_anim_handle, &"unfrozen")
+		_freeze_anim_handle = {}
+
+	if new_state == TurretState.FREEZEING:
+		if _freeze_anim_handle.is_empty():
+			_freeze_anim_handle = ctrl.acquire_action(&"stunned", {"auto_release_on_finish": false})
+		ctrl.set_locomotion_intent(0.0, 0.0, false, false)
+	elif new_state == TurretState.IDLE:
+		ctrl.set_locomotion_intent(0.0, 0.0, false, true)
 
 
 

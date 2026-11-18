@@ -101,8 +101,8 @@ static func spawn_death_blood(unit, damage_ctx = null) -> void:
 				has_impact_dir = true
 				
 	# 若无攻击者方向，尝试提取单位移动方向
-	if not has_impact_dir and "path" in unit and unit.path is PathFollow3D:
-		var fwd: Vector3 = -unit.path.global_transform.basis.z
+	if not has_impact_dir and unit.has_method(&"get_move_direction"):
+		var fwd: Vector3 = unit.call(&"get_move_direction")
 		fwd.y = 0.0
 		if fwd.length_squared() > 0.001:
 			impact_dir = fwd.normalized()

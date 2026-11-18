@@ -5036,8 +5036,7 @@ _data = {
 [sub_resource type="BoxShape3D" id="BoxShape3D_8iqam"]
 size = Vector3(2.278, 4.5, 3.57592)
 
-[node name="Enemy" type="PathFollow3D" groups=["enemy"]]
-use_model_front = true
+[node name="Enemy" type="Node3D" groups=["enemy"]]
 script = ExtResource("1_rs53c")
 
 [node name="Fox2" type="Node3D" parent="."]

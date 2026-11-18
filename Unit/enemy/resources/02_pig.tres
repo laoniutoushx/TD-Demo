@@ -48,6 +48,7 @@ anim_idle = "Armature|Idle"
 anim_death = "death"
 anim_release = null
 anim_speed_factor = 1.0
+run_ref_speed = 4.438
 anim_ack_point = 0.03
 audio_death = "野猪死亡_爱给网_aigei_com"
 is_selected_circle = true

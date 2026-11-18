@@ -5,8 +5,14 @@ var _tick := 0.0
 var attack_serial := 0
 
 func attack_delay(source: BaseUnit) -> float:
+	var speed_scale := 1.0
+	var ctrl: Variant = source.get_animation_controller() if source.has_method(&"get_animation_controller") else null
+	if ctrl != null and ctrl.get_active_semantic() == &"attack":
+		speed_scale = ctrl.get_active_speed_scale()
+	elif is_instance_valid(source._ap):
+		speed_scale = source._ap.speed_scale
 	if source.anim_ack_normalized >= 0 and is_instance_valid(source._ap) and source._ap.has_animation(source.anim_attack):
-		return source._ap.get_animation(source.anim_attack).length * source.anim_ack_normalized / maxf(source._ap.speed_scale, 0.001)
+		return source._ap.get_animation(source.anim_attack).length * source.anim_ack_normalized / maxf(speed_scale, 0.001)
 	return maxf(0.0, source.anim_ack_point)
 
 func _ready() -> void:
@@ -55,7 +61,7 @@ func process_single_fire_position_async(source: BaseUnit, original_target: BaseU
 
 	if fire_pos_mark and fire_pos_mark.ap and fire_pos_mark.fire_animation:
 		# fire_pos_mark.ap.play(fire_pos_mark.fire_animation)
-		CommonUtil.play_attack_animation_with_reset_v1(fire_pos_mark.ap, fire_pos_mark.fire_animation, source.attack_speed)
+		CommonUtil.play_attack_animation_with_reset_v1(fire_pos_mark.ap, fire_pos_mark.fire_animation, source.attack_speed, source.max_attack_anim_speed_scale)
 
 	# 弹幕系统处理
 	var bs = await (SystemUtil.barrage_system as BarrageSystem).action(source, fire_pos, current_target, fire_pos_mark, attack_uid)
@@ -176,15 +182,6 @@ func get_units_in_range_physics_3d(center_position: Vector3, range_distance: flo
 			if unit.global_position.distance_to(center_position) <= range_distance:
 				return unit
 	return null
-
-
-# 动画处理
-func animation_action(source: BaseUnit, target: BaseUnit):
-	var ap: AnimationPlayer = CommonUtil.get_first_node_by_node_type(source, Constants.AnimationPlayer_CLZ)
-	if ap != null:
-		if ap.is_playing():
-			ap.stop()
-		ap.play(source.anim_attack)
 
 
 func _process(delta: float) -> void:

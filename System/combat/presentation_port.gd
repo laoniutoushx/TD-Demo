@@ -5,11 +5,13 @@ const PRIORITY_DEATH := 100
 const PRIORITY_STUN := 80
 const PRIORITY_CAST := 60
 const PRIORITY_ATTACK := 40
+const PRIORITY_HIT := 25
 const PRIORITY_MOVE := 10
 
 var _next_id: int = 1
-var _handles: Dictionary = {}      # id -> {generation, vfx_node, anim_unit_id, anim_handle_id, cue}
-var _anim_owners: Dictionary = {}  # unit_id -> Array[{id, priority, anim_name}]
+var _next_play_token: int = 1
+var _handles: Dictionary = {}      # id -> {generation, vfx_node, anim_unit_id, anim_handle, anim_controller_ref, play_token, cue}
+var _anim_owners: Dictionary = {}  # unit_id -> Array[{id, priority, semantic, anim_name, play_token}]
 var _vfx_system: Node = null
 
 
@@ -28,21 +30,24 @@ func _resolve_vfx_system() -> Node:
 	return _vfx_system
 
 
-static func compute_attack_speed_scale(raw_length: float, attack_interval: float, max_speed_scale: float = 4.0) -> float:
+static func compute_attack_speed_scale(raw_length: float, attack_interval: float, max_speed_scale: float = 0.0) -> float:
 	if raw_length <= 0.0:
 		return 1.0
-	var interval := maxf(0.05, attack_interval)
+	var interval := maxf(0.005, attack_interval)
 	var fit_duration := minf(raw_length, interval * 0.95)
 	if fit_duration >= raw_length:
 		return 1.0
-	return clampf(raw_length / fit_duration, 1.0, maxf(1.0, max_speed_scale))
+	var computed := maxf(1.0, raw_length / fit_duration)
+	if max_speed_scale > 0.0:
+		return clampf(computed, 1.0, maxf(1.0, max_speed_scale))
+	return computed
 
 
 static func play_attack_synced(
 	ap: AnimationPlayer,
 	anim_name: StringName,
 	attack_interval: float,
-	max_speed_scale: float = 4.0
+	max_speed_scale: float = 0.0
 ) -> float:
 	if not is_instance_valid(ap) or anim_name == &"" or not ap.has_animation(anim_name):
 		return 1.0
@@ -84,20 +89,24 @@ func emit(cue: PresentationDefinition, ctx: ExecutionContext, runner: AbilityRun
 				vfx_node.global_position = ctx.origin_pos
 
 	var anim_unit_id: int = 0
-	if cue.anim_semantic != &"":
-		var src := ctx.get_source()
-		if is_instance_valid(src):
-			anim_unit_id = src.get_instance_id()
-			_acquire_anim_priority(src, anim_unit_id, hid, cue.anim_semantic, ctx, runner)
-
 	var handle := {
 		"id": hid,
 		"generation": gen,
 		"cue": cue,
 		"vfx_node": vfx_node,
-		"anim_unit_id": anim_unit_id,
+		"anim_unit_id": 0,
+		"anim_handle": {},
+		"anim_controller_ref": null,
 	}
 	_handles[hid] = handle
+
+	if cue.anim_semantic != &"":
+		var src := ctx.get_source()
+		if is_instance_valid(src):
+			anim_unit_id = src.get_instance_id()
+			handle["anim_unit_id"] = anim_unit_id
+			_acquire_anim_priority(src, anim_unit_id, hid, gen, cue.anim_semantic, ctx, runner)
+
 	return {"id": hid, "generation": gen}
 
 
@@ -118,7 +127,7 @@ func update(handle: Dictionary, params: Dictionary) -> void:
 				vfx_node.set(target_prop, params[src_key])
 
 
-func stop(handle: Dictionary, _reason: StringName) -> void:
+func stop(handle: Dictionary, reason: StringName = &"stopped") -> void:
 	if handle.is_empty() or not _handles.has(handle.get("id")):
 		return
 	var hid: int = int(handle["id"])
@@ -127,9 +136,16 @@ func stop(handle: Dictionary, _reason: StringName) -> void:
 		return
 	_handles.erase(hid)
 
-	var anim_unit_id: int = int(record.get("anim_unit_id", 0))
-	if anim_unit_id != 0:
-		_release_anim_priority(anim_unit_id, hid)
+	var ctrl_ref: Variant = record.get("anim_controller_ref")
+	var anim_handle: Dictionary = record.get("anim_handle", {})
+	if ctrl_ref is WeakRef and not anim_handle.is_empty():
+		var ctrl: Object = (ctrl_ref as WeakRef).get_ref()
+		if ctrl != null and ctrl.has_method(&"release_action"):
+			ctrl.call(&"release_action", anim_handle, reason)
+	else:
+		var anim_unit_id: int = int(record.get("anim_unit_id", 0))
+		if anim_unit_id != 0:
+			_release_anim_priority(anim_unit_id, hid)
 
 	var vfx_node: Node3D = record.get("vfx_node")
 	if is_instance_valid(vfx_node):
@@ -144,23 +160,48 @@ func _semantic_priority(semantic: StringName) -> int:
 	match semantic:
 		&"death":
 			return PRIORITY_DEATH
-		&"stunned":
+		&"stunned", &"frozen":
 			return PRIORITY_STUN
 		&"cast":
 			return PRIORITY_CAST
 		&"attack":
 			return PRIORITY_ATTACK
+		&"hit":
+			return PRIORITY_HIT
 		_:
 			return PRIORITY_MOVE
 
 
-func _acquire_anim_priority(src: Object, unit_id: int, hid: int, semantic: StringName, ctx: ExecutionContext, runner: AbilityRunner) -> void:
+func _acquire_anim_priority(src: Object, unit_id: int, hid: int, gen: int, semantic: StringName, ctx: ExecutionContext, runner: AbilityRunner) -> void:
+	var ctrl: Object = src.call(&"get_animation_controller") if src.has_method(&"get_animation_controller") else null
+	if ctrl != null and ctrl.has_method(&"acquire_action"):
+		var runner_ref: WeakRef = weakref(runner) if runner != null else null
+		var phase_gen := ctx.phase_generation
+		var params: Dictionary = {
+			"auto_release_on_finish": false,
+		}
+		if semantic == &"attack":
+			params["attack_interval"] = float(ctx.source_snapshot.get("attack_interval", 1.0))
+		if runner_ref != null:
+			params["on_finished"] = func(_anim_handle: Dictionary) -> void:
+				_forward_runner_gate(hid, gen, &"release" if semantic != &"attack" else &"fire", runner_ref, phase_gen)
+			params["on_marker"] = func(marker_name: StringName, _anim_handle: Dictionary) -> void:
+				_forward_runner_gate(hid, gen, marker_name, runner_ref, phase_gen)
+		var anim_handle: Dictionary = ctrl.call(&"acquire_action", semantic, params)
+		if _handles.has(hid):
+			_handles[hid]["anim_controller_ref"] = weakref(ctrl)
+			_handles[hid]["anim_handle"] = anim_handle
+		return
+
+	# Fallback stack for lightweight test doubles without UnitAnimationController
 	var prio := _semantic_priority(semantic)
 	if not _anim_owners.has(unit_id):
 		_anim_owners[unit_id] = []
 	var stack: Array = _anim_owners[unit_id]
 	var current_top := _top_priority(stack)
-	stack.append({"id": hid, "priority": prio, "semantic": semantic})
+	_next_play_token += 1
+	var play_token := _next_play_token
+	stack.append({"id": hid, "priority": prio, "semantic": semantic, "play_token": play_token})
 	if prio < current_top:
 		return
 
@@ -177,18 +218,41 @@ func _acquire_anim_priority(src: Object, unit_id: int, hid: int, semantic: Strin
 		if cast_anim != null and cast_anim != &"":
 			played_anim = StringName(cast_anim)
 			src.call(&"play_action_animation", cast_anim)
+	elif semantic == &"death":
+		var death_anim: Variant = src.get(&"anim_death")
+		if death_anim != null and death_anim != &"" and src.has_method(&"play_action_animation"):
+			played_anim = StringName(death_anim)
+			src.call(&"play_action_animation", death_anim)
+	elif semantic == &"stunned":
+		var idle_anim: Variant = src.get(&"anim_idle")
+		if idle_anim != null and idle_anim != &"" and src.has_method(&"play_action_animation"):
+			played_anim = StringName(idle_anim)
+			src.call(&"play_action_animation", idle_anim)
 
 	if runner != null and played_anim != &"":
 		var ap: Variant = src.get(&"_ap")
 		if ap is AnimationPlayer and is_instance_valid(ap):
 			var anim_ap := ap as AnimationPlayer
-			var anim_cb := Callable(self, &"_on_animation_finished").bind(hid, played_anim, weakref(runner), ctx.phase_generation, anim_ap)
+			var anim_cb := Callable(self, &"_on_animation_finished").bind(hid, unit_id, play_token, played_anim, weakref(runner), ctx.phase_generation, anim_ap)
 			anim_ap.animation_finished.connect(anim_cb)
+
+
+func _forward_runner_gate(hid: int, gen: int, gate_name: StringName, runner_ref: WeakRef, phase_gen: int) -> void:
+	if not _handles.has(hid):
+		return
+	var rec: Dictionary = _handles[hid]
+	if int(rec.get("generation", -1)) != gen:
+		return
+	var r: AbilityRunner = runner_ref.get_ref() as AbilityRunner
+	if r != null and not r.is_finished():
+		r.signal_gate(gate_name, phase_gen)
 
 
 func _on_animation_finished(
 	finished_name: StringName,
 	hid: int,
+	unit_id: int,
+	play_token: int,
 	expected_anim: StringName,
 	runner_ref: WeakRef,
 	gen: int,
@@ -196,12 +260,19 @@ func _on_animation_finished(
 ) -> void:
 	if finished_name != expected_anim:
 		return
+	if not _handles.has(hid):
+		if is_instance_valid(anim_player):
+			var stale_cb := Callable(self, &"_on_animation_finished").bind(hid, unit_id, play_token, expected_anim, runner_ref, gen, anim_player)
+			if anim_player.animation_finished.is_connected(stale_cb):
+				anim_player.animation_finished.disconnect(stale_cb)
+		return
+	var active_token := _top_play_token(unit_id)
+	if active_token != play_token:
+		return
 	if is_instance_valid(anim_player):
-		var bound_cb := Callable(self, &"_on_animation_finished").bind(hid, expected_anim, runner_ref, gen, anim_player)
+		var bound_cb := Callable(self, &"_on_animation_finished").bind(hid, unit_id, play_token, expected_anim, runner_ref, gen, anim_player)
 		if anim_player.animation_finished.is_connected(bound_cb):
 			anim_player.animation_finished.disconnect(bound_cb)
-	if not _handles.has(hid):
-		return
 	var r: AbilityRunner = runner_ref.get_ref() as AbilityRunner
 	if r != null and not r.is_finished():
 		r.signal_gate(&"release", gen)
@@ -226,3 +297,19 @@ func _top_priority(stack: Array) -> int:
 	for item in stack:
 		best = maxi(best, int(item["priority"]))
 	return best
+
+
+func _top_play_token(unit_id: int) -> int:
+	if not _anim_owners.has(unit_id):
+		return -1
+	var stack: Array = _anim_owners[unit_id]
+	if stack.is_empty():
+		return -1
+	var best_prio := -1
+	var best_token := -1
+	for item in stack:
+		var p := int(item["priority"])
+		if p >= best_prio:
+			best_prio = p
+			best_token = int(item.get("play_token", -1))
+	return best_token

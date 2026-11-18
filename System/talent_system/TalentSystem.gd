@@ -97,24 +97,7 @@ func release(talent_context: TalentContext) -> void:
 	var source_unit: BaseUnit = talent_context.source
 	var target_unit: BaseUnit = talent_context.target
 
-	if source_unit is Gdbot:
-
-		source_unit.jump()
-		await CommonUtil.await_timer(0.1)
-		if not SystemUtil.skill_system._session_valid(generation, source_unit):
-			return
-		source_unit.fall()
-		await CommonUtil.await_timer(0.1)
-		if not SystemUtil.skill_system._session_valid(generation, source_unit):
-			return
-		source_unit.idle()
-
-
-	var ap: AnimationPlayer = CommonUtil.get_first_node_by_node_type(source_unit, Constants.AnimationPlayer_CLZ)
-	var anim_release_code: String = source_unit.anim_release
-
-	if ap != null and ap.has_animation(anim_release_code):
-		ap.play(anim_release_code)
+	source_unit.play_action_animation(source_unit.anim_release)
 
 	await CommonUtil.await_timer(talent_context.talent.start_time)
 	if is_instance_valid(talent) and SystemUtil.skill_system._session_valid(generation, source_unit):

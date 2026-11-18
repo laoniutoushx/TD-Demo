@@ -1,42 +1,95 @@
 class_name Enemy extends BaseUnit
 
-@onready var path: PathFollow3D = $"."
+const BakedPathDataScript = preload("res://System/movement/baked_path_data.gd")
+const PathCorridorMoverScript = preload("res://System/movement/path_corridor_mover.gd")
+
 @onready var base = get_tree().get_first_node_in_group("base")
 
+@export var use_model_front: bool = true
+@export var look_ahead_distance: float = 1.6
+@export var default_turn_speed: float = 9.0
 
-var is_finish = false
+var is_finish: bool = false
+var _mover: PathCorridorMoverScript = PathCorridorMoverScript.new()
+var _stun_anim_handle: Dictionary = {}
+
+var progress: float:
+	get:
+		return _mover.progress
+	set(value):
+		_mover.set_progress_distance(value)
+
+var progress_ratio: float:
+	get:
+		return _mover.get_progress_ratio()
+	set(value):
+		_mover.set_progress_ratio(value)
+
+var v_offset: float:
+	get:
+		return _mover.v_offset
+	set(value):
+		_mover.v_offset = value
+		if is_inside_tree() and _mover.get_baked_path() != null:
+			_mover.snap_to_distance(_mover.progress)
+
+var h_offset: float:
+	get:
+		return _mover.lane_offset
+	set(value):
+		_mover.lane_offset = value
+		if is_inside_tree() and _mover.get_baked_path() != null:
+			_mover.snap_to_distance(_mover.progress)
 
 
 func _ready() -> void:
-	super._ready()	
-	# 初始化时创建 path3d 与 pathfollow3d
-	
-	# 初始化 walk 动画
+	super._ready()
+	_mover.bind_body((self as Variant) as Node3D)
+	_mover.use_model_front = use_model_front
+	_mover.look_ahead_distance = look_ahead_distance
+	_mover.turn_speed = turn_speed if turn_speed > 0.0 else default_turn_speed
+
+	if not _mover.locomotion_updated.is_connected(_on_locomotion_updated):
+		_mover.locomotion_updated.connect(_on_locomotion_updated)
+	if not _mover.path_progress_reached_end.is_connected(_on_path_reached_end):
+		_mover.path_progress_reached_end.connect(_on_path_reached_end)
+
+	if _mover.get_baked_path() == null and get_parent() is Path3D:
+		_mover.set_baked_path(BakedPathDataScript.for_path3d(get_parent() as Path3D), _mover.lane_offset, true)
+	elif _mover.get_baked_path() != null:
+		_mover.snap_to_distance(_mover.progress)
 
 	change_state(EnemyState.WALKING)
-	
-	# health bar
 	_health_bar_create()
-	
 
-# health bar creation
+
+func set_baked_path(baked_path: BakedPathDataScript, p_lane_offset: float = 0.0) -> void:
+	_mover.set_baked_path(baked_path, p_lane_offset, is_inside_tree())
+
+
+func get_move_direction() -> Vector3:
+	return _mover.get_move_direction()
+
+
 func _health_bar_create() -> void:
 	await self.ready
 	var bars = get_tree().get_first_node_in_group("screen_health_bars")
-	if is_instance_valid(bars): bars.register_unit(self)
+	if is_instance_valid(bars):
+		bars.register_unit(self)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	if not is_alive() or current_state != EnemyState.WALKING: return
-	
-	path.progress = path.progress + (delta * move_speed)
-	if path.progress_ratio >= 0.98 && !is_finish:
-		is_finish = true
-		if is_instance_valid(base):
-			base.take_damage()
-		do_logical_death("leaked")
-		set_process(false)
+func _on_locomotion_updated(actual_speed: float, desired_speed: float, is_moving: bool, can_move: bool) -> void:
+	get_animation_controller().set_locomotion_intent(actual_speed, desired_speed, is_moving, can_move)
+
+
+func _on_path_reached_end(_ratio: float) -> void:
+	if is_finish or not is_alive():
+		return
+	is_finish = true
+	if is_instance_valid(base):
+		base.take_damage()
+	do_logical_death("leaked")
+	set_physics_process(false)
 
 
 func take_damage(damage_ctx: DamageCtx) -> bool:
@@ -56,13 +109,6 @@ func _on_control_state_changed(_capability: StringName, _allowed: bool) -> void:
 		change_state(EnemyState.WALKING)
 
 
-#func _on_animation_player_animation_finished(anim_name: StringName) -> void:
-	#print("++++" + anim_name)
-	#pass # Replace with function body.
-
-
-# 状态机
-# state   idle（呆滞状态）
 enum EnemyState {
 	IDLE, WALKING, STUN, DEAD
 }
@@ -71,58 +117,44 @@ var current_state: EnemyState
 
 
 func _physics_process(delta: float) -> void:
+	if not is_alive():
+		return
 
-	if not is_alive(): return
-
-	match current_state:		
+	match current_state:
 		EnemyState.IDLE:
-			pass
-
+			_mover.reset_for_idle(move_speed, true)
 		EnemyState.STUN:
-			pass
-
+			_mover.reset_for_idle(0.0, false)
 		EnemyState.WALKING:
-			pass
-
-
+			_mover.step(delta, move_speed, true, true)
 		EnemyState.DEAD:
-			pass
-
-
-
-
+			_mover.reset_for_idle(0.0, false)
 
 
 func change_state(new_state: EnemyState) -> void:
-	if not is_alive() and new_state != EnemyState.DEAD: return
+	if not is_alive() and new_state != EnemyState.DEAD:
+		return
 	pre_state = current_state
 	current_state = new_state
 
-	if current_state == EnemyState.IDLE:
-		# 初始化 idle 动画
-		if _ap and _ap.has_animation(anim_idle):
-			_ap.play(anim_idle)
-			_ap.speed_scale = _anim_speed
+	var ctrl := get_animation_controller()
+	if new_state != EnemyState.STUN and not _stun_anim_handle.is_empty():
+		ctrl.release_action(_stun_anim_handle, &"stun_ended")
+		_stun_anim_handle = {}
 
+	match current_state:
+		EnemyState.IDLE:
+			_mover.reset_for_idle(move_speed, true)
 
-	if current_state == EnemyState.STUN:
-		set_process(false)
-		if _ap and _ap.has_animation(anim_idle):
-			_ap.play(anim_idle)
-			_ap.speed_scale = _anim_speed
+		EnemyState.STUN:
+			if _stun_anim_handle.is_empty():
+				_stun_anim_handle = ctrl.acquire_action(&"stunned", {"auto_release_on_finish": false})
+			_mover.reset_for_idle(0.0, false)
 
+		EnemyState.WALKING:
+			_mover.reset_motion_sample()
+			ctrl.set_locomotion_intent(move_speed, move_speed, true, true)
 
-
-	if current_state == EnemyState.WALKING:
-		set_process(true)
-		# 初始化 walk 动画
-		if _ap and _ap.has_animation(anim_run):
-			_ap.play(anim_run)
-			_ap.speed_scale = _anim_speed
-
-
-
-	if current_state == EnemyState.DEAD:
-		if _ap and _ap.has_animation(anim_death):
-			_ap.play(anim_death)
-			_ap.speed_scale = _anim_speed
+		EnemyState.DEAD:
+			_mover.reset_for_idle(0.0, false)
+			set_physics_process(false)
