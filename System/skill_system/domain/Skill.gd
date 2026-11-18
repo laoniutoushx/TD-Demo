@@ -471,9 +471,7 @@ func change_state(new_state: SKILL_STATE) -> void:
             var tween = create_tween()
             tween.tween_property(slot, "scale", Vector2(1.0, 1.0), 0.1)
 
-        var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
-        if range_comp:
-            range_comp.set_radius(unit.attack_range)
+        _update_range_indicator(false)
 
         # 恢复 cursor 移动
         SOS.main.player_controller.not_limit_move()
@@ -504,9 +502,7 @@ func change_state(new_state: SKILL_STATE) -> void:
                 tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
 
             # 单位技能范围指示
-            var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
-            if range_comp:
-                range_comp.set_radius(release_distance)
+            _update_range_indicator(true)
 
             # 开启范围技能地面指示框（Decal）
             var aoe_radius = damage_range if damage_range > 0.0 else range
@@ -529,9 +525,7 @@ func change_state(new_state: SKILL_STATE) -> void:
                 tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
 
             # 单位技能范围指示
-            var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
-            if range_comp:
-                range_comp.set_radius(release_distance)
+            _update_range_indicator(true)
 
             # 单位全局技能状态处理
             unit.current_global_skill_state = 1
@@ -638,6 +632,18 @@ func change_state(new_state: SKILL_STATE) -> void:
 
         SKILL_STATE.Disabled:
             CommonUtil.debug_log(["skill [%s] is Disabled" % code])
+
+func _update_range_indicator(active: bool) -> void:
+    if not is_instance_valid(unit):
+        return
+    var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
+    if not range_comp:
+        return
+    if active:
+        range_comp.set_skill_range(release_distance)
+    else:
+        range_comp.clear_skill_range()
+
 
 func _exit_tree() -> void:
     if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):

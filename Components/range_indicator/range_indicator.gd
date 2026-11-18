@@ -1,6 +1,9 @@
 extends Node3D
 
+enum DisplayMode { ATTACK, SKILL, PREVIEW }
+
 const COLOR_FRIENDLY := Color(0.22, 0.95, 0.65, 1.0)
+const COLOR_SKILL := Color(0.25, 0.75, 1.0, 1.0)
 const COLOR_PREVIEW_VALID := Color(0.22, 0.95, 0.65, 1.0)
 const COLOR_PREVIEW_INVALID := Color(1.0, 0.32, 0.22, 1.0)
 const COLOR_ENEMY := Color(1.0, 0.35, 0.25, 1.0)
@@ -18,6 +21,7 @@ var _current_radius: float = 10.0
 var _alpha_mult: float = 0.0
 var _target_alpha: float = 0.0
 var _active_color: Color = COLOR_FRIENDLY
+var _display_mode: DisplayMode = DisplayMode.ATTACK
 
 
 func _ready() -> void:
@@ -51,23 +55,42 @@ func set_radius(rad: float) -> void:
 	_sync_shader()
 
 
+## 切换到技能释放范围样式并锁定为技能施法距离，避免被单位基础 attack_range 覆盖
+func set_skill_range(rad: float) -> void:
+	_ensure_shared_resources()
+	_display_mode = DisplayMode.SKILL
+	_active_color = COLOR_SKILL
+	var clamped := maxf(0.5, rad)
+	radius = clamped
+	_target_radius = clamped
+	if not visible or _target_alpha <= 0.001:
+		_current_radius = maxf(clamped * 0.85, 0.5)
+		_alpha_mult = 0.0
+		_target_alpha = 1.0
+		visible = true
+		set_process(true)
+	_sync_shader()
+
+
+## 退出技能指示后恢复为单位普通攻击范围显示
+func clear_skill_range() -> void:
+	_display_mode = DisplayMode.ATTACK
+	_active_color = _resolve_owner_color()
+	_sync_owner_attack_range()
+	_sync_shader()
+
+
 func set_preview_valid(is_valid: bool) -> void:
+	_display_mode = DisplayMode.PREVIEW
 	_active_color = COLOR_PREVIEW_VALID if is_valid else COLOR_PREVIEW_INVALID
 	_sync_shader()
 
 
 func show_indicator() -> void:
 	_ensure_shared_resources()
-	if owner is BaseUnit:
-		var unit := owner as BaseUnit
-		if "attack_range" in unit and float(unit.attack_range) > 0.1:
-			_target_radius = float(unit.attack_range)
-			radius = _target_radius
-		if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
-			if unit.player_group != SOS.main.player_controller.player_group_idx:
-				_active_color = COLOR_ENEMY
-			elif _active_color == COLOR_ENEMY:
-				_active_color = COLOR_FRIENDLY
+	if _display_mode == DisplayMode.ATTACK:
+		_sync_owner_attack_range()
+		_active_color = _resolve_owner_color()
 	_current_radius = maxf(_target_radius * 0.78, 0.5)
 	_alpha_mult = 0.0
 	_target_alpha = 1.0
@@ -77,6 +100,7 @@ func show_indicator() -> void:
 
 
 func hide_indicator() -> void:
+	_display_mode = DisplayMode.ATTACK
 	_target_alpha = 0.0
 	if not is_inside_tree():
 		_alpha_mult = 0.0
@@ -108,11 +132,8 @@ func _process(delta: float) -> void:
 		set_process(false)
 		return
 
-	if owner is BaseUnit and "attack_range" in owner:
-		var live_range := maxf(0.5, float(owner.attack_range))
-		if not is_equal_approx(live_range, _target_radius):
-			_target_radius = live_range
-			radius = live_range
+	if _display_mode == DisplayMode.ATTACK:
+		_sync_owner_attack_range()
 
 	var lerp_weight := 1.0 - exp(-18.0 * delta)
 	_current_radius = lerpf(_current_radius, _target_radius, lerp_weight)
@@ -136,6 +157,25 @@ func _sync_shader() -> void:
 	_volume.set_instance_shader_parameter(&"radius", _current_radius)
 	_volume.set_instance_shader_parameter(&"color", _active_color)
 	_volume.set_instance_shader_parameter(&"alpha_mult", _alpha_mult)
+	_volume.set_instance_shader_parameter(&"style_mode", 1.0 if _display_mode == DisplayMode.SKILL else 0.0)
+
+
+func _is_owner_friendly() -> bool:
+	if owner is BaseUnit and is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
+		return (owner as BaseUnit).player_group == SOS.main.player_controller.player_group_idx
+	return true
+
+
+func _resolve_owner_color() -> Color:
+	return COLOR_FRIENDLY if _is_owner_friendly() else COLOR_ENEMY
+
+
+func _sync_owner_attack_range() -> void:
+	if owner is BaseUnit and "attack_range" in owner:
+		var live_range := maxf(0.5, float(owner.attack_range))
+		if not is_equal_approx(live_range, _target_radius):
+			_target_radius = live_range
+			radius = live_range
 
 
 # player select event
@@ -143,14 +183,10 @@ func _sync_shader() -> void:
 func _on_player_selected_units(unit_map: Dictionary, _mouse_pos: Vector3, on_selected_player_status: PlayerController.PLAYER_STATUS) -> void:
 	if unit_map.size() == 1 and is_instance_valid(owner):
 		if unit_map.keys()[0] == owner.get_instance_id():
-			if owner is BaseUnit:
-				var unit := owner as BaseUnit
-				var is_friendly := true
-				if is_instance_valid(SOS.main) and is_instance_valid(SOS.main.player_controller):
-					is_friendly = (unit.player_group == SOS.main.player_controller.player_group_idx)
-				_active_color = COLOR_FRIENDLY if is_friendly else COLOR_ENEMY
-				if unit is Turret:
-					set_radius(unit.attack_range)
+			_display_mode = DisplayMode.ATTACK
+			_active_color = _resolve_owner_color()
+			if owner is Turret:
+				set_radius((owner as Turret).attack_range)
 			show_indicator()
 			return
 

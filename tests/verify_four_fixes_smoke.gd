@@ -136,7 +136,49 @@ func run() -> void:
 	check(vol != null and vol.mesh is BoxMesh and vol.material_override is ShaderMaterial, "RangeIndicator uses depth-projected BoxMesh + ShaderMaterial")
 	if vol != null:
 		check(is_equal_approx(float(vol.get_instance_shader_parameter(&"radius")), cannon.attack_range), "RangeIndicator shader radius matches cannon.attack_range")
+		check(is_equal_approx(float(vol.get_instance_shader_parameter(&"style_mode")), 0.0), "RangeIndicator starts in attack style_mode=0")
 		check(float(vol.get_instance_shader_parameter(&"alpha_mult")) > 0.85, "RangeIndicator fades in cleanly")
+
+	# --- 4b. Skill Release Range Switch & Style Differentiation ---
+	var skill_metas = cannon.skill_metas.duplicate()
+	skill_metas.clear()
+	skill_metas.append(load("res://System/skill_system/resources/damage/storm_hammer.tres"))
+	skill_metas.append(load("res://System/skill_system/resources/damage/fire_rain.tres"))
+	var added_skill_map: Dictionary = main_scene.skill_system.initialize_skills(cannon, skill_metas)
+	for k in added_skill_map:
+		cannon.skill_map[k] = added_skill_map[k]
+
+	var hammer_skill = added_skill_map.get("storm_hammer")
+	hammer_skill.release_distance = cannon.attack_range + 7.5
+	hammer_skill.change_state(hammer_skill.SKILL_STATE.Targeted_Indicate)
+	await create_timer(0.3).timeout
+	check(ri.visible, "RangeIndicator stays visible during Targeted_Indicate")
+	if vol != null:
+		check(absf(float(vol.get_instance_shader_parameter(&"radius")) - hammer_skill.release_distance) < 0.25, "RangeIndicator switches to skill release_distance and does NOT revert to attack_range")
+		check(is_equal_approx(float(vol.get_instance_shader_parameter(&"style_mode")), 1.0), "RangeIndicator switches to skill style_mode=1")
+		var skill_col: Color = vol.get_instance_shader_parameter(&"color")
+		check(skill_col.b > skill_col.g, "RangeIndicator skill range uses distinct azure/blue color")
+	hammer_skill.change_state(hammer_skill.SKILL_STATE.Idle)
+	await create_timer(0.3).timeout
+	if vol != null:
+		check(absf(float(vol.get_instance_shader_parameter(&"radius")) - cannon.attack_range) < 0.25, "RangeIndicator restores cannon.attack_range when skill indicate ends")
+		check(is_equal_approx(float(vol.get_instance_shader_parameter(&"style_mode")), 0.0), "RangeIndicator restores attack style_mode=0 when skill indicate ends")
+		var atk_col: Color = vol.get_instance_shader_parameter(&"color")
+		check(atk_col.g > atk_col.b, "RangeIndicator restores friendly green color when skill indicate ends")
+
+	var fire_skill = added_skill_map.get("fire_rain")
+	fire_skill.release_distance = cannon.attack_range + 9.0
+	fire_skill.change_state(fire_skill.SKILL_STATE.Circle_Range_Indicate)
+	await create_timer(0.3).timeout
+	if vol != null:
+		check(absf(float(vol.get_instance_shader_parameter(&"radius")) - fire_skill.release_distance) < 0.25, "RangeIndicator switches to Circle_Range_Indicate release_distance")
+		check(is_equal_approx(float(vol.get_instance_shader_parameter(&"style_mode")), 1.0), "RangeIndicator uses skill style_mode=1 during Circle_Range_Indicate")
+	await RenderingServer.frame_post_draw
+	DirAccess.make_dir_recursive_absolute("res://.godot/verify_four_fixes")
+	root.get_texture().get_image().save_png("res://.godot/verify_four_fixes/skill_range_preview.png")
+	fire_skill.change_state(fire_skill.SKILL_STATE.Idle)
+	await create_timer(0.3).timeout
+
 	if ri.has_method("set_preview_valid"):
 		ri.set_preview_valid(false)
 		var col: Color = vol.get_instance_shader_parameter(&"color")

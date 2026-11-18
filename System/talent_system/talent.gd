@@ -265,9 +265,7 @@ func change_state(new_state: TALENT_STATE) -> void:
         var tween = create_tween()
         tween.tween_property(slot, "scale", Vector2(1.0, 1.0), 0.1)
 
-        var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
-        if range_comp:
-            range_comp.set_radius(unit.attack_range)
+        _update_range_indicator(false)
 
         # 恢复 cursor 移动
         SOS.main.player_controller.not_limit_move()
@@ -299,9 +297,7 @@ func change_state(new_state: TALENT_STATE) -> void:
             tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
 
             # 单位技能范围指示
-            var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
-            if range_comp:
-                range_comp.set_radius(release_distance)
+            _update_range_indicator(true)
 
             # 若目标类型包含地面，则开启范围指示框
             if CommonUtil.is_flag_set(TalentResource.TALENT_TARGET_TYPE.FLOOR, target_type):
@@ -325,9 +321,7 @@ func change_state(new_state: TALENT_STATE) -> void:
             tween.tween_property(slot, "scale", Vector2(1.2, 1.2), 0.1)
 
             # 单位技能范围指示
-            var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
-            if range_comp:
-                range_comp.set_radius(release_distance)
+            _update_range_indicator(true)
 
             # 若目标类型包含地面，则开启范围指示框
             if CommonUtil.is_flag_set(TalentResource.TALENT_TARGET_TYPE.FLOOR, target_type):
@@ -459,6 +453,18 @@ func _talent_target_unit_cond_matched(target_node: Variant) -> bool:
     ]
 
     return conditions.any(func(x): return x)
+
+
+func _update_range_indicator(active: bool) -> void:
+    if not is_instance_valid(unit):
+        return
+    var range_comp = CommonUtil.get_component_by_name(unit, "RangeIndicator")
+    if not range_comp:
+        return
+    if active:
+        range_comp.set_skill_range(release_distance)
+    else:
+        range_comp.clear_skill_range()
 
 
 func _exit_tree() -> void:
